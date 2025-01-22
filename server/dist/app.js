@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 
 const resolvers = {
   Query: {
-    hello: () => "Hello, world!"
+    hello: () => "Hello, world 2!"
   }
 };
 
@@ -33,6 +33,7 @@ const server = new ApolloServer({
     "/graphql",
     cors(),
     express.json(),
+    // @ts-ignore
     expressMiddleware(server, {
       context: async ({ req }) => {
         console.log(req.headers);
