@@ -1,19 +1,17 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "esnext",
+		"rootDirs": ["src"],
+		"outDir": "dist",
 		"lib": ["es2020"],
+		"target": "es2020",
 		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"outDir": "./dist",
+		"module": "esnext",
 		"moduleResolution": "node",
-		"rootDir": "./src",
-		"rootDirs": ["./src"],
+		"esModuleInterop": true,
 		"types": ["node"],
 		"paths": {
-			"@app/*": ["./src/*"]
+			"@src/*": ["./src/*"]
 		}
 	},
 	"include": ["./src/**/*.ts"],

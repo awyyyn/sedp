@@ -7,42 +7,26 @@ import http from "http";
 import cors from "cors";
 import { typeDefs, resolvers } from "./graphql";
 import dotenv from "dotenv";
-
-interface MyContext {
-	token?: string;
-}
-
 // Initialize an app and an httpServer
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
-
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-const server = new ApolloServer<MyContext>({
-	typeDefs,
-	resolvers,
-	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
-
 // Ensure we wait for our server to start
 await server.start();
-
 // GraphQL endpoint
-app.use(
-	"/graphql",
-	cors<cors.CorsRequest>(),
-	express.json(),
-	expressMiddleware(server, {
-		context: async ({ req }) => {
-			console.log(req.headers);
-			return { token: req.headers.token };
-		},
-	})
-);
-
+app.use("/graphql", cors(), express.json(), expressMiddleware(server, {
+    context: async ({ req }) => {
+        console.log(req.headers);
+        return { token: req.headers.token };
+    },
+}));
 // Modified server startup
-await new Promise<void>((resolve) =>
-	httpServer.listen({ port: 4000 }, resolve)
-);
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 console.log(`🚀 Server ready at http://localhost:4000/`);
