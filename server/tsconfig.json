@@ -10,13 +10,10 @@
 		"paths": {
 			"@src/*": ["./src/*"]
 		},
-
 		// Treat files as modules even if it doesn't use import/export
 		"moduleDetection": "force",
-
 		// Ignore module structure
-		"module": "Preserve",
-
+		"module": "CommonJS",
 		// Allow JSON modules to be imported
 		"resolveJsonModule": true,
 
