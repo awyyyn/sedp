@@ -1,2 +1,2 @@
-export * from "./resolver";
-export * from "./schema";
+export * from "./resolver.js";
+export * from "./schema.js";

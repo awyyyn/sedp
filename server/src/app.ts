@@ -5,7 +5,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import express, { Request } from "express";
 import http from "http";
 import cors from "cors";
-import { typeDefs, resolvers } from "./graphql";
+import { typeDefs, resolvers } from "./graphql/index.js";
 import dotenv from "dotenv";
 
 interface MyContext {

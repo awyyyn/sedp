@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "tsx watch --include \"./src/*\" ./src/app.ts",
-		"build": "pkgroll"
+		"build": "npx tsc"
 	},
 	"keywords": [],
 	"author": "",
@@ -29,7 +29,7 @@
 		"@types/node": "^22.10.5",
 		"@types/qrcode": "^1.5.5",
 		"@types/speakeasy": "^2.0.10",
-		"pkgroll": "^2.6.0",
+		"pkgroll": "^2.6.1",
 		"prisma": "^6.1.0",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.19.2",
