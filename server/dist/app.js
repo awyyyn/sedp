@@ -1,32 +1,47 @@
-// npm install @apollo/server express graphql cors
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express from "express";
-import http from "http";
-import cors from "cors";
-import { typeDefs, resolvers } from "./graphql";
-import dotenv from "dotenv";
-// Initialize an app and an httpServer
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import { gql } from 'graphql-tag';
+import dotenv from 'dotenv';
+
+const resolvers = {
+  Query: {
+    hello: () => "Hello, world!"
+  }
+};
+
+const typeDefs = gql`
+	type Query {
+		hello: String!
+	}
+`;
+
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
-// Same ApolloServer initialization as before, plus the drain plugin
-// for our httpServer.
 const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  typeDefs,
+  resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
 });
-// Ensure we wait for our server to start
-await server.start();
-// GraphQL endpoint
-app.use("/graphql", cors(), express.json(), expressMiddleware(server, {
-    context: async ({ req }) => {
+(async () => {
+  await server.start();
+  app.use(
+    "/graphql",
+    cors(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
         console.log(req.headers);
         return { token: req.headers.token };
-    },
-}));
-// Modified server startup
-await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
-console.log(`🚀 Server ready at http://localhost:4000/`);
+      }
+    })
+  );
+  await new Promise(
+    (resolve) => httpServer.listen({ port: 4e3 }, resolve)
+  );
+  console.log(`\u{1F680} Server ready at http://localhost:4000/`);
+})();

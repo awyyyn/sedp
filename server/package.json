@@ -2,9 +2,12 @@
 	"name": "server",
 	"version": "1.0.0",
 	"main": "index.js",
+	"exports": "./dist/app.js",
 	"scripts": {
 		"compile": "tsc",
-		"start": "npm run compile && node ./dist/app.js"
+		"start": "npm run compile && node ./dist/app.js",
+		"build": "npx pkgroll",
+		"dev": "tsx --watch src/* src/app.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -13,15 +16,22 @@
 	"type": "module",
 	"dependencies": {
 		"@apollo/server": "^4.11.3",
+		"@prisma/client": "^6.2.1",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
 		"graphql": "^16.10.0",
-		"graphql-tag": "^2.12.6"
+		"graphql-tag": "^2.12.6",
+		"jsonwebtoken": "^9.0.2",
+		"pkgroll": "^2.6.1",
+		"speakeasy": "^2.0.0"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
+		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "^22.10.7",
+		"@types/speakeasy": "^2.0.10",
+		"tsx": "^4.19.2",
 		"typescript": "^5.7.3"
 	}
 }

@@ -26,23 +26,25 @@ const server = new ApolloServer<MyContext>({
 });
 
 // Ensure we wait for our server to start
-await server.start();
+(async () => {
+	await server.start();
 
-// GraphQL endpoint
-app.use(
-	"/graphql",
-	cors<cors.CorsRequest>(),
-	express.json(),
-	expressMiddleware(server, {
-		context: async ({ req }) => {
-			console.log(req.headers);
-			return { token: req.headers.token };
-		},
-	})
-);
+	// GraphQL endpoint
+	app.use(
+		"/graphql",
+		cors<cors.CorsRequest>(),
+		express.json(),
+		expressMiddleware(server, {
+			context: async ({ req }) => {
+				console.log(req.headers);
+				return { token: req.headers.token };
+			},
+		})
+	);
 
-// Modified server startup
-await new Promise<void>((resolve) =>
-	httpServer.listen({ port: 4000 }, resolve)
-);
-console.log(`🚀 Server ready at http://localhost:4000/`);
+	// Modified server startup
+	await new Promise<void>((resolve) =>
+		httpServer.listen({ port: 4000 }, resolve)
+	);
+	console.log(`🚀 Server ready at http://localhost:4000/`);
+})();
