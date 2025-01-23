@@ -11,6 +11,7 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import * as yup from "yup";
+import { Link } from "react-router";
 
 const validationSchema = yup.object({
 	email: yup.string().email("Invalid email").required("Email is required"),
@@ -74,30 +75,38 @@ export default function Login() {
 												helperText={errors.email}
 												onBlur={handleBlur}
 											/>
-											<TextField
-												onChange={handleChange}
-												label="Password"
-												size="small"
-												type={showPassword ? "text" : "password"}
-												slotProps={{
-													input: {
-														endAdornment: (
-															<IconButton onClick={handleShowPassword}>
-																{showPassword ? (
-																	<VisibilityOff />
-																) : (
-																	<Visibility />
-																)}
-															</IconButton>
-														),
-													},
-												}}
-												name="password"
-												value={values.password}
-												error={Boolean(errors.password)}
-												onBlur={handleBlur}
-												helperText={errors.password}
-											/>
+											<Stack direction="column" spacing={1}>
+												<TextField
+													onChange={handleChange}
+													label="Password"
+													size="small"
+													type={showPassword ? "text" : "password"}
+													slotProps={{
+														input: {
+															endAdornment: (
+																<IconButton onClick={handleShowPassword}>
+																	{showPassword ? (
+																		<VisibilityOff />
+																	) : (
+																		<Visibility />
+																	)}
+																</IconButton>
+															),
+														},
+													}}
+													name="password"
+													value={values.password}
+													error={Boolean(errors.password)}
+													onBlur={handleBlur}
+													helperText={errors.password}
+												/>
+
+												<Link to="/auth/forgot-password">
+													<Typography align="right" variant="subtitle2">
+														Forgot Password?
+													</Typography>
+												</Link>
+											</Stack>
 										</>
 									) : (
 										<MuiOtpInput
