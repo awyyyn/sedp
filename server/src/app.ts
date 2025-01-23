@@ -25,6 +25,11 @@ const server = new ApolloServer<MyContext>({
 	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
+// Health check endpoint
+app.get("/healthz", (_, res) => {
+	res.send("ok");
+});
+
 // Ensure we wait for our server to start
 (async () => {
 	await server.start();
