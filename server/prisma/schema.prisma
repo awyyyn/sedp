@@ -19,12 +19,19 @@ model SystemUser {
   mfaEnabled Boolean @default(false)
   address address?
   role SystemUserRole
+  status SystemUserStatus @default(UNVERIFIED)
 
   // TimeStamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("system_users")
+}
+
+enum SystemUserStatus {
+  VERIFIED
+  UNVERIFIED
+  ARCHIVED
 }
 
 enum SystemUserRole {
@@ -53,5 +60,5 @@ type address {
   street String
   city String
   state String
-  zip String
+  zip Int
 }
