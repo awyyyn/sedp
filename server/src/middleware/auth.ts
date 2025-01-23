@@ -1,4 +1,4 @@
-import { verifyToken } from "@app/services/jwt";
+import { verifyToken } from "../services/index.js";
 import { NextFunction, Request, Response } from "express";
 
 export const authMiddleware = async (
