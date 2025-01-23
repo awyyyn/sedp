@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -13,46 +8,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Project {
+model SystemUser {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content String
-  techStack   String[]
-  duration    String
-  imgUrls String[]
-
-  repoUrl String
-  liveUrl String?
-  type String
-  tags String[]
-  // TimeStamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("projects")
-}
- 
-
-model Technology {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  imgUrl String
-  name   String @unique
-  skill Int
-  category Category
+  email String @unique
+  firstName String
+  lastName String
+  displayName String?
+  password String?
+  mfaSecret String?
+  mfaEnabled Boolean @default(false)
+  address address?
+  role SystemUserRole
 
   // TimeStamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("technologies")
+  @@map("system_users")
 }
 
-enum Category {
-  FRONTEND
-	BACKEND
-	DATABASE
-	DEVOPS
-	DESIGN
-	OTHER
+enum SystemUserRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model student {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  firstName String
+  lastName String 
+  address address?
+  password String?
+  mfaSecret String?
+  mfaEnabled Boolean @default(false)
+
+  // TimeStamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
+
+type address {
+  street String
+  city String
+  state String
+  zip String
 }
