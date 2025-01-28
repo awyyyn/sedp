@@ -2,11 +2,12 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express, { Request } from "express";
+import express from "express";
 import http from "http";
 import cors from "cors";
 import { typeDefs, resolvers } from "./graphql/index.js";
 import dotenv from "dotenv";
+import { routes } from "./routes/index.js";
 
 interface MyContext {
 	token?: string;
@@ -30,6 +31,13 @@ app.get("/healthz", (_, res) => {
 	res.send("ok");
 });
 
+// Middlewares
+app.use(cors<cors.CorsRequest>());
+app.use(express.json());
+
+// REST endpoints
+app.use("/", routes);
+
 // Ensure we wait for our server to start
 (async () => {
 	await server.start();
@@ -37,8 +45,6 @@ app.get("/healthz", (_, res) => {
 	// GraphQL endpoint
 	app.use(
 		"/graphql",
-		cors<cors.CorsRequest>(),
-		express.json(),
 		// @ts-ignore
 		expressMiddleware(server, {
 			context: async ({ req }) => {
