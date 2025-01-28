@@ -13,8 +13,8 @@ model SystemUser {
   email String @unique
   firstName String
   lastName String
-  displayName String?
-  password String?
+  displayName String
+  password String
   mfaSecret String?
   mfaEnabled Boolean @default(false)
   address address?
@@ -44,10 +44,14 @@ model student {
   email String @unique
   firstName String
   lastName String 
-  address address?
-  password String?
+  middleName String?
+  address address
+  password String
+  birthDate DateTime
   mfaSecret String?
   mfaEnabled Boolean @default(false)
+  schoolYear String 
+  schoolName String
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -59,6 +63,15 @@ model student {
 type address {
   street String
   city String
-  state String
+  brgy String
   zip Int
+}
+
+model token {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  token String
+  time  DateTime  
+
+  @@map("tokens")
 }
