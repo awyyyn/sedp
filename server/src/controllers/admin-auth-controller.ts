@@ -1,12 +1,16 @@
 import { Request, Response } from "express";
-import { createSystemUser, readSystemUser } from "@/models/index.js";
+import {
+	readSystemUser,
+	readToken,
+	sendForgotPasswordOTP,
+	updateSystemUser,
+} from "@/models/index.js";
 import * as bcrypt from "bcrypt";
 import {
 	generateAccessToken,
 	generateRefreshToken,
-	transporter,
+	prisma,
 } from "@/services/index.js";
-import { environment } from "@/environments/environment.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -155,38 +159,143 @@ export const adminForgotPasswordController = async (
 			return;
 		}
 
-		const token = await generateAccessToken({
-			email,
-			id: user.id,
-			role: user.role,
-		});
+		const token = await readToken(email);
 
-		const resetPasswordLink = `${environment.CLIENT_URL}/reset-password?token=${token}`;
+		if (token !== null) {
+			res.status(400).json({
+				error: {
+					code: 400,
+					message:
+						"Token is already sent, please check your spam folder! You can request a new OTP after 5 minutes.",
+				},
+			});
+			return;
+		}
 
-		const mailOptions = {
-			from: environment.EMAIL,
-			sender: {
-				name: "SEDP - Ligao",
-				address: environment.EMAIL!,
-			},
-			to: email,
-			subject: "Password Reset Link",
-			html: `
-			 	<h1>Password Reset Request</h1>		 
-				<p>Your OTP for password reset is: <b><a href="${resetPasswordLink}">Click to reset your password</a></b></p>
-				
-				<p>If you didn't request this, please ignore this email.</p>
-			`,
-		};
+		await sendForgotPasswordOTP(email);
 
-		await transporter.sendMail(mailOptions);
-		await res.status(200).json({
+		res.status(200).json({
 			data: {
 				message: "Reset password link is sent to your email.",
 			},
 		});
 	} catch (error) {
 		console.error(error);
+		res.status(500).json({
+			error: {
+				code: 500,
+				message: "Internal Server Error!",
+			},
+		});
+	}
+};
+
+export const verifyTokenController = async (req: Request, res: Response) => {
+	try {
+		const { token, email } = req.body;
+
+		const user = await readSystemUser(email);
+
+		if (!user) {
+			res.status(400).json({
+				error: {
+					code: 400,
+					message: "UnAuthorized!",
+				},
+			});
+			return;
+		}
+
+		const storedToken = await readToken(email);
+
+		if (storedToken === null) {
+			res.status(400).json({
+				error: {
+					code: 400,
+					message: "Token is expired!",
+				},
+			});
+			return;
+		}
+
+		if (token !== storedToken?.token) {
+			res.status(400).json({
+				error: {
+					code: 400,
+					message: "OTP doesn't match!",
+				},
+			});
+			return;
+		}
+
+		const passwordAccessToken = await generateAccessToken({
+			email: user.email,
+			role: user.role,
+			id: user.id,
+		});
+		res.status(200).json({
+			data: {
+				passwordAccessToken,
+			},
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			error: {
+				code: 500,
+				message: "Internal Server Error!",
+			},
+		});
+	}
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+	const { email, password } = req.body;
+
+	if (!email || !password) {
+		res.status(400).json({
+			error: {
+				code: 400,
+				message: "Email and password are required!",
+			},
+		});
+		return;
+	}
+
+	try {
+		const user = await prisma.systemUser.findUnique({ where: { email } });
+
+		if (!user) {
+			res.status(404).json({
+				error: {
+					code: 404,
+					message: "User is not registered",
+				},
+			});
+			return;
+		}
+
+		const salt = bcrypt.genSaltSync(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
+
+		const updatedUser = await updateSystemUser(user.id, {
+			password: hashedPassword,
+		});
+
+		if (!updatedUser) {
+			res.status(400).json({
+				code: 400,
+				message: "Something went wrong while updating your password!",
+			});
+			return;
+		}
+
+		res.status(200).json({
+			data: {
+				message: "Password reset!",
+			},
+		});
+	} catch (error) {
 		res.status(500).json({
 			error: {
 				code: 500,
