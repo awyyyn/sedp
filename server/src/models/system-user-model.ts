@@ -1,6 +1,8 @@
+import { environment } from "@/environments/environment.js";
 import { prisma } from "@/services/prisma.js";
 import { SystemUser, SystemUserAddress } from "@/types/system-user.js";
 import { Prisma } from "@prisma/client";
+import { genSalt, hash } from "bcrypt";
 
 export const createSystemUser = async (
 	values: Omit<SystemUser, "id" | "createdAt" | "updatedAt" | "status">
@@ -17,10 +19,13 @@ export const createSystemUser = async (
 		role,
 	} = values;
 
+	const generateSalt = await genSalt(environment.SALT);
+	const hashedPassword = await hash(password, generateSalt);
+
 	const newUser = await prisma.systemUser.create({
 		data: {
 			email,
-			password,
+			password: hashedPassword,
 			firstName,
 			lastName,
 			role,
@@ -36,14 +41,16 @@ export const createSystemUser = async (
 	return newUser;
 };
 
-export const updateSystemUser = async (values: Partial<SystemUser>) => {
+export const updateSystemUser = async (
+	toUpdateId: string,
+	values: Partial<SystemUser>
+) => {
 	const {
 		address,
 		status,
 		displayName,
 		email,
 		firstName,
-		id,
 		lastName,
 		mfaEnabled,
 		mfaSecret,
@@ -52,7 +59,7 @@ export const updateSystemUser = async (values: Partial<SystemUser>) => {
 	} = values;
 
 	const updatedUser = await prisma.systemUser.update({
-		where: { id },
+		where: { id: toUpdateId },
 		data: {
 			email,
 			password,
