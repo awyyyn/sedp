@@ -17,7 +17,8 @@ model SystemUser {
   password String
   mfaSecret String?
   mfaEnabled Boolean @default(false)
-  address address?
+  address address
+  
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
 
@@ -63,7 +64,7 @@ model student {
 type address {
   street String
   city String
-  brgy String
+  province String
   zip Int
 }
 
