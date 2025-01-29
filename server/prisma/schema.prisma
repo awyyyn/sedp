@@ -17,8 +17,9 @@ model SystemUser {
   password String
   mfaSecret String?
   mfaEnabled Boolean @default(false)
-  address address
-  
+  address address 
+  emailVerifiedAt DateTime?
+  emailVerified Boolean @default(false)
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
 
@@ -53,6 +54,9 @@ model student {
   mfaEnabled Boolean @default(false)
   schoolYear String 
   schoolName String
+  emailVerifiedAt DateTime?
+  emailVerified Boolean @default(false)
+  documents documents[]
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -75,4 +79,27 @@ model token {
   time  DateTime  
 
   @@map("tokens")
+}
+
+
+enum documentTypeEnum {
+  photo
+  document
+}
+
+model documents {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  student student @relation(fields: [studentId], references: [id])
+  studentId String  @db.ObjectId
+  documentType documentTypeEnum @default(photo)
+  documentName String
+  documentUrl String 
+
+  
+
+  // TimeStamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("documents")
 }
