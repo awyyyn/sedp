@@ -5,7 +5,7 @@ export interface SystemUser {
 	firstName: string;
 	lastName: string;
 	role: SystemUserRole;
-	address?: SystemUserAddress;
+	address: SystemUserAddress;
 	displayName: string;
 	mfaEnabled: boolean;
 	mfaSecret: string;
@@ -17,7 +17,7 @@ export interface SystemUser {
 export interface SystemUserAddress {
 	city: string;
 	zip: number;
-	brgy: string;
+	province: string;
 	street: string;
 }
 
