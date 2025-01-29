@@ -8,14 +8,18 @@ export const authMiddleware = async (
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		res.status(401).json({ error: { message: "Unauthorized" } });
+		return;
 	}
 
-	// Verify token
-	const isValid = verifyToken(token);
-	if (!isValid) {
-		return res.status(401).json({ message: "Unauthorized" });
+	const data = verifyToken(token);
+
+	if (!data) {
+		res.status(401).json({ error: { message: "Unauthorized" } });
+		return;
 	}
+
+	req.body = { ...req.body, ...data };
 
 	next();
 };

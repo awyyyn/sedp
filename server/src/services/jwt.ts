@@ -1,30 +1,33 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-interface Payload {
+interface PayloadArgs {
 	id: string;
 	email: string;
 	role?: string;
 }
 
-export const generateAccessToken = (payload: Payload) => {
+type JWTPayload = PayloadArgs & JwtPayload;
+
+export const generateAccessToken = (payload: PayloadArgs) => {
 	const secret = process.env.ACCESS_SECRET;
 	return jwt.sign(payload, secret!, {
 		expiresIn: "2h",
 	});
 };
 
-export const generateRefreshToken = (payload: Payload) => {
+export const generateRefreshToken = (payload: PayloadArgs) => {
 	const secret = process.env.REFRESH_SECRET;
 	return jwt.sign(payload, secret!, {
 		expiresIn: "2h",
 	});
 };
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): JWTPayload | null => {
 	try {
-		jwt.verify(token, process.env.ACCESS_SECRET!);
-		return true;
+		const decoded = <JWTPayload>jwt.verify(token, process.env.ACCESS_SECRET!);
+		return decoded;
+		// return decoded;
 	} catch (error) {
-		return false;
+		return null;
 	}
 };
