@@ -8,6 +8,7 @@ import cors from "cors";
 import { typeDefs, resolvers } from "./graphql/index.js";
 import dotenv from "dotenv";
 import { routes } from "./routes/index.js";
+import { environment } from "./environments/environment.js";
 
 interface MyContext {
 	token?: string;
@@ -36,7 +37,7 @@ app.use(cors<cors.CorsRequest>());
 app.use(express.json());
 
 // REST endpoints
-app.use("/", routes);
+app.use("/api", routes);
 
 // Ensure we wait for our server to start
 (async () => {
@@ -56,7 +57,7 @@ app.use("/", routes);
 
 	// Modified server startup
 	await new Promise<void>((resolve) =>
-		httpServer.listen({ port: 4000 }, resolve)
+		httpServer.listen({ port: environment.PORT }, resolve)
 	);
-	console.log(`🚀 Server ready at http://localhost:4000/`);
+	console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
 })();
