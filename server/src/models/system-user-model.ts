@@ -1,7 +1,8 @@
 import { prisma } from "@/services/prisma.js";
-import { SystemUser } from "@/types/system-user.js";
+import { SystemUser, SystemUserAddress } from "@/types/system-user.js";
+import { Prisma } from "@prisma/client";
 
-export const create = async (
+export const createSystemUser = async (
 	values: Omit<SystemUser, "id" | "createdAt" | "updatedAt" | "status">
 ) => {
 	const {
@@ -35,7 +36,7 @@ export const create = async (
 	return newUser;
 };
 
-export const update = async (values: Partial<SystemUser>) => {
+export const updateSystemUser = async (values: Partial<SystemUser>) => {
 	const {
 		address,
 		status,
@@ -61,6 +62,7 @@ export const update = async (values: Partial<SystemUser>) => {
 			displayName,
 			mfaEnabled,
 			mfaSecret,
+			address,
 			status,
 		},
 	});
@@ -70,42 +72,60 @@ export const update = async (values: Partial<SystemUser>) => {
 	return updatedUser;
 };
 
-export const read = async (identifier: string): Promise<SystemUser | null> => {
+export const readSystemUser = async (
+	identifier: string
+): Promise<SystemUser | null> => {
+	let where: Prisma.SystemUserWhereInput = { id: identifier };
+
+	if (identifier.includes("@")) {
+		where = { email: identifier };
+	}
+
 	const user = await prisma.systemUser.findFirst({
-		where: {
-			OR: [{ id: identifier }, { email: identifier }],
-		},
+		where,
 	});
 
 	if (!user) return null;
 
 	return {
 		...user,
-		address: user.address || undefined,
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
 		mfaEnabled: !!user.mfaEnabled,
 		mfaSecret: user.mfaSecret || "",
-		password: "",
 	};
 };
 
-export async function readAll(): Promise<SystemUser[]>;
-export async function readAll(filter?: string): Promise<SystemUser[] | null> {
-	const users = await prisma.systemUser.findMany({
-		where: {
+export async function readAllSystemUsers(
+	filter?: string
+): Promise<SystemUser[]> {
+	let where: Prisma.SystemUserWhereInput = {};
+
+	if (filter) {
+		where = {
 			OR: [
 				{ email: { contains: filter } },
 				{ displayName: { contains: filter } },
 				{ firstName: { contains: filter } },
 				{ lastName: { contains: filter } },
 			],
-		},
+		};
+	}
+
+	const users = await prisma.systemUser.findMany({
+		where,
 	});
 
 	return users.map((user) => ({
 		...user,
-		address: user.address || undefined,
+		address:
+			user.address ||
+			({
+				city: "",
+				province: "",
+				street: "",
+				zip: 0,
+			} as SystemUserAddress),
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
 		mfaEnabled: !!user.mfaEnabled,

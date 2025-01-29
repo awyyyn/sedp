@@ -33,7 +33,21 @@ app.get("/healthz", (_, res) => {
 });
 
 // Middlewares
-app.use(cors<cors.CorsRequest>());
+// console.log(environment.CLIENT_URL);
+app.use(
+	cors<cors.CorsRequest>({
+		// origin: environment.CLIENT_URL,/
+		methods: ["GET", "POST", "PATCH", "PUT"],
+		origin: function (origin, callback) {
+			if (origin === environment.CLIENT_URL || !origin) {
+				callback(null, true);
+			} else {
+				callback(new Error("Not allowed by CORS"));
+			}
+		},
+		allowedHeaders: ["Content-Type", "Authorization"],
+	})
+);
 app.use(express.json());
 
 // REST endpoints

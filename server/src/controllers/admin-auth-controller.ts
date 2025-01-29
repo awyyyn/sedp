@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import {
-	create as createSystemUser,
-	read as readUser,
-} from "@/models/index.js";
-import { SystemUserRole } from "@prisma/client";
+import { createSystemUser, readSystemUser } from "@/models/index.js";
 import * as bcrypt from "bcrypt";
+import {
+	generateAccessToken,
+	generateRefreshToken,
+	transporter,
+} from "@/services/index.js";
 import { environment } from "@/environments/environment.js";
-import { generateAccessToken, generateRefreshToken } from "@/services/index.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -22,7 +22,7 @@ export const adminLoginController = async (req: Request, res: Response) => {
 	}
 
 	try {
-		const user = await readUser(email);
+		const user = await readSystemUser(email);
 
 		if (!user) {
 			res.status(404).json({
@@ -65,9 +65,14 @@ export const adminLoginController = async (req: Request, res: Response) => {
 
 		const accessToken = generateAccessToken(payload);
 		const refreshToken = generateRefreshToken(payload);
+		const { password: removePassword, ...userData } = user;
 
 		res.status(200).json({
-			data: {},
+			data: {
+				accessToken,
+				refreshToken,
+				user: userData,
+			},
 			error: null,
 		});
 	} catch (error) {
@@ -81,46 +86,112 @@ export const adminLoginController = async (req: Request, res: Response) => {
 	}
 };
 
-export const adminRegisterController = async (req: Request, res: Response) => {
-	const { password, email } = req.body;
+// TODO: FIX THIS
+// export const adminRegisterController = async (req: Request, res: Response) => {
+// 	const { password, email } = req.body;
 
-	const salt = bcrypt.genSaltSync(environment.SALT);
+// 	const salt = bcrypt.genSaltSync(environment.SALT);
 
-	const hashedPassword = await bcrypt.hash(password, salt);
+// 	const hashedPassword = await bcrypt.hash(password, salt);
 
-	try {
-		const newUser = await createSystemUser({
-			displayName: "",
-			email,
-			firstName: "",
-			lastName: "",
-			mfaEnabled: false,
-			mfaSecret: "",
-			password: hashedPassword,
-			role: SystemUserRole.SUPER_ADMIN,
-			address: {
-				city: "",
-				state: "",
-				street: "",
-				zip: 0,
-			},
-		});
-		res.status(201).json({
-			data: {},
-			error: null,
-		});
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({
-			error: {
-				code: 500,
-				message: "Internal server error",
-			},
-		});
-	}
-};
+// 	try {
+// 		const newUser = await createSystemUser({
+// 			displayName: "",
+// 			email,
+// 			firstName: "",
+// 			lastName: "",
+// 			mfaEnabled: false,
+// 			mfaSecret: "",
+// 			password: hashedPassword,
+// 			role: SystemUserRole.SUPER_ADMIN,
+// 			address: {
+// 				brgy: "",
+// 				city: "",
+// 				street: "",
+// 				zip: 0,
+// 			},
+// 		});
+// 		res.status(201).json({
+// 			data: {},
+// 			error: null,
+// 		});
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json({
+// 			error: {
+// 				code: 500,
+// 				message: "Internal server error",
+// 			},
+// 		});
+// 	}
+// };
 
-export const forgotPasswordController = async (
+export const adminForgotPasswordController = async (
 	req: Request,
 	res: Response
-) => {};
+) => {
+	const { email } = req.body;
+
+	if (!email) {
+		res.status(400).json({
+			error: {
+				code: 400,
+				message: "Email is required!",
+			},
+		});
+		return;
+	}
+
+	try {
+		const user = await readSystemUser(email);
+
+		if (!user) {
+			res.status(404).json({
+				error: {
+					code: 400,
+					message: "User is not registered!",
+				},
+			});
+			return;
+		}
+
+		const token = await generateAccessToken({
+			email,
+			id: user.id,
+			role: user.role,
+		});
+
+		const resetPasswordLink = `${environment.CLIENT_URL}/reset-password?token=${token}`;
+
+		const mailOptions = {
+			from: environment.EMAIL,
+			sender: {
+				name: "SEDP - Ligao",
+				address: environment.EMAIL!,
+			},
+			to: email,
+			subject: "Password Reset Link",
+			html: `
+			 	<h1>Password Reset Request</h1>		 
+				<p>Your OTP for password reset is: <b><a href="${resetPasswordLink}">Click to reset your password</a></b></p>
+				
+				<p>If you didn't request this, please ignore this email.</p>
+			`,
+		};
+
+		await transporter.sendMail(mailOptions);
+		await res.status(200).json({
+			data: {
+				message: "Reset password link is sent to your email.",
+			},
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			error: {
+				code: 500,
+				message: "Internal Server Error!",
+			},
+		});
+	}
+};
