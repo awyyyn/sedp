@@ -39,7 +39,11 @@ app.use(
 		// origin: environment.CLIENT_URL,/
 		methods: ["GET", "POST", "PATCH", "PUT"],
 		origin: function (origin, callback) {
-			if (origin === environment.CLIENT_URL || !origin) {
+			if (
+				origin === environment.CLIENT_URL ||
+				!origin ||
+				origin == "http://localhost:4000"
+			) {
 				callback(null, true);
 			} else {
 				callback(new Error("Not allowed by CORS"));
@@ -63,7 +67,6 @@ app.use("/api", routes);
 		// @ts-ignore
 		expressMiddleware(server, {
 			context: async ({ req }) => {
-				console.log(req.headers);
 				return { token: req.headers.token };
 			},
 		})

@@ -13,13 +13,14 @@ model SystemUser {
   email String @unique
   firstName String
   lastName String
+  middleName String?
   displayName String
   password String
   mfaSecret String?
-  mfaEnabled Boolean @default(false)
+  phoneNumber String
+  birthDate DateTime
+  mfaEnabled Boolean @default(false) 
   address address 
-  emailVerifiedAt DateTime?
-  emailVerified Boolean @default(false)
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
 
@@ -43,6 +44,7 @@ enum SystemUserRole {
 
 model student {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String @unique
   email String @unique
   firstName String
   lastName String 
@@ -50,12 +52,18 @@ model student {
   address address
   password String
   birthDate DateTime
+  phoneNumber String
+
   mfaSecret String?
   mfaEnabled Boolean @default(false)
-  schoolYear String 
-  schoolName String
-  emailVerifiedAt DateTime?
-  emailVerified Boolean @default(false)
+
+
+  yearLevel String
+  schoolYear String
+  schoolName String 
+  
+  
+
   documents documents[]
 
   // TimeStamps
@@ -67,11 +75,9 @@ model student {
 
 type address {
   street String
-  city String
-  province String
-  zip Int
+  city String 
 }
-
+ 
 model token {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
