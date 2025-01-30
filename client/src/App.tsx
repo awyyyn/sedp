@@ -8,7 +8,6 @@ import Login from "./pages/auth/login/login";
 import Register from "./pages/auth/register/register";
 import { AuthLayout } from "./layouts";
 import ForgotPassword from "./pages/auth/forgot-password/forgot-password";
-import ResetPassword from "./pages/auth/reset-password/reset-password";
 
 export default function App() {
 	// const [loading, setLoading] = useState(true);
@@ -39,9 +38,8 @@ export default function App() {
 		<Routes>
 			<Route element={<AuthLayout />} path="admin">
 				<Route element={<Login />} index path="login" />
-				<Route element={<Register />} path="register" />
 				<Route element={<ForgotPassword />} path="forgot-password" />
-				<Route element={<ResetPassword />} path="reset-password" />
+				<Route element={<Register />} path="register" />
 			</Route>
 			<Route path="*" element={<h1>404</h1>} />
 		</Routes>

@@ -15,17 +15,10 @@ export const AuthLayout = () => {
 			width="100%"
 			height="100%"
 			display="flex"
-			alignItems="center"
-			justifyContent="center">
-			<Box
-				p={{ xs: 3, md: 5 }}
-				pt={{ xs: 4 }}
-				borderRadius={1}
-				boxShadow={2}
-				minWidth={{ xs: "90%", sm: "70%", md: "380px" }}
-				maxWidth={{ xs: "90%", sm: "70%", md: "380px" }}>
-				<Outlet />
-			</Box>
+			// alignItems="center"
+			// justifyContent="center"
+		>
+			<Outlet />
 		</Box>
 	);
 };
