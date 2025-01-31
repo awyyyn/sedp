@@ -18,6 +18,8 @@ import * as yup from "yup";
 import { Verified, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Formik } from "formik";
 import Step3 from "./components/step3";
+import { useSetAtom } from "jotai";
+import { snackbarAtom } from "../../../states";
 const Autocomplete = React.lazy(() => import("@mui/material/Autocomplete"));
 
 const steps = ["User Information", "Generate Password", "Add 2FA", "Review"];
@@ -50,6 +52,7 @@ export default function Register() {
 	const [skipped, setSkipped] = React.useState(new Set<number>());
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [brgys, setBrgys] = React.useState<string[]>([]);
+	const setSnackbar = useSetAtom(snackbarAtom);
 
 	// const currentYear = new Date().getFullYear();
 	// const schoolYears = Array.from({ length: 7 }, (_, i) => currentYear + i);
@@ -171,7 +174,43 @@ export default function Register() {
 						otp: "",
 					}}
 					validationSchema={formSchema}
-					onSubmit={() => {}}>
+					onSubmit={async (values) => {
+						try {
+							//
+							const body = {
+								...values,
+								street: values.barangay,
+							};
+							const response = await fetch(
+								`${import.meta.env.VITE_API_URL}/api/auth/admin-register`,
+								{
+									headers: {
+										"Content-type": "application/json",
+									},
+									method: "POST",
+									body: JSON.stringify(body),
+								}
+							);
+
+							const data = await response.json();
+
+							if (response.status !== 201) {
+								throw new Error(data.error.message ?? "Something went wrong!");
+							}
+
+							console.log(data, "RESPONSE");
+							setActiveStep((stp) => stp + 1);
+						} catch (error) {
+							//
+							setSnackbar((snckbr) => ({
+								...snckbr,
+								message: (error as Error).message,
+								open: true,
+								severity: "error",
+								showIcon: true,
+							}));
+						}
+					}}>
 					{({
 						values,
 						errors,
@@ -709,7 +748,11 @@ export default function Register() {
 									)}
 									<Button
 										disabled={isSubmitting || disabledNextButton}
-										onClick={handleNext}>
+										onClick={
+											activeStep === steps.length - 1
+												? () => handleSubmit()
+												: handleNext
+										}>
 										{activeStep === steps.length - 1 ? "Finish" : "Next"}
 									</Button>
 								</Box>
