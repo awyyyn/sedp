@@ -1,3 +1,3 @@
 export * from "./AdminLayout";
-export * from "./AuthLayout";
+export * from "./AdminAuthLayout";
 export * from "./StudentLayout";
