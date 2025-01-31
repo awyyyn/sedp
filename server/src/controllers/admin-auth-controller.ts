@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+	createSystemUser,
 	readSystemUser,
 	readToken,
 	sendForgotPasswordOTP,
@@ -11,10 +12,11 @@ import {
 	generateRefreshToken,
 	prisma,
 } from "@/services/index.js";
+import { SystemUserRole } from "@prisma/client";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
-
+	console.log(req.body);
 	if (!password || !email) {
 		res.status(400).json({
 			error: {
@@ -38,16 +40,16 @@ export const adminLoginController = async (req: Request, res: Response) => {
 			return;
 		}
 
-		if (user.status !== "VERIFIED") {
-			res.status(401).json({
-				error: {
-					code: 401,
-					message:
-						"User is not verified, please contact admin to verify your account!",
-				},
-			});
-			return;
-		}
+		// if (user.status !== "VERIFIED") {
+		// 	res.status(401).json({
+		// 		error: {
+		// 			code: 401,
+		// 			message:
+		// 				"User is not verified, please contact admin to verify your account!",
+		// 		},
+		// 	});
+		// 	return;
+		// }
 
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -90,45 +92,66 @@ export const adminLoginController = async (req: Request, res: Response) => {
 	}
 };
 
-// TODO: FIX THIS
-// export const adminRegisterController = async (req: Request, res: Response) => {
-// 	const { password, email } = req.body;
+export const adminRegisterController = async (req: Request, res: Response) => {
+	const {
+		password,
+		email,
+		mfaSecret,
+		firstName,
+		lastName,
+		city,
+		street,
+		phoneNumber,
+		middleName,
+		birthDate,
+		role,
+	} = req.body;
 
-// 	const salt = bcrypt.genSaltSync(environment.SALT);
+	console.log(req.body);
 
-// 	const hashedPassword = await bcrypt.hash(password, salt);
+	try {
+		const newUser = await createSystemUser({
+			displayName: "",
+			email,
+			firstName,
+			lastName,
+			mfaSecret,
+			password,
+			address: {
+				city: city,
+				street: street,
+			},
+			birthDate,
+			mfaEnabled: !!mfaSecret,
+			middleName,
+			phoneNumber,
+			role: role ?? SystemUserRole.ADMIN,
+		});
 
-// 	try {
-// 		const newUser = await createSystemUser({
-// 			displayName: "",
-// 			email,
-// 			firstName: "",
-// 			lastName: "",
-// 			mfaEnabled: false,
-// 			mfaSecret: "",
-// 			password: hashedPassword,
-// 			role: SystemUserRole.SUPER_ADMIN,
-// 			address: {
-// 				brgy: "",
-// 				city: "",
-// 				street: "",
-// 				zip: 0,
-// 			},
-// 		});
-// 		res.status(201).json({
-// 			data: {},
-// 			error: null,
-// 		});
-// 	} catch (error) {
-// 		console.error(error);
-// 		res.status(500).json({
-// 			error: {
-// 				code: 500,
-// 				message: "Internal server error",
-// 			},
-// 		});
-// 	}
-// };
+		if (!newUser) {
+			res.status(400).json({
+				error: {
+					code: 400,
+					message: "Failed to create system user",
+				},
+			});
+			return;
+		}
+
+		res.status(201).json({
+			data: newUser,
+			error: null,
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			error: {
+				code: 500,
+				message: "Internal server error",
+			},
+		});
+	}
+};
 
 export const adminForgotPasswordController = async (
 	req: Request,

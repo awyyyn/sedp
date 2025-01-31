@@ -4,9 +4,12 @@ export interface SystemUser {
 	password: string;
 	firstName: string;
 	lastName: string;
+	middleName: string | null;
 	role: SystemUserRole;
 	address: SystemUserAddress;
+	birthDate: string;
 	displayName: string;
+	phoneNumber: string;
 	mfaEnabled: boolean;
 	mfaSecret: string;
 	status: SystemUserStatus;
@@ -16,8 +19,6 @@ export interface SystemUser {
 
 export interface SystemUserAddress {
 	city: string;
-	zip: number;
-	province: string;
 	street: string;
 }
 

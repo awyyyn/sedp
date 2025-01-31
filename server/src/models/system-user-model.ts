@@ -1,7 +1,7 @@
 import { environment } from "@/environments/environment.js";
 import { prisma } from "@/services/prisma.js";
-import { SystemUser, SystemUserAddress } from "@/types/system-user.js";
-import { Prisma } from "@prisma/client";
+import { SystemUser } from "@/types/system-user.js";
+import { Prisma, SystemUserStatus } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 
 export const createSystemUser = async (
@@ -15,8 +15,11 @@ export const createSystemUser = async (
 		lastName,
 		mfaEnabled,
 		mfaSecret,
+		birthDate,
+		phoneNumber,
 		password,
 		role,
+		middleName,
 	} = values;
 
 	const generateSalt = await genSalt(environment.SALT);
@@ -28,11 +31,15 @@ export const createSystemUser = async (
 			password: hashedPassword,
 			firstName,
 			lastName,
+			birthDate: new Date(birthDate).toISOString(),
 			role,
 			address,
+			phoneNumber,
+			status: SystemUserStatus.UNVERIFIED,
 			displayName,
 			mfaEnabled,
 			mfaSecret,
+			middleName,
 		},
 	});
 
@@ -54,7 +61,9 @@ export const updateSystemUser = async (
 		lastName,
 		mfaEnabled,
 		mfaSecret,
-		password,
+		birthDate,
+		phoneNumber,
+		middleName,
 		role,
 	} = values;
 
@@ -62,15 +71,17 @@ export const updateSystemUser = async (
 		where: { id: toUpdateId },
 		data: {
 			email,
-			password,
 			firstName,
 			lastName,
+			birthDate,
 			role,
+			address,
+			phoneNumber,
+			status,
 			displayName,
 			mfaEnabled,
 			mfaSecret,
-			address,
-			status,
+			middleName,
 		},
 	});
 
@@ -96,6 +107,7 @@ export const readSystemUser = async (
 
 	return {
 		...user,
+		birthDate: user.birthDate.toISOString(),
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
 		mfaEnabled: !!user.mfaEnabled,
@@ -125,14 +137,7 @@ export async function readAllSystemUsers(
 
 	return users.map((user) => ({
 		...user,
-		address:
-			user.address ||
-			({
-				city: "",
-				province: "",
-				street: "",
-				zip: 0,
-			} as SystemUserAddress),
+		birthDate: user.birthDate.toISOString(),
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
 		mfaEnabled: !!user.mfaEnabled,

@@ -4,6 +4,7 @@ import {
 	adminForgotPasswordController,
 	verifyTokenController,
 	resetPasswordController,
+	adminRegisterController,
 } from "../controllers/index.js";
 import { authMiddleware } from "@/middleware/auth.js";
 
@@ -12,6 +13,7 @@ const router = Router();
 router.post("/admin-login", adminLoginController);
 router.post("/admin-forgot-password", adminForgotPasswordController);
 router.post("/admin-verify-token", verifyTokenController);
+router.post("/admin-register", adminRegisterController);
 router.post("/admin-reset-password", authMiddleware, resetPasswordController);
 
 export { router as authRoutes };
