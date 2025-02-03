@@ -110,7 +110,7 @@ export async function readAllStudents({
 
 	const users = await prisma.student.findMany({
 		where,
-		skip: pagination ? pagination.page * pagination.take - 1 : undefined,
+		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
 		take: pagination ? pagination.take : undefined,
 	});
 
@@ -119,7 +119,10 @@ export async function readAllStudents({
 	});
 
 	return {
-		data: users,
+		data: users.map((user, indx) => ({
+			...user,
+			studentId: user.studentId + indx,
+		})),
 		hasMore: pagination ? pagination.page * pagination.take < count : false,
 		count,
 	};

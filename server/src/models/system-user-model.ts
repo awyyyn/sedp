@@ -136,7 +136,7 @@ export async function readAllSystemUsers({
 	const users = await prisma.systemUser.findMany({
 		where,
 		take: pagination ? pagination.take : undefined,
-		skip: pagination ? pagination.page * pagination.take - 1 : undefined,
+		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
 	});
 
 	const count = await prisma.systemUser.count({
