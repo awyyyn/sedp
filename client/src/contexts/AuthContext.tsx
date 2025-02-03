@@ -77,6 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 		if (decoded.exp * 1000 > Date.now()) {
 			setRole(decoded.role as ROLE);
+			// createHttpLink(token);
 		} else {
 			localStorage.removeItem("accessToken");
 			setRole(null);
