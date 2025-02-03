@@ -34,7 +34,7 @@ model SystemUser {
 enum SystemUserStatus {
   VERIFIED
   UNVERIFIED
-  ARCHIVED
+  DELETED
 }
 
 enum SystemUserRole {
@@ -91,7 +91,6 @@ model token {
 
   @@map("tokens")
 }
-
 
 enum documentTypeEnum {
   photo
