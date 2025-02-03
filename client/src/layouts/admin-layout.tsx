@@ -1,0 +1,46 @@
+import { Outlet, useLocation } from "react-router-dom";
+import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
+import { Button } from "@heroui/button";
+import { Icon } from "@iconify/react/dist/iconify.js";
+
+import { AppSidebar } from "@/components";
+
+export default function AdminLayout() {
+	const { pathname } = useLocation();
+
+	const items = pathname.split("/").filter((item) => item !== "");
+
+	const breadcrumbs = items.map((item, index) => ({
+		label: item,
+		href: `/${items.slice(0, index + 1).join("/")}`,
+	}));
+
+	return (
+		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
+			<AppSidebar />
+			<main className="w-full relative  px-4 sm:px-6 md:px-10 overflow-hidden">
+				<div className="absolute px-4 sm:px-6 md:px-10 top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
+					<div className=" pt-4 block md:hidden">
+						<Button isIconOnly variant="flat">
+							<Icon fontSize={30} icon="stash:burger-arrow-right" />
+						</Button>
+					</div>
+					<Breadcrumbs className="py-4 md:py-6">
+						{breadcrumbs.map((item, index) => (
+							<BreadcrumbItem
+								href={item.href}
+								className="capitalize"
+								key={item.href + index}>
+								{item.label.split("-").join(" ")}
+							</BreadcrumbItem>
+						))}
+					</Breadcrumbs>
+				</div>
+
+				<section className="overflow-y-scroll h-full pt-32 md:pt-20 scrollbar-hide   ">
+					<Outlet />
+				</section>
+			</main>
+		</div>
+	);
+}
