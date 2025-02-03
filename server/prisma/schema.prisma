@@ -53,16 +53,13 @@ model student {
   password String
   birthDate DateTime
   phoneNumber String
+  status StudentStatus @default(SCHOLAR)
 
   mfaSecret String?
-  mfaEnabled Boolean @default(false)
+  mfaEnabled Boolean @default(false) 
 
-
-  yearLevel String
-  schoolYear String
-  schoolName String 
-  
-  
+  yearLevel Int 
+  schoolName String  
 
   documents documents[]
 
@@ -71,6 +68,14 @@ model student {
   updatedAt DateTime @updatedAt
 
   @@map("students")
+}
+
+enum StudentStatus {
+  REQUESTING
+  SCHOLAR
+  GRADUATED
+  DISQUALIFIED
+  ARCHIVED
 }
 
 type address {
