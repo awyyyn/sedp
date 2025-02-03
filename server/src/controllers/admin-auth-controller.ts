@@ -4,7 +4,6 @@ import {
 	readSystemUser,
 	readToken,
 	sendForgotPasswordOTP,
-	updateSystemUser,
 } from "@/models/index.js";
 import * as bcrypt from "bcrypt";
 import {
@@ -13,6 +12,7 @@ import {
 	prisma,
 } from "@/services/index.js";
 import { SystemUserRole } from "@prisma/client";
+import { environment } from "@/environments/environment.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -213,7 +213,10 @@ export const adminForgotPasswordController = async (
 	}
 };
 
-export const verifyTokenController = async (req: Request, res: Response) => {
+export const adminVerifyTokenController = async (
+	req: Request,
+	res: Response
+) => {
 	try {
 		const { token, email } = req.body;
 
@@ -272,7 +275,10 @@ export const verifyTokenController = async (req: Request, res: Response) => {
 	}
 };
 
-export const resetPasswordController = async (req: Request, res: Response) => {
+export const adminResetPasswordController = async (
+	req: Request,
+	res: Response
+) => {
 	const { email, password } = req.body;
 
 	if (!email || !password) {
@@ -298,11 +304,14 @@ export const resetPasswordController = async (req: Request, res: Response) => {
 			return;
 		}
 
-		const salt = bcrypt.genSaltSync(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
+		const generatedSALT = await bcrypt.genSalt(environment.SALT);
+		const hashedPassword = await bcrypt.hash(password, generatedSALT);
 
-		const updatedUser = await updateSystemUser(user.id, {
-			password: hashedPassword,
+		console.log(hashedPassword);
+
+		const updatedUser = await prisma.systemUser.update({
+			where: { id: user.id },
+			data: { password: hashedPassword },
 		});
 
 		if (!updatedUser) {

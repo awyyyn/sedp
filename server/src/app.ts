@@ -9,6 +9,10 @@ import { typeDefs, resolvers } from "./graphql/index.js";
 import dotenv from "dotenv";
 import { routes } from "./routes/index.js";
 import { environment } from "./environments/environment.js";
+import { GraphQLError } from "graphql";
+import { verifyToken } from "./services/jwt.js";
+import { AppContext } from "./types/index.js";
+import { prisma } from "./services/prisma.js";
 
 interface MyContext {
 	token?: string;
@@ -66,8 +70,25 @@ app.use("/api", routes);
 		"/graphql",
 		// @ts-ignore
 		expressMiddleware(server, {
-			context: async ({ req }) => {
-				return { token: req.headers.token };
+			context: async ({ req }): Promise<AppContext> => {
+				const token = req.headers.authorization?.split(" ")[1];
+
+				if (!token) {
+					throw new GraphQLError("UnAuthorized");
+				}
+
+				const data = verifyToken(token);
+
+				if (!data) {
+					throw new GraphQLError("UnAuthorized");
+				}
+
+				return {
+					id: data.id,
+					email: data.email,
+					role: data.role,
+					prisma: prisma,
+				};
 			},
 		})
 	);
