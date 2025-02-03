@@ -1,5 +1,372 @@
-import React from "react";
+import { useQuery } from "@apollo/client";
+import {
+	Table,
+	TableHeader,
+	TableBody,
+	TableColumn,
+	TableRow,
+	TableCell,
+	SortDescriptor,
+} from "@heroui/table";
+import { Spinner } from "@heroui/spinner";
+import { useCallback, useMemo, useState } from "react";
+import { Pagination } from "@heroui/pagination";
+import { Chip, ChipProps } from "@heroui/chip";
+import { Tooltip } from "@heroui/tooltip";
+import { Select, SelectItem } from "@heroui/select";
+import { Icon } from "@iconify/react";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import {
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+} from "@heroui/dropdown";
+
+import { client } from "@/main";
+import { systemUsersQuery } from "@/queries";
+import { PaginationResult, SystemUser, SystemUserStatus } from "@/types";
+
+export const columns = [
+	{ name: "NAME", uid: "name", sortable: true },
+	{ name: "EMAIL", uid: "email", sortable: true },
+	{ name: "PHONE", uid: "phoneNumber", sortable: true },
+	{ name: "STATUS", uid: "status" },
+	{ name: "ACTIONS", uid: "actions" },
+];
+
+const statusColorMap: Record<string, ChipProps["color"]> = {
+	VERIFIED: "success",
+	UNVERIFIED: "warning",
+	DELETED: "danger",
+};
+
+const statusOptions: { label: string; value: SystemUserStatus }[] = [
+	{ label: "Verified", value: "VERIFIED" },
+	{ label: "Deleted", value: "DELETED" },
+	{ label: "Unverified", value: "UNVERIFIED" },
+];
+
+const rowsPerPageItems = [
+	{ key: "25", label: "25" },
+	{ key: "50", label: "50" },
+	{
+		key: "100",
+		label: "100",
+	},
+];
 
 export default function SystemUsers() {
-	return <div></div>;
+	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
+	const [page, setPage] = useState(1);
+	const [total, setTotal] = useState(0);
+	const [filterValue, setFilterValue] = useState("");
+	const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+		column: "firstName",
+		direction: "ascending",
+	});
+	const [statusFilter, setStatusFilter] = useState("all");
+	const hasSearchFilter = Boolean(filterValue);
+
+	const { loading, data, fetchMore } = useQuery<{
+		systemUsers: PaginationResult<SystemUser>;
+	}>(systemUsersQuery, {
+		client: client,
+		variables: {
+			pagination: {
+				take: Number(rowsPerPage),
+				page: page,
+			},
+		},
+		ssr: true,
+		onCompleted: (data) => {
+			setTotal(data.systemUsers.count);
+		},
+	});
+
+	const pages = useMemo(() => {
+		return total ? Math.ceil(total / Number(rowsPerPage)) : 0;
+	}, [total, rowsPerPage]);
+
+	const loadingState = loading ? "loading" : "idle";
+
+	const renderCell = useCallback((user: SystemUser, columnKey: React.Key) => {
+		const cellValue = user[columnKey as keyof SystemUser];
+
+		switch (columnKey) {
+			case "name":
+				const middleName = user.middleName
+					? ` ${user.middleName[0].toUpperCase()}.`
+					: "";
+
+				return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
+
+			case "role":
+				return (
+					<div className="flex flex-col">
+						<p className="text-bold text-sm capitalize">
+							{cellValue?.toString()}
+						</p>
+						<p className="text-bold text-sm capitalize text-default-400">
+							{/* {user.team} */}
+						</p>
+					</div>
+				);
+			case "status":
+				return (
+					<Chip
+						className="capitalize"
+						color={statusColorMap[user.status]}
+						size="sm"
+						variant="flat">
+						{cellValue?.toString()}
+					</Chip>
+				);
+			case "actions":
+				return (
+					<div className="relative flex  justify-center items-center gap-2">
+						<Tooltip content="Details">
+							<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+								<Icon icon="solar:info-square-bold" color="gray" />
+							</span>
+						</Tooltip>
+						<Tooltip content="Edit user">
+							<span className="text-lg text-default-400  cursor-pointer active:opacity-50">
+								<Icon icon="solar:clapperboard-edit-bold" color="green" />
+							</span>
+						</Tooltip>
+						<Tooltip color="danger" content="Delete user">
+							<span className="text-lg text-danger cursor-pointer active:opacity-50">
+								<Icon icon="solar:trash-bin-2-bold" />
+							</span>
+						</Tooltip>
+					</div>
+				);
+			case "phoneNumber":
+				return <p>+63 {cellValue?.toString()}</p>;
+			default:
+				return cellValue?.toString();
+		}
+	}, []);
+
+	const onRowsPerPageChange = useCallback(
+		(e: React.ChangeEvent<HTMLSelectElement>) => {
+			setRowsPerPage(e.target.value);
+			setPage(1);
+		},
+		[]
+	);
+
+	const filteredItems = useMemo(() => {
+		let filteredUsers = [...(data?.systemUsers.data ?? [])];
+
+		if (hasSearchFilter) {
+			filteredUsers = filteredUsers.filter(
+				(user) =>
+					user.firstName.toLowerCase().includes(filterValue.toLowerCase()) ||
+					user.lastName.toLowerCase().includes(filterValue.toLowerCase())
+			);
+		}
+
+		if (
+			statusFilter !== "all" &&
+			Array.from(statusFilter).length !== statusOptions.length
+		) {
+			filteredUsers = filteredUsers.filter((user) =>
+				Array.from(statusFilter).includes(user.status)
+			);
+		}
+
+		return filteredUsers;
+	}, [data?.systemUsers.data, filterValue, statusFilter]);
+
+	const items = useMemo(() => {
+		const start = (page - 1) * Number(rowsPerPage);
+		const end = start + Number(rowsPerPage);
+
+		return filteredItems.slice(start, end);
+	}, [page, filteredItems, rowsPerPage]);
+
+	const sortedItems = useMemo(() => {
+		return [...(items ?? [])].sort((a: SystemUser, b: SystemUser) => {
+			const first =
+				sortDescriptor.column === "name"
+					? a["firstName"]
+					: a[sortDescriptor.column as keyof SystemUser]!;
+			const second =
+				sortDescriptor.column === "name"
+					? b["firstName"]
+					: b[sortDescriptor.column as keyof SystemUser]!;
+			const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+			return sortDescriptor.direction === "descending" ? -cmp : cmp;
+		});
+	}, [sortDescriptor, items]);
+
+	const topContent = useMemo(() => {
+		return (
+			<div className="flex flex-col gap-4">
+				<div className="flex justify-between gap-3 items-end">
+					<Input
+						isClearable
+						classNames={{
+							base: "w-full sm:max-w-[44%]",
+							inputWrapper: "border-1",
+						}}
+						placeholder="Search by name..."
+						size="md"
+						// startContent={<SearchIcon className="text-default-300" />}
+						// value={filterValue}
+						variant="bordered"
+						onClear={() => setFilterValue("")}
+						onValueChange={setFilterValue}
+					/>
+					<div className="flex gap-3">
+						<Dropdown>
+							<DropdownTrigger className="hidden sm:flex">
+								<Button
+									// endContent={<ChevronDownIcon className="text-small" />}
+									size="md"
+									variant="flat">
+									Status
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu
+								disallowEmptySelection
+								aria-label="Table Columns"
+								closeOnSelect={false}
+								// selectedKeys={statusFilter}
+								selectionMode="multiple"
+								// onSelectionChange={setStatusFilter}
+							>
+								{statusOptions.map((status) => (
+									<DropdownItem key={status.value} className="capitalize">
+										{status.label}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown>
+
+						{/* 
+						<Dropdown>
+							<DropdownTrigger className="hidden sm:flex">
+								<Button
+									endContent={<ChevronDownIcon className="text-small" />}
+									size="sm"
+									variant="flat">
+									Columns
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu
+								disallowEmptySelection
+								aria-label="Table Columns"
+								closeOnSelect={false}
+								selectedKeys={visibleColumns}
+								selectionMode="multiple"
+								onSelectionChange={setVisibleColumns}>
+								{columns.map((column) => (
+									<DropdownItem key={column.uid} className="capitalize">
+										{capitalize(column.name)}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown> */}
+						<Button
+							className="bg-foreground text-background"
+							// endContent={<PlusIcon />}
+							size="md">
+							Add New
+						</Button>
+					</div>
+				</div>
+			</div>
+		);
+	}, []);
+
+	return (
+		<>
+			<Table
+				sortDescriptor={sortDescriptor}
+				onSortChange={setSortDescriptor}
+				aria-label="Example table with custom cells"
+				shadow="none"
+				bottomContentPlacement="outside"
+				topContent={topContent}
+				bottomContent={
+					pages > 0 ? (
+						<div className="flex w-full justify-between">
+							<div className="flex gap-3 items-center">
+								<p className="min-w-[100px] inline  ">
+									<span className="text-sm">Total Users: </span>
+									{total}
+								</p>
+								<Select
+									className="max-w-[200px] w-[100px] inline"
+									items={rowsPerPageItems}
+									selectedKeys={[rowsPerPage.toString()]}
+									onSelectionChange={(v) => {
+										if (
+											!!v &&
+											v.currentKey?.toString()! !== rowsPerPage &&
+											v.currentKey?.toString()! !== undefined
+										) {
+											setRowsPerPage(v.currentKey?.toString()!);
+										}
+									}}>
+									{rowsPerPageItems.map((row) => (
+										<SelectItem key={row.key}>{row.label}</SelectItem>
+									))}
+								</Select>
+							</div>
+							<Pagination
+								isCompact
+								showControls={pages > 3}
+								showShadow
+								color="primary"
+								page={page}
+								total={pages}
+								onChange={(page) => {
+									fetchMore({
+										variables: {
+											pagination: {
+												page: page,
+												take: rowsPerPage,
+											},
+										},
+									});
+									setPage(page);
+								}}
+							/>
+						</div>
+					) : null
+				}>
+				<TableHeader columns={columns}>
+					{(column) => (
+						<TableColumn
+							allowsSorting={column.sortable}
+							key={column.uid}
+							align={column.uid === "actions" ? "center" : "start"}>
+							{column.name}
+						</TableColumn>
+					)}
+				</TableHeader>
+				<TableBody
+					emptyContent={"No rows to display."}
+					loadingContent={<Spinner />}
+					loadingState={loadingState}
+					items={sortedItems ?? []}>
+					{(item) => (
+						<TableRow key={`${item.id}`}>
+							{(columnKey) => (
+								<TableCell className="min-w-[200px]">
+									{renderCell(item, columnKey)}
+								</TableCell>
+							)}
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+		</>
+	);
 }
