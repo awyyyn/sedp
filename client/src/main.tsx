@@ -1,27 +1,30 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { Toaster } from "sonner";
+
 import App from "./App.tsx";
-import "./global.css";
-import { BrowserRouter } from "react-router";
-import GlobalSnackbar from "./components/global-snackbar/global-snackbar.tsx";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { Provider } from "./provider.tsx";
+import "@/styles/globals.css";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 const client = new ApolloClient({
 	uri: import.meta.env.VITE_GQL_API_URL!,
 	cache: new InMemoryCache(),
 });
 
-createRoot(document.getElementById("root")!).render(
-	<StrictMode>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+	<React.StrictMode>
 		<ApolloProvider client={client}>
-			<LocalizationProvider dateAdapter={AdapterDateFns}>
+			<AuthProvider>
 				<BrowserRouter>
-					<App />
-					<GlobalSnackbar />
+					<Provider>
+						<App />
+						<Toaster />
+					</Provider>
 				</BrowserRouter>
-			</LocalizationProvider>
+			</AuthProvider>
 		</ApolloProvider>
-	</StrictMode>
+	</React.StrictMode>
 );
