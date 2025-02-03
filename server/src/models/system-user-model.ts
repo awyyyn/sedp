@@ -1,6 +1,6 @@
 import { environment } from "@/environments/environment.js";
 import { prisma } from "@/services/prisma.js";
-import { SystemUser } from "@/types/system-user.js";
+import { SystemUser, PaginationArgs, PaginationResult } from "@/types/index.js";
 import { Prisma, SystemUserStatus } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 
@@ -32,10 +32,10 @@ export const createSystemUser = async (
 			firstName,
 			lastName,
 			birthDate: new Date(birthDate).toISOString(),
-			role,
+			role: "SUPER_ADMIN",
 			address,
 			phoneNumber,
-			status: SystemUserStatus.UNVERIFIED,
+			status: SystemUserStatus.VERIFIED,
 			displayName,
 			mfaEnabled,
 			mfaSecret,
@@ -107,6 +107,7 @@ export const readSystemUser = async (
 
 	return {
 		...user,
+		status: "VERIFIED",
 		birthDate: user.birthDate.toISOString(),
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
@@ -115,9 +116,10 @@ export const readSystemUser = async (
 	};
 };
 
-export async function readAllSystemUsers(
-	filter?: string
-): Promise<SystemUser[]> {
+export async function readAllSystemUsers({
+	filter,
+	pagination,
+}: PaginationArgs = {}): Promise<PaginationResult<SystemUser>> {
 	let where: Prisma.SystemUserWhereInput = {};
 
 	if (filter) {
@@ -133,15 +135,30 @@ export async function readAllSystemUsers(
 
 	const users = await prisma.systemUser.findMany({
 		where,
+		take: pagination ? pagination.take : undefined,
+		skip: pagination ? pagination.page * pagination.take - 1 : undefined,
 	});
 
-	return users.map((user) => ({
-		...user,
-		birthDate: user.birthDate.toISOString(),
-		createdAt: user.createdAt.toISOString(),
-		updatedAt: user.updatedAt.toISOString(),
-		mfaEnabled: !!user.mfaEnabled,
-		mfaSecret: user.mfaSecret || "",
-		password: "",
-	}));
+	const count = await prisma.systemUser.count({
+		where,
+	});
+
+	const hasMore = pagination
+		? pagination.page * pagination.take < count
+		: false;
+
+	return {
+		data: users.map((user) => ({
+			...user,
+			status: "VERIFIED",
+			birthDate: user.birthDate.toISOString(),
+			createdAt: user.createdAt.toISOString(),
+			updatedAt: user.updatedAt.toISOString(),
+			mfaEnabled: !!user.mfaEnabled,
+			mfaSecret: user.mfaSecret || "",
+			password: "",
+		})),
+		count: count,
+		hasMore: hasMore,
+	};
 }

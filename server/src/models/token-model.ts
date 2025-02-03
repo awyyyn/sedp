@@ -6,7 +6,7 @@ export const createToken = async (email: string): Promise<Token> => {
 		.toString(36)
 		.substring(2)
 		.toUpperCase()
-		.substring(0, 4);
+		.substring(0, 6);
 
 	const token = await prisma.token.create({
 		data: {

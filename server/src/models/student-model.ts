@@ -1,20 +1,58 @@
+import { environment } from "@/environments/environment.js";
 import { prisma } from "@/services/prisma.js";
-import { Student } from "@/types/index.js";
+import { PaginationResult, Student } from "@/types/index.js";
 import { Prisma } from "@prisma/client";
+import { genSalt, hash } from "bcrypt";
 
 export const createStudent = async (
-	values: Omit<Student, "id" | "createdAt" | "updatedAt">
+	values: Omit<
+		Student,
+		"id" | "createdAt" | "updatedAt" | "mfaEnabled" | "status"
+	>
 ): Promise<Student> => {
+	const {
+		address,
+		birthDate,
+		email,
+		firstName,
+		lastName,
+		studentId,
+		mfaSecret,
+		middleName,
+		password,
+		schoolName,
+		phoneNumber,
+		yearLevel,
+	} = values;
+
+	const generateSalt = await genSalt(environment.SALT);
+	const hashedPassword = await hash(password, generateSalt);
+
 	const newStudentUser = await prisma.student.create({
-		data: values,
+		data: {
+			password: hashedPassword,
+			address,
+			birthDate: new Date(birthDate).toISOString(),
+			email,
+			firstName,
+			lastName,
+			phoneNumber,
+			schoolName,
+			studentId,
+			yearLevel,
+			middleName,
+			status: "SCHOLAR",
+			mfaEnabled: !!mfaSecret,
+			mfaSecret,
+		},
 	});
 
 	return newStudentUser;
 };
 
 export const updateStudent = async (
-	values: Partial<Student>,
-	id: string
+	id: string,
+	values: Partial<Student>
 ): Promise<Student> => {
 	const updatedStudent = await prisma.student.update({
 		data: {
@@ -57,15 +95,13 @@ interface readAllArgs {
 export async function readAllStudents({
 	filter,
 	pagination,
-}: readAllArgs = {}): Promise<Student[]> {
+}: readAllArgs = {}): Promise<PaginationResult<Student>> {
 	let where: Prisma.studentWhereInput = {};
 
 	if (filter) {
 		where = {
 			OR: [
 				{ email: { contains: filter } },
-				{ schoolYear: { contains: filter } },
-				{ schoolYear: { contains: filter } },
 				{ firstName: { contains: filter } },
 				{ lastName: { contains: filter } },
 			],
@@ -78,5 +114,13 @@ export async function readAllStudents({
 		take: pagination ? pagination.take : undefined,
 	});
 
-	return users;
+	const count = await prisma.student.count({
+		where,
+	});
+
+	return {
+		data: users,
+		hasMore: pagination ? pagination.page * pagination.take < count : false,
+		count,
+	};
 }
