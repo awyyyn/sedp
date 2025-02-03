@@ -22,6 +22,6 @@ export interface SystemUserAddress {
 	street: string;
 }
 
-export type SystemUserRole = "SUPER_ADMIN" | "ADMIN" | "ADMIN";
+export type SystemUserRole = "SUPER_ADMIN" | "ADMIN";
 
-export type SystemUserStatus = "VERIFIED" | "UNVERIFIED" | "ARCHIVED";
+export type SystemUserStatus = "VERIFIED" | "UNVERIFIED" | "DELETED";
