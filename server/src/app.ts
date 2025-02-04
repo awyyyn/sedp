@@ -14,10 +14,6 @@ import { verifyToken } from "./services/jwt.js";
 import { AppContext } from "./types/index.js";
 import { prisma } from "./services/prisma.js";
 
-interface MyContext {
-	token?: string;
-}
-
 // Initialize an app and an httpServer
 dotenv.config();
 const app = express();
@@ -25,7 +21,7 @@ const httpServer = http.createServer(app);
 
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-const server = new ApolloServer<MyContext>({
+const server = new ApolloServer<AppContext>({
 	typeDefs,
 	resolvers,
 	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
