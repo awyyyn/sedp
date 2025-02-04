@@ -42,9 +42,10 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 	DELETED: "danger",
 };
 
-const statusOptions: { label: string; value: SystemUserStatus }[] = [
+const statusOptions: { label: string; value: string }[] = [
+	{ label: "all", value: "ALL" },
 	{ label: "Verified", value: "VERIFIED" },
-	{ label: "Deleted", value: "DELETED" },
+	// { label: "Deleted", value: "DELETED" },
 	{ label: "Unverified", value: "UNVERIFIED" },
 ];
 
@@ -62,11 +63,12 @@ export default function SystemUsers() {
 	const [page, setPage] = useState(1);
 	const [total, setTotal] = useState(0);
 	const [filterValue, setFilterValue] = useState("");
+	const [users, setUsers] = useState<SystemUser[]>([]);
 	const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
 		column: "firstName",
 		direction: "ascending",
 	});
-	const [statusFilter, setStatusFilter] = useState("all");
+	const [statusFilter, setStatusFilter] = useState("ALL");
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading, data, fetchMore } = useQuery<{
@@ -82,8 +84,11 @@ export default function SystemUsers() {
 		ssr: true,
 		onCompleted: (data) => {
 			setTotal(data.systemUsers.count);
+			setUsers((p) => [...p, ...data.systemUsers.data]);
 		},
 	});
+
+	console.log(statusFilter, "qqq");
 
 	const pages = useMemo(() => {
 		return total ? Math.ceil(total / Number(rowsPerPage)) : 0;
@@ -131,11 +136,11 @@ export default function SystemUsers() {
 								<Icon icon="solar:info-square-bold" color="gray" />
 							</span>
 						</Tooltip>
-						<Tooltip content="Edit user">
+						{/* <Tooltip content="Edit user">
 							<span className="text-lg text-default-400  cursor-pointer active:opacity-50">
 								<Icon icon="solar:clapperboard-edit-bold" color="green" />
 							</span>
-						</Tooltip>
+						</Tooltip> */}
 						<Tooltip color="danger" content="Delete user">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-2-bold" />
@@ -159,7 +164,7 @@ export default function SystemUsers() {
 	);
 
 	const filteredItems = useMemo(() => {
-		let filteredUsers = [...(data?.systemUsers.data ?? [])];
+		let filteredUsers = [...(users ?? [])];
 
 		if (hasSearchFilter) {
 			filteredUsers = filteredUsers.filter(
@@ -169,17 +174,14 @@ export default function SystemUsers() {
 			);
 		}
 
-		if (
-			statusFilter !== "all" &&
-			Array.from(statusFilter).length !== statusOptions.length
-		) {
-			filteredUsers = filteredUsers.filter((user) =>
-				Array.from(statusFilter).includes(user.status)
-			);
+		if (statusFilter !== "ALL") {
+			filteredUsers = filteredUsers.filter((user) => {
+				return user.status === statusFilter;
+			});
 		}
 
 		return filteredUsers;
-	}, [data?.systemUsers.data, filterValue, statusFilter]);
+	}, [users, filterValue, statusFilter]);
 
 	const items = useMemo(() => {
 		const start = (page - 1) * Number(rowsPerPage);
@@ -233,15 +235,23 @@ export default function SystemUsers() {
 								</Button>
 							</DropdownTrigger>
 							<DropdownMenu
+								onSelectionChange={(v) => {
+									if (v.currentKey) {
+										setStatusFilter(v.currentKey.toString());
+									}
+								}}
 								disallowEmptySelection
 								aria-label="Table Columns"
 								closeOnSelect={false}
 								// selectedKeys={statusFilter}
-								selectionMode="multiple"
-								// onSelectionChange={setStatusFilter}
-							>
+								selectionMode="single"
+								defaultSelectedKeys={["ALL"]}
+								unselectable="on">
 								{statusOptions.map((status) => (
-									<DropdownItem key={status.value} className="capitalize">
+									<DropdownItem
+										key={status.value}
+										value={status.value}
+										className="capitalize">
 										{status.label}
 									</DropdownItem>
 								))}
@@ -287,8 +297,8 @@ export default function SystemUsers() {
 	return (
 		<>
 			<Table
-				sortDescriptor={sortDescriptor}
-				onSortChange={setSortDescriptor}
+				// sortDescriptor={sortDescriptor}
+				// onSortChange={setSortDescriptor}
 				aria-label="Example table with custom cells"
 				shadow="none"
 				bottomContentPlacement="outside"
@@ -331,7 +341,7 @@ export default function SystemUsers() {
 										variables: {
 											pagination: {
 												page: page,
-												take: rowsPerPage,
+												take: Number(rowsPerPage),
 											},
 										},
 									});
