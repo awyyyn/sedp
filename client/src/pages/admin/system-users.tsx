@@ -242,16 +242,10 @@ export default function SystemUsers() {
 								}}
 								disallowEmptySelection
 								aria-label="Table Columns"
-								closeOnSelect={false}
-								// selectedKeys={statusFilter}
-								selectionMode="single"
-								defaultSelectedKeys={["ALL"]}
-								unselectable="on">
+								defaultSelectedKeys={[statusFilter]}
+								selectionMode="single">
 								{statusOptions.map((status) => (
-									<DropdownItem
-										key={status.value}
-										value={status.value}
-										className="capitalize">
+									<DropdownItem key={status.value} className={`capitalize `}>
 										{status.label}
 									</DropdownItem>
 								))}
@@ -292,7 +286,7 @@ export default function SystemUsers() {
 				</div>
 			</div>
 		);
-	}, []);
+	}, [statusFilter]);
 
 	return (
 		<>
