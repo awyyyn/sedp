@@ -3,9 +3,17 @@ import { gql } from "graphql-tag";
 export const typeDefs = gql`
 	type Query {
 		generateTOTPSecret: GeneratedOTPResult
-		systemUsers(filter: String, pagination: PaginationInput): SystemUsersResult
+		systemUsers(
+			filter: String
+			pagination: PaginationInput
+			status: String
+		): SystemUsersResult
 		systemUser(id: String!): SystemUser
-		students(filter: String, pagination: PaginationInput): StudentsResult
+		students(
+			filter: String
+			pagination: PaginationInput
+			status: String
+		): StudentsResult
 		student(id: String!): Student
 	}
 

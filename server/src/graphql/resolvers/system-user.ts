@@ -13,12 +13,13 @@ import { GraphQLError } from "graphql";
 
 export const systemUsersResolver = async (
 	_: never,
-	{ filter, pagination }: PaginationArgs
+	{ filter, pagination, status }: PaginationArgs
 ) => {
 	try {
 		const data = await readAllSystemUsers({
 			filter: filter ?? undefined,
 			pagination: pagination ? pagination : undefined,
+			status: status ? status : undefined,
 		});
 
 		return data;

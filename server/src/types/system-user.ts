@@ -33,6 +33,7 @@ export interface Pagination {
 
 export interface PaginationArgs {
 	filter?: string;
+	status?: string;
 	pagination?: {
 		page: number;
 		take: number;

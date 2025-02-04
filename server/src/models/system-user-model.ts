@@ -107,7 +107,6 @@ export const readSystemUser = async (
 
 	return {
 		...user,
-		status: "VERIFIED",
 		birthDate: user.birthDate.toISOString(),
 		createdAt: user.createdAt.toISOString(),
 		updatedAt: user.updatedAt.toISOString(),
@@ -119,6 +118,7 @@ export const readSystemUser = async (
 export async function readAllSystemUsers({
 	filter,
 	pagination,
+	status,
 }: PaginationArgs = {}): Promise<PaginationResult<SystemUser>> {
 	let where: Prisma.SystemUserWhereInput = {};
 
@@ -132,6 +132,23 @@ export async function readAllSystemUsers({
 			],
 		};
 	}
+
+	console.log(status);
+
+	if (status) {
+		where = {
+			...where,
+			status: SystemUserStatus[status as SystemUserStatus],
+		};
+	} else
+		[
+			(where = {
+				...where,
+				status: {
+					not: SystemUserStatus.DELETED,
+				},
+			}),
+		];
 
 	const users = await prisma.systemUser.findMany({
 		where,
@@ -150,7 +167,6 @@ export async function readAllSystemUsers({
 	return {
 		data: users.map((user) => ({
 			...user,
-			status: "VERIFIED",
 			birthDate: user.birthDate.toISOString(),
 			createdAt: user.createdAt.toISOString(),
 			updatedAt: user.updatedAt.toISOString(),
