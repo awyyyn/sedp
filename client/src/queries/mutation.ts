@@ -19,3 +19,11 @@ export const sendSystemUserRegistrationMutation = gql`
 		}
 	}
 `;
+
+export const deleteSystemUserMutation = gql`
+	mutation DeleteSystemUser($id: String!) {
+		deleteSystemUser(id: $id) {
+			id
+		}
+	}
+`;

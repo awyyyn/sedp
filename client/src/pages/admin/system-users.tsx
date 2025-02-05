@@ -24,11 +24,14 @@ import {
 	DropdownTrigger,
 } from "@heroui/dropdown";
 import { Link } from "@heroui/link";
+import { useAtom } from "jotai";
 
 import { client } from "@/main";
 import { systemUsersQuery } from "@/queries";
 import { PaginationResult, SystemUser } from "@/types";
 import { SendRegistrationModal } from "@/components";
+import DeleteModal from "@/components/delete-modal";
+import { systemUsersAtom } from "@/states";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -61,11 +64,17 @@ const rowsPerPageItems = [
 ];
 
 export default function SystemUsers() {
+	const [deleteModal, setDeleteModal] = useState(false);
+	const [systemUsersState, setSystemUsersState] = useAtom(systemUsersAtom);
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [total, setTotal] = useState(0);
 	const [filterValue, setFilterValue] = useState("");
-	const [users, setUsers] = useState<SystemUser[]>([]);
+	const [toDeleteItem, setToDeleteItem] = useState<Pick<
+		SystemUser,
+		"id" | "email"
+	> | null>(null);
+
 	const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
 		column: "firstName",
 		direction: "ascending",
@@ -88,7 +97,7 @@ export default function SystemUsers() {
 		ssr: true,
 		onCompleted: (data) => {
 			setTotal(data.systemUsers.count);
-			setUsers((p) => [...p, ...data.systemUsers.data]);
+			setSystemUsersState((p) => [...p, ...data.systemUsers.data]);
 		},
 	});
 
@@ -147,7 +156,13 @@ export default function SystemUsers() {
 						</Tooltip> */}
 						<Tooltip color="danger" content="Delete user">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
-								<Icon icon="solar:trash-bin-2-bold" />
+								<Icon
+									onClick={() => {
+										setDeleteModal(true);
+										setToDeleteItem(user);
+									}}
+									icon="solar:trash-bin-2-bold"
+								/>
 							</span>
 						</Tooltip>
 					</div>
@@ -160,14 +175,22 @@ export default function SystemUsers() {
 	}, []);
 
 	const filteredItems = useMemo(() => {
-		let filteredUsers = [...(users ?? [])];
+		let filteredUsers = [...(systemUsersState ?? [])];
 
 		if (hasSearchFilter) {
-			filteredUsers = filteredUsers.filter(
-				(user) =>
-					user.firstName.toLowerCase().includes(filterValue.toLowerCase()) ||
-					user.lastName.toLowerCase().includes(filterValue.toLowerCase())
-			);
+			filteredUsers = filteredUsers.filter((user) => {
+				const firstName = user.firstName.toLowerCase();
+				const lastName = user.lastName.toLowerCase();
+
+				const fullName = `${firstName} ${lastName}`;
+				const filterVal = filterValue.toLowerCase();
+
+				return (
+					firstName.includes(filterVal) ||
+					lastName.toLowerCase().includes(filterVal) ||
+					fullName.includes(filterVal)
+				);
+			});
 		}
 
 		if (statusFilter !== "ALL") {
@@ -177,7 +200,7 @@ export default function SystemUsers() {
 		}
 
 		return filteredUsers;
-	}, [users, filterValue, statusFilter]);
+	}, [systemUsersState, filterValue, statusFilter]);
 
 	const items = useMemo(() => {
 		const start = (page - 1) * Number(rowsPerPage);
@@ -383,6 +406,21 @@ export default function SystemUsers() {
 					)}
 				</TableBody>
 			</Table>
+
+			{deleteModal && toDeleteItem && (
+				<DeleteModal
+					setSystemUsersState={(id) => {
+						setSystemUsersState((prev) =>
+							prev.filter((user) => user.id !== id)
+						);
+						setTotal((p) => p - 1);
+					}}
+					id={toDeleteItem.id}
+					email={toDeleteItem.email}
+					isOpen={deleteModal}
+					setState={setDeleteModal}
+				/>
+			)}
 		</>
 	);
 }
