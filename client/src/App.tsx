@@ -18,6 +18,7 @@ import StudentLogin from "@/pages/auth/student/login";
 import StudentForgotPassword from "@/pages/auth/student/forgot-password";
 import Unauthorized from "@/pages/unauthorized";
 import NotFound from "@/pages/not-found";
+import Home from "@/pages/home";
 
 interface RouteType {
 	[key: string]: {
@@ -61,7 +62,6 @@ function App() {
 				allowed: ["SUPER_ADMIN", "ADMIN"],
 			},
 		],
-		student: [{ element: <h1>Home</h1>, path: "/", allowed: ["STUDENT"] }],
 	};
 
 	return (
@@ -85,11 +85,13 @@ function App() {
 				))}
 			</Route>
 
-			<Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />}>
+			<Route path="/" element={<Home />} />
+
+			{/* <Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />}>
 				{routes.student.map((link) => (
 					<Route key={link.path} element={link.element} path={link.path} />
 				))}
-			</Route>
+			</Route> */}
 
 			<Route path="unauthorized" element={<Unauthorized />} />
 			<Route path="*" element={<NotFound />} />
