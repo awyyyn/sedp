@@ -26,7 +26,8 @@ import {
 
 import { client } from "@/main";
 import { systemUsersQuery } from "@/queries";
-import { PaginationResult, SystemUser, SystemUserStatus } from "@/types";
+import { PaginationResult, SystemUser } from "@/types";
+import { SendRegistrationModal } from "@/components";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -71,15 +72,17 @@ export default function SystemUsers() {
 	const [statusFilter, setStatusFilter] = useState("ALL");
 	const hasSearchFilter = Boolean(filterValue);
 
-	const { loading, data, fetchMore } = useQuery<{
+	const { loading, fetchMore } = useQuery<{
 		systemUsers: PaginationResult<SystemUser>;
 	}>(systemUsersQuery, {
 		client: client,
 		variables: {
-			pagination: {
-				take: Number(rowsPerPage),
-				page: page,
-			},
+			// pagination: {
+			// 	take: Number(rowsPerPage),
+			// 	page: page,
+			// },
+			// filterValue: filterValue ?? null,
+			// status: statusFilter ?? null,
 		},
 		ssr: true,
 		onCompleted: (data) => {
@@ -87,8 +90,6 @@ export default function SystemUsers() {
 			setUsers((p) => [...p, ...data.systemUsers.data]);
 		},
 	});
-
-	console.log(statusFilter, "qqq");
 
 	const pages = useMemo(() => {
 		return total ? Math.ceil(total / Number(rowsPerPage)) : 0;
@@ -155,14 +156,6 @@ export default function SystemUsers() {
 		}
 	}, []);
 
-	const onRowsPerPageChange = useCallback(
-		(e: React.ChangeEvent<HTMLSelectElement>) => {
-			setRowsPerPage(e.target.value);
-			setPage(1);
-		},
-		[]
-	);
-
 	const filteredItems = useMemo(() => {
 		let filteredUsers = [...(users ?? [])];
 
@@ -208,8 +201,8 @@ export default function SystemUsers() {
 
 	const topContent = useMemo(() => {
 		return (
-			<div className="flex flex-col gap-4">
-				<div className="flex justify-between gap-3 items-end">
+			<div className="flex flex-col w-full ">
+				<div className="flex justify-between flex-wrap sm:flex-nowrap gap-3 items-end">
 					<Input
 						isClearable
 						classNames={{
@@ -218,17 +211,17 @@ export default function SystemUsers() {
 						}}
 						placeholder="Search by name..."
 						size="md"
-						// startContent={<SearchIcon className="text-default-300" />}
+						startContent={<Icon icon="icon-park-solid:search" />}
 						// value={filterValue}
 						variant="bordered"
 						onClear={() => setFilterValue("")}
 						onValueChange={setFilterValue}
 					/>
-					<div className="flex gap-3">
+					<div className="flex gap-3 justify-between md:justify-end w-full">
 						<Dropdown>
-							<DropdownTrigger className="hidden sm:flex">
+							<DropdownTrigger className="">
 								<Button
-									// endContent={<ChevronDownIcon className="text-small" />}
+									endContent={<Icon icon="mynaui:chevron-down-solid" />}
 									size="md"
 									variant="flat">
 									Status
@@ -276,30 +269,47 @@ export default function SystemUsers() {
 								))}
 							</DropdownMenu>
 						</Dropdown> */}
-						<Button
-							className="bg-foreground text-background"
-							// endContent={<PlusIcon />}
-							size="md">
-							Add New
-						</Button>
+						<SendRegistrationModal type="admin" />
 					</div>
 				</div>
 			</div>
 		);
-	}, [statusFilter]);
+	}, []);
 
 	return (
 		<>
 			<Table
-				// sortDescriptor={sortDescriptor}
-				// onSortChange={setSortDescriptor}
+				sortDescriptor={sortDescriptor}
+				onSortChange={setSortDescriptor}
 				aria-label="Example table with custom cells"
 				shadow="none"
 				bottomContentPlacement="outside"
 				topContent={topContent}
 				bottomContent={
 					pages > 0 ? (
-						<div className="flex w-full justify-between">
+						<div className="flex w-full  justify-between px-5 flex-wrap">
+							<Pagination
+								isCompact
+								showControls={pages > 3}
+								showShadow
+								color="primary"
+								page={page}
+								isDisabled={hasSearchFilter}
+								total={pages}
+								onChange={(page) => {
+									// fetchMore({
+									// 	variables: {
+									// 		pagination: {
+									// 			page: page,
+									// 			take: Number(rowsPerPage),
+									// 		},
+									// 		filterValue: filterValue ?? null,
+									// 		status: statusFilter ?? null,
+									// 	},
+									// });
+									setPage(page);
+								}}
+							/>
 							<div className="flex gap-3 items-center">
 								<p className="min-w-[100px] inline  ">
 									<span className="text-sm">Total Users: </span>
@@ -319,29 +329,20 @@ export default function SystemUsers() {
 										}
 									}}>
 									{rowsPerPageItems.map((row) => (
-										<SelectItem key={row.key}>{row.label}</SelectItem>
+										<SelectItem
+											key={row.key}
+											isReadOnly={total < Number(row.key)}
+											isDisabled={total < Number(row.key)}
+											classNames={{
+												// wrapper: "read-only:hover:bg-red-400",
+												base: "read-only:hover:bg-white read-only:focus:bg-yellow-500",
+											}}
+											className="read-only:text-gray-400  read-only:hover:text-gray-400">
+											{row.label}
+										</SelectItem>
 									))}
 								</Select>
 							</div>
-							<Pagination
-								isCompact
-								showControls={pages > 3}
-								showShadow
-								color="primary"
-								page={page}
-								total={pages}
-								onChange={(page) => {
-									fetchMore({
-										variables: {
-											pagination: {
-												page: page,
-												take: Number(rowsPerPage),
-											},
-										},
-									});
-									setPage(page);
-								}}
-							/>
 						</div>
 					) : null
 				}>
@@ -363,7 +364,7 @@ export default function SystemUsers() {
 					{(item) => (
 						<TableRow key={`${item.id}`}>
 							{(columnKey) => (
-								<TableCell className="min-w-[200px]">
+								<TableCell className="min-w-[140px]">
 									{renderCell(item, columnKey)}
 								</TableCell>
 							)}

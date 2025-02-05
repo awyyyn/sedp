@@ -35,7 +35,7 @@ export const sendRegistrationLink = async ({
 }: RegistrationLink) => {
 	const registrationToken = generateAccessToken({ email, role, id: "" });
 
-	const userRole = role === "SUPER_ADMIN" || "ADMIN" === role ? "/admin" : "/";
+	const userRole = role === "SUPER_ADMIN" || "ADMIN" === role ? "/admin/" : "/";
 
 	const link = `${environment.CLIENT_URL}${userRole}register?registrationToken=${registrationToken}`;
 

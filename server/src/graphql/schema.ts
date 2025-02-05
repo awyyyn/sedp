@@ -21,8 +21,11 @@ export const typeDefs = gql`
 		verifyTOTP(secret: String!, token: String!): Boolean
 		updateSystemUser(values: updateSystemUserInput): SystemUser
 		deleteSystemUser(id: String!): SystemUser
-		sendSystemUserRegistrationEmail: SendEmailResult
-		sendStudentRegistrationEmail: SendEmailResult
+		sendSystemUserRegistrationEmail(
+			email: String!
+			role: SystemUserRole!
+		): SendEmailResult
+		sendStudentRegistrationEmail(email: String!): SendEmailResult
 	}
 
 	type SendEmailResult {

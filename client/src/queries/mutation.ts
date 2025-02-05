@@ -5,3 +5,17 @@ export const verifyTOTPMutation = gql`
 		totp: verifyTOTP(secret: $secret, token: $token)
 	}
 `;
+
+export const sendSystemUserRegistrationMutation = gql`
+	mutation SendSystemUserRegistrationEmail(
+		$email: String!
+		$role: SystemUserRole!
+	) {
+		sendRegistration: sendSystemUserRegistrationEmail(
+			email: $email
+			role: $role
+		) {
+			message
+		}
+	}
+`;

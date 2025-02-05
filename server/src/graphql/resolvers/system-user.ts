@@ -7,6 +7,7 @@ import {
 import {
 	AppContext,
 	PaginationArgs,
+	SystemUserRole,
 	SystemUserUpdateArgs,
 } from "@/types/index.js";
 import { GraphQLError } from "graphql";
@@ -16,6 +17,9 @@ export const systemUsersResolver = async (
 	{ filter, pagination, status }: PaginationArgs
 ) => {
 	try {
+		console.log("filter", filter);
+		console.log("pagination", pagination);
+		console.log("status", status);
 		const data = await readAllSystemUsers({
 			filter: filter ?? undefined,
 			pagination: pagination ? pagination : undefined,
@@ -81,16 +85,22 @@ export const deleteSystemUserResolver = async (
 		}
 
 		return deletedUser;
-	} catch {
-		throw new GraphQLError("Internal Server Error!");
+	} catch (error) {
+		if (error instanceof GraphQLError) {
+			throw new GraphQLError((error as GraphQLError).message);
+		} else {
+			throw new GraphQLError("Internal Server Error!");
+		}
 	}
 };
 
 export const sendSystemUserRegistrationEmailResolver = async (
 	_: never,
-	{ email }: { email: string; role: string },
+	{ email, role: userRole }: { email: string; role: SystemUserRole },
 	{ role }: AppContext
 ) => {
+	console.log(email);
+
 	if (role !== "SUPER_ADMIN") {
 		throw new GraphQLError("UnAuthorized!");
 	}
@@ -101,10 +111,14 @@ export const sendSystemUserRegistrationEmailResolver = async (
 			throw new GraphQLError("User already exists!");
 		}
 
-		await sendRegistrationLink({ email, role });
+		await sendRegistrationLink({ email, role: userRole });
 
 		return { message: "Email sent successfully!" };
-	} catch {
-		throw new GraphQLError("Internal Server Error!");
+	} catch (error) {
+		if (error instanceof GraphQLError) {
+			throw new GraphQLError((error as GraphQLError).message);
+		} else {
+			throw new GraphQLError("Internal Server Error!");
+		}
 	}
 };
