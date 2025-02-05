@@ -23,6 +23,7 @@ import {
 	DropdownMenu,
 	DropdownTrigger,
 } from "@heroui/dropdown";
+import { Link } from "@heroui/link";
 
 import { client } from "@/main";
 import { systemUsersQuery } from "@/queries";
@@ -72,7 +73,7 @@ export default function SystemUsers() {
 	const [statusFilter, setStatusFilter] = useState("ALL");
 	const hasSearchFilter = Boolean(filterValue);
 
-	const { loading, fetchMore } = useQuery<{
+	const { loading } = useQuery<{
 		systemUsers: PaginationResult<SystemUser>;
 	}>(systemUsersQuery, {
 		client: client,
@@ -133,9 +134,11 @@ export default function SystemUsers() {
 				return (
 					<div className="relative flex  justify-center items-center gap-2">
 						<Tooltip content="Details">
-							<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-								<Icon icon="solar:info-square-bold" color="gray" />
-							</span>
+							<Link href={`/system-users/${user.id}`}>
+								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+									<Icon icon="solar:info-square-bold" color="gray" />
+								</span>
+							</Link>
 						</Tooltip>
 						{/* <Tooltip content="Edit user">
 							<span className="text-lg text-default-400  cursor-pointer active:opacity-50">
@@ -278,6 +281,14 @@ export default function SystemUsers() {
 
 	return (
 		<>
+			<div className="px-5">
+				<div className="leading-loose">
+					<h1 className="text-xl leading-none font-medium">System Users</h1>
+					<p className="text-sm leading-loose text-gray-400">
+						List of system users
+					</p>
+				</div>
+			</div>
 			<Table
 				sortDescriptor={sortDescriptor}
 				onSortChange={setSortDescriptor}

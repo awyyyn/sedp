@@ -46,3 +46,12 @@ export const systemUsersQuery = gql`
 		}
 	}
 `;
+
+export const systemUserQuery = gql`
+	${systemUsersFragment}
+	query SystemUser($id: String!) {
+		systemUser(id: $id) {
+			...SystemUserFragment
+		}
+	}
+`;
