@@ -41,7 +41,7 @@ export default function SystemUserPage() {
 				</div>
 			</div>
 
-			<div className="mt-3 space-y-2">
+			<div className="mt-3 space-y-2 px-4">
 				<h1>Personal Information</h1>
 				<div className="flex gap-2 flex-col md:flex-row">
 					<Input
@@ -75,7 +75,7 @@ export default function SystemUserPage() {
 					)}
 				</div>
 
-				<div className="flex gap-2 flex-col md:flex-row  ">
+				<div className="flex gap-2  flex-col md:flex-row  ">
 					<Input
 						label="Email"
 						variant="flat"
@@ -98,7 +98,7 @@ export default function SystemUserPage() {
 				</div>
 			</div>
 			<Divider className="mt-5" />
-			<div className="mt-3 space-y-2">
+			<div className="mt-3 space-y-2 px-4">
 				<h1>Address</h1>
 				<div className="flex gap-2 flex-col md:flex-row">
 					<Input
