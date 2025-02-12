@@ -1,4 +1,5 @@
-import { prisma } from "@/services/prisma.js";
+import { prisma } from "../services/prisma.js";
+import { SystemUserRole } from "./system-user.js";
 
 export * from "./system-user.js";
 export * from "./student.js";
@@ -13,6 +14,6 @@ export interface PaginationResult<T> {
 export type AppContext = {
 	id: string;
 	email: string;
-	role: "SUPER_ADMIN" | "ADMIN" | "STUDENT";
+	role: SystemUserRole | "STUDENT";
 	prisma: typeof prisma;
 };

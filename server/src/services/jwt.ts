@@ -1,4 +1,4 @@
-import { SystemUserRole } from "@/types/index.js";
+import { SystemUserRole } from "../types/index.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface PayloadArgs {

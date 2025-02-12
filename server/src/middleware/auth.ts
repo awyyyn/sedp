@@ -1,7 +1,7 @@
-import { verifyToken } from "../services/index.js";
+import { prisma, verifyToken } from "../services/index.js";
 import { NextFunction, Request, Response } from "express";
 import { GraphQLError } from "graphql";
-import { AppContext } from "@/types/index.js";
+import { AppContext } from "../types/index.js";
 
 export const authMiddleware = async (
 	req: Request,
@@ -43,5 +43,5 @@ export const contextMiddleware = async ({
 		throw new GraphQLError("UnAuthorized");
 	}
 
-	return { id: data.id, email: data.email };
+	return { id: data.id, email: data.email, prisma, role: data.role };
 };

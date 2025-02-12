@@ -1,6 +1,6 @@
-import { environment } from "@/environments/environment.js";
-import { prisma } from "@/services/prisma.js";
-import { PaginationResult, Student } from "@/types/index.js";
+import { environment } from "../environments/environment.js";
+import { prisma } from "../services/prisma.js";
+import { PaginationResult, Student } from "../types/index.js";
 import { Prisma } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 

@@ -3,12 +3,12 @@ import {
 	readStudent,
 	updateStudent,
 	readAllStudents,
-} from "@/models/index.js";
+} from "../../models/index.js";
 import {
 	AppContext,
 	PaginationArgs,
 	StudentUpdateArgs,
-} from "@/types/index.js";
+} from "../../types/index.js";
 import { GraphQLError } from "graphql";
 
 export const updateStudentResolver = async (

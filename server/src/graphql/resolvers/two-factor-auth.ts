@@ -1,4 +1,4 @@
-import { generateTOTPSecret, verifyTOTP } from "@/services/otpauth.js";
+import { generateTOTPSecret, verifyTOTP } from "../../services/otpauth.js";
 import { GraphQLError } from "graphql";
 
 export const twoFactorAuthResolver = async () => {

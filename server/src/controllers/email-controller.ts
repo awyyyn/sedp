@@ -1,3 +1,3 @@
 import { Request, Response } from "express";
 
-export const sendEmail = async (req: Request, res: Response) => {};
+export const sendEmail = async (_: Request, __: Response) => {};

@@ -13,9 +13,6 @@
 		"forceConsistentCasingInFileNames": true,
 
 		"skipLibCheck": true,
-		"paths": {
-			"@/*": ["./src/*"]
-		},
 
 		/* Linting */
 		"strict": true,

@@ -1,6 +1,10 @@
-import { environment } from "@/environments/environment.js";
-import { prisma } from "@/services/prisma.js";
-import { SystemUser, PaginationArgs, PaginationResult } from "@/types/index.js";
+import { environment } from "../environments/environment.js";
+import { prisma } from "../services/prisma.js";
+import {
+	SystemUser,
+	PaginationArgs,
+	PaginationResult,
+} from "../types/index.js";
 import { Prisma, SystemUserStatus } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 
@@ -18,7 +22,7 @@ export const createSystemUser = async (
 		birthDate,
 		phoneNumber,
 		password,
-		role,
+		// role,
 		middleName,
 	} = values;
 
@@ -151,13 +155,19 @@ export async function readAllSystemUsers({
 		];
 
 	const users = await prisma.systemUser.findMany({
-		where,
+		where: {
+			...where,
+			role: "ADMIN",
+		},
 		take: pagination ? pagination.take : undefined,
 		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
 	});
 
 	const count = await prisma.systemUser.count({
-		where,
+		where: {
+			...where,
+			role: "ADMIN",
+		},
 	});
 
 	const hasMore = pagination

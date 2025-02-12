@@ -1,15 +1,15 @@
-import { sendRegistrationLink } from "@/models/email-model.js";
+import { sendRegistrationLink } from "../../models/email-model.js";
 import {
 	readAllSystemUsers,
 	readSystemUser,
 	updateSystemUser,
-} from "@/models/system-user-model.js";
+} from "../../models/system-user-model.js";
 import {
 	AppContext,
 	PaginationArgs,
 	SystemUserRole,
 	SystemUserUpdateArgs,
-} from "@/types/index.js";
+} from "../../types/index.js";
 import { GraphQLError } from "graphql";
 
 export const systemUsersResolver = async (

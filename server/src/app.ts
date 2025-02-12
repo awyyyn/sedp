@@ -89,6 +89,8 @@ app.use("/api", routes);
 		})
 	);
 
+	console.log("====================================");
+	console.log("🚀 Server ready", environment);
 	// Modified server startup
 	await new Promise<void>((resolve) =>
 		httpServer.listen({ port: environment.PORT }, resolve)

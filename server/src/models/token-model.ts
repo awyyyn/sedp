@@ -1,5 +1,5 @@
-import { prisma } from "@/services/prisma.js";
-import { Token } from "@/types/token.js";
+import { prisma } from "../services/prisma.js";
+import { Token } from "../types/token.js";
 
 export const createToken = async (email: string): Promise<Token> => {
 	const generatedToken = Math.random()

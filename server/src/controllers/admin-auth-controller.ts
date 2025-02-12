@@ -4,15 +4,15 @@ import {
 	readSystemUser,
 	readToken,
 	sendForgotPasswordOTP,
-} from "@/models/index.js";
+} from "../models/index.js";
 import * as bcrypt from "bcrypt";
 import {
 	generateAccessToken,
 	generateRefreshToken,
 	prisma,
-} from "@/services/index.js";
+} from "..//services/index.js";
 import { SystemUserRole } from "@prisma/client";
-import { environment } from "@/environments/environment.js";
+import { environment } from "../environments/environment.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;

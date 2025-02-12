@@ -4,14 +4,14 @@ import {
 	readStudent,
 	readToken,
 	sendForgotPasswordOTP,
-} from "@/models/index.js";
+} from "../models/index.js";
 import * as bcrypt from "bcrypt";
 import {
 	generateAccessToken,
 	generateRefreshToken,
 	prisma,
-} from "@/services/index.js";
-import { environment } from "@/environments/environment.js";
+} from "../services/index.js";
+import { environment } from "../environments/environment.js";
 
 export const studentLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -53,12 +53,17 @@ export const studentLoginController = async (req: Request, res: Response) => {
 
 		const payload = {
 			email: student.email,
-			role: "STUDENT",
 			id: student.id,
 		};
 
-		const accessToken = generateAccessToken(payload);
-		const refreshToken = generateRefreshToken(payload);
+		const accessToken = generateAccessToken({
+			...payload,
+			role: "STUDENT",
+		});
+		const refreshToken = generateRefreshToken({
+			...payload,
+			role: "STUDENT",
+		});
 		const { password: removePassword, ...userData } = student;
 
 		res.status(200).json({

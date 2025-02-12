@@ -1,7 +1,7 @@
-import { environment } from "@/environments/environment.js";
+import { environment } from "../environments/environment.js";
 import { createToken } from "./token-model.js";
-import { transporter } from "@/services/nodemailer.js";
-import { generateAccessToken } from "@/services/jwt.js";
+import { transporter } from "../services/nodemailer.js";
+import { generateAccessToken } from "../services/jwt.js";
 
 export const sendForgotPasswordOTP = async (email: string) => {
 	const token = await createToken(email);
