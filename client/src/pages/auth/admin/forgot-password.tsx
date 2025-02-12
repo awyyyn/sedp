@@ -32,7 +32,7 @@ export default function ForgotPassword() {
 		setLoading(true);
 		try {
 			const response = await fetch(
-				"http://localhost:4000/api/auth/admin-forgot-password",
+				`${import.meta.env.VITE_API_URL}/auth/admin-forgot-password`,
 				{
 					method: "POST",
 					body: JSON.stringify({ email: values.email }),
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
 		try {
 			setLoading(true);
 			const response = await fetch(
-				"http://localhost:4000/api/auth/admin-verify-token",
+				`${import.meta.env.VITE_API_URL}/api/auth/admin-verify-token`,
 				{
 					method: "POST",
 					body: JSON.stringify({ token: values.otp, email: values.email }),
@@ -116,7 +116,7 @@ export default function ForgotPassword() {
 
 			setLoading(true);
 			const response = await fetch(
-				"http://localhost:4000/api/auth/admin-reset-password",
+				`${import.meta.env.VITE_API_URL}/api/auth/admin-reset-password`,
 				{
 					method: "POST",
 					body: JSON.stringify({ password: values.confirmPassword }),

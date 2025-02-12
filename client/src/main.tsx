@@ -7,8 +7,8 @@ import {
 	createHttpLink,
 	InMemoryCache,
 } from "@apollo/client";
-import { Toaster } from "sonner";
 import { setContext } from "@apollo/client/link/context";
+import { Toaster } from "sonner";
 
 import App from "./App.tsx";
 import { Provider } from "./provider.tsx";

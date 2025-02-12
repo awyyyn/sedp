@@ -37,7 +37,7 @@ export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
 	{ name: "EMAIL", uid: "email", sortable: true },
 	{ name: "PHONE", uid: "phoneNumber", sortable: true },
-	{ name: "STATUS", uid: "status" },
+	{ name: "ADDRESS", uid: "address" },
 	{ name: "ACTIONS", uid: "actions" },
 ];
 
@@ -129,15 +129,18 @@ export default function SystemUsers() {
 						</p>
 					</div>
 				);
-			case "status":
+			case "address":
 				return (
-					<Chip
-						className="capitalize"
-						color={statusColorMap[user.status]}
-						size="sm"
-						variant="flat">
-						{cellValue?.toString()}
-					</Chip>
+					<p>
+						{user.address.street}, {user.address.city}
+					</p>
+					// <Chip
+					// 	className="capitalize"
+					// 	color={statusColorMap[user.status]}
+					// 	size="sm"
+					// 	variant="flat">
+					// 	{cellValue?.toString()}
+					// </Chip>
 				);
 			case "actions":
 				return (
@@ -244,7 +247,7 @@ export default function SystemUsers() {
 						onValueChange={setFilterValue}
 					/>
 					<div className="flex gap-3 justify-between md:justify-end w-full">
-						<Dropdown>
+						{/* <Dropdown>
 							<DropdownTrigger className="">
 								<Button
 									endContent={<Icon icon="mynaui:chevron-down-solid" />}
@@ -269,7 +272,7 @@ export default function SystemUsers() {
 									</DropdownItem>
 								))}
 							</DropdownMenu>
-						</Dropdown>
+						</Dropdown> */}
 
 						{/* 
 						<Dropdown>

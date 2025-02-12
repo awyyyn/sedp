@@ -78,7 +78,7 @@ export default function Home() {
 										}}
 										viewport={{ once: false }}
 										transition={{
-											duration: 0.6,
+											duration: 0.5,
 										}}
 										className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-5 z-10"
 									/>
@@ -91,7 +91,7 @@ export default function Home() {
 										}}
 										viewport={{ once: false }}
 										transition={{
-											duration: 0.8,
+											duration: 0.6,
 											delay: 0.1,
 										}}
 										className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-5 z-10"
@@ -108,7 +108,7 @@ export default function Home() {
 												opacity: 1,
 												y: 0,
 												transition: {
-													staggerChildren: 0.1,
+													staggerChildren: 0.2,
 													damping: 0,
 													delay: 1,
 												},
