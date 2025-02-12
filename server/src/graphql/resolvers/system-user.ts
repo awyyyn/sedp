@@ -17,9 +17,6 @@ export const systemUsersResolver = async (
 	{ filter, pagination, status }: PaginationArgs
 ) => {
 	try {
-		console.log("filter", filter);
-		console.log("pagination", pagination);
-		console.log("status", status);
 		const data = await readAllSystemUsers({
 			filter: filter ?? undefined,
 			pagination: pagination ? pagination : undefined,
@@ -99,8 +96,6 @@ export const sendSystemUserRegistrationEmailResolver = async (
 	{ email, role: userRole }: { email: string; role: SystemUserRole },
 	{ role }: AppContext
 ) => {
-	console.log(email);
-
 	if (role !== "SUPER_ADMIN") {
 		throw new GraphQLError("UnAuthorized!");
 	}

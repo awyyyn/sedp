@@ -33,7 +33,7 @@ app.get("/healthz", (_, res) => {
 });
 
 // Middlewares
-// console.log(environment.CLIENT_URL);
+
 app.use(
 	cors<cors.CorsRequest>({
 		// origin: environment.CLIENT_URL,/
@@ -89,8 +89,6 @@ app.use("/api", routes);
 		})
 	);
 
-	console.log("====================================");
-	console.log("🚀 Server ready", environment);
 	// Modified server startup
 	await new Promise<void>((resolve) =>
 		httpServer.listen({ port: environment.PORT }, resolve)

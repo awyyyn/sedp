@@ -16,7 +16,7 @@ import { environment } from "../environments/environment.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
-	console.log(req.body);
+
 	if (!password || !email) {
 		res.status(400).json({
 			error: {
@@ -106,8 +106,6 @@ export const adminRegisterController = async (req: Request, res: Response) => {
 		birthDate,
 		role,
 	} = req.body;
-
-	console.log(req.body);
 
 	try {
 		const newUser = await createSystemUser({
@@ -306,8 +304,6 @@ export const adminResetPasswordController = async (
 
 		const generatedSALT = await bcrypt.genSalt(environment.SALT);
 		const hashedPassword = await bcrypt.hash(password, generatedSALT);
-
-		console.log(hashedPassword);
 
 		const updatedUser = await prisma.systemUser.update({
 			where: { id: user.id },

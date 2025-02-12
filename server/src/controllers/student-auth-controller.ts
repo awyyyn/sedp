@@ -104,8 +104,6 @@ export const studentRegisterController = async (
 		yearLevel,
 	} = req.body;
 
-	console.log(req.body);
-
 	try {
 		const newUser = await createStudent({
 			email,
@@ -304,8 +302,6 @@ export const studentResetPasswordController = async (
 
 		const generatedSALT = await bcrypt.genSalt(environment.SALT);
 		const hashedPassword = await bcrypt.hash(password, generatedSALT);
-
-		console.log(hashedPassword);
 
 		const updatedUser = await prisma.systemUser.update({
 			where: { id: user.id },

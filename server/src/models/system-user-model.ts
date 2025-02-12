@@ -137,8 +137,6 @@ export async function readAllSystemUsers({
 		};
 	}
 
-	console.log(status);
-
 	if (status) {
 		where = {
 			...where,

@@ -22,8 +22,6 @@ export const verifyTOTPResolver = async (
 	try {
 		const isVerified = await verifyTOTP(secret, token);
 
-		console.log(isVerified);
-
 		return isVerified;
 	} catch {
 		throw new GraphQLError("Internal Server Error!");
