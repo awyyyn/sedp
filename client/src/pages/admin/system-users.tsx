@@ -11,18 +11,11 @@ import {
 import { Spinner } from "@heroui/spinner";
 import { useCallback, useMemo, useState } from "react";
 import { Pagination } from "@heroui/pagination";
-import { Chip, ChipProps } from "@heroui/chip";
 import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
-import { Button } from "@heroui/button";
+
 import { Input } from "@heroui/input";
-import {
-	Dropdown,
-	DropdownItem,
-	DropdownMenu,
-	DropdownTrigger,
-} from "@heroui/dropdown";
 import { Link } from "@heroui/link";
 import { useAtom } from "jotai";
 
@@ -39,19 +32,6 @@ export const columns = [
 	{ name: "PHONE", uid: "phoneNumber", sortable: true },
 	{ name: "ADDRESS", uid: "address" },
 	{ name: "ACTIONS", uid: "actions" },
-];
-
-const statusColorMap: Record<string, ChipProps["color"]> = {
-	VERIFIED: "success",
-	UNVERIFIED: "warning",
-	DELETED: "danger",
-};
-
-const statusOptions: { label: string; value: string }[] = [
-	{ label: "all", value: "ALL" },
-	{ label: "Verified", value: "VERIFIED" },
-	// { label: "Deleted", value: "DELETED" },
-	{ label: "Unverified", value: "UNVERIFIED" },
 ];
 
 const rowsPerPageItems = [
@@ -79,7 +59,7 @@ export default function SystemUsers() {
 		column: "firstName",
 		direction: "ascending",
 	});
-	const [statusFilter, setStatusFilter] = useState("ALL");
+	const [statusFilter] = useState("ALL");
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading } = useQuery<{
