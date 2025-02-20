@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
 	createSystemUser,
+	readStudent,
 	readSystemUser,
 	readToken,
 	sendForgotPasswordOTP,
@@ -322,6 +323,48 @@ export const adminResetPasswordController = async (
 			data: {
 				message: "Password reset!",
 			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			error: {
+				code: 500,
+				message: "Internal Server Error!",
+			},
+		});
+	}
+};
+
+export const userProfileController = async (req: Request, res: Response) => {
+	const { role, id } = req.body;
+	try {
+		let user;
+		if (role === "STUDENT") {
+			user = await readStudent(id);
+		} else {
+			user = await readSystemUser(id);
+		}
+
+		if (!user) throw new Error("INTERNAL_SERVER_ERROR");
+
+		const accessToken = await generateAccessToken({
+			email: user.email,
+			id: user.id,
+			role: role,
+		});
+
+		const refreshToken = await generateRefreshToken({
+			email: user.email,
+			id: user.id,
+			role: role,
+		});
+
+		res.status(200).json({
+			data: {
+				accessToken,
+				refreshToken,
+				user: user,
+			},
+			error: null,
 		});
 	} catch (error) {
 		res.status(500).json({

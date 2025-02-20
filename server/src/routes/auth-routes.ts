@@ -10,6 +10,7 @@ import {
 	studentForgotPasswordController,
 	studentVerifyTokenController,
 	studentResetPasswordController,
+	userProfileController,
 } from "../controllers/index.js";
 import { authMiddleware } from "../middleware/auth.js";
 
@@ -30,5 +31,7 @@ router.post("/login", studentLoginController);
 router.post("/forgot-password", studentForgotPasswordController);
 router.post("/verify-token", studentVerifyTokenController);
 router.post("/reset-password", authMiddleware, studentResetPasswordController);
+
+router.post("/me", authMiddleware, userProfileController);
 
 export { router as authRoutes };

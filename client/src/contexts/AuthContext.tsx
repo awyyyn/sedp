@@ -36,36 +36,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		const token = localStorage.getItem("accessToken");
+		(async () => {
+			const token = localStorage.getItem("accessToken");
 
-		if (!token) {
-			setIsAuthenticated(false);
-			setLoading(false);
-			setRole(null);
+			if (!token) {
+				setIsAuthenticated(false);
+				setLoading(false);
+				setRole(null);
 
-			return;
-		}
-
-		try {
-			const decoded = jwtDecode<{ role: string } & JwtPayload>(token);
-
-			if (!(decoded.exp! * 1000 > Date.now())) {
-				throw new Error("Token expired");
+				return;
 			}
-			setRole(decoded.role as ROLE);
 
-			setIsAuthenticated(true);
-		} catch (err) {
-			localStorage.clear();
-			toast.error((err as Error).message, {
-				position: "top-center",
-				richColors: true,
-			});
-			setIsAuthenticated(false);
-			setRole(null);
-		} finally {
-			setLoading(false);
-		}
+			try {
+				const response = await fetch(
+					`${import.meta.env.VITE_API_URL}/api/auth/me`,
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+						method: "POST",
+					}
+				);
+
+				if (response.status !== 200) {
+					throw new Error("Session expired");
+				}
+
+				const data = await response.json();
+
+				setIsAuthenticated(true);
+				setRole(data.data.user.role as ROLE);
+				localStorage.setItem("accessToken", data.data.accessToken);
+			} catch (err) {
+				localStorage.clear();
+				toast.error((err as Error).message, {
+					position: "top-center",
+					richColors: true,
+				});
+				setIsAuthenticated(false);
+				setRole(null);
+			} finally {
+				setLoading(false);
+			}
+		})();
 	}, []);
 
 	const login = (token: string) => {
