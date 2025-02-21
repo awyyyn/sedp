@@ -1,29 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const systemUsersFragment = gql`
-	fragment SystemUserFragment on SystemUser {
-		id
-		email
-		firstName
-		lastName
-		middleName
-		displayName
-		password
-		mfaSecret
-		phoneNumber
-		birthDate
-		mfaEnabled
-		address {
-			city
-			street
-		}
-		role
-		status
-
-		createdAt
-		updatedAt
-	}
-`;
+import { systemUsersFragment } from "./fragments";
 
 export const generateTOTPQuery = gql`
 	query {
