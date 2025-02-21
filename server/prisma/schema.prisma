@@ -70,6 +70,11 @@ model student {
   @@map("students")
 }
 
+type address {
+  street String
+  city String 
+}
+
 enum StudentStatus {
   REQUESTING
   SCHOLAR
@@ -78,10 +83,6 @@ enum StudentStatus {
   ARCHIVED
 }
 
-type address {
-  street String
-  city String 
-}
  
 model token {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId

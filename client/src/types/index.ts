@@ -5,6 +5,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export * from "./system-user";
+export * from "./student";
 
 export interface PaginationResult<T> {
 	count: number;
