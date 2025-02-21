@@ -26,6 +26,21 @@ export const typeDefs = gql`
 			role: SystemUserRole!
 		): SendEmailResult
 		sendStudentRegistrationEmail(email: String!): SendEmailResult
+		updateStudent(
+			id: String!
+			studentId: String
+			firstName: String
+			lastName: String
+			middleName: String
+			city: String
+			street: String
+			phoneNumber: String
+			status: StudentStatus
+			mfaSecret: String
+			mfaEnabled: Boolean
+			yearLevel: Int
+			schoolName: String
+		): Student
 	}
 
 	type SendEmailResult {

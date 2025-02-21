@@ -9,6 +9,7 @@ import {
 	studentResolver,
 	sendSystemUserRegistrationEmailResolver,
 	sendStudentRegistrationEmailResolver,
+	updateStudentResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -25,5 +26,6 @@ export const resolvers = {
 		deleteSystemUser: deleteSystemUserResolver,
 		sendSystemUserRegistrationEmail: sendSystemUserRegistrationEmailResolver,
 		sendStudentRegistrationEmail: sendStudentRegistrationEmailResolver,
+		updateStudent: updateStudentResolver,
 	},
 };

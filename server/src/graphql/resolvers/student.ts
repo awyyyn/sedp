@@ -13,11 +13,13 @@ import { GraphQLError } from "graphql";
 
 export const updateStudentResolver = async (
 	_: never,
-	{ values }: { values: StudentUpdateArgs },
+	{ values, id }: { id: string; values: StudentUpdateArgs },
 	context: AppContext
 ) => {
 	try {
-		if (values.id !== context.id) {
+		console.log(context.id, "context.id");
+		console.log(id, "id");
+		if (id !== context.id && context.role === "STUDENT") {
 			throw new GraphQLError("UnAuthorized!");
 		}
 
@@ -28,7 +30,8 @@ export const updateStudentResolver = async (
 		}
 
 		return updatedStudent;
-	} catch {
+	} catch (err) {
+		console.log(err, "qq");
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
