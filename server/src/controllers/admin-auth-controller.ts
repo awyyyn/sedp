@@ -346,6 +346,8 @@ export const userProfileController = async (req: Request, res: Response) => {
 
 		if (!user) throw new Error("INTERNAL_SERVER_ERROR");
 
+		console.log(user);
+
 		const accessToken = await generateAccessToken({
 			email: user.email,
 			id: user.id,

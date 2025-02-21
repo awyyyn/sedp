@@ -33,13 +33,14 @@ export const deleteSystemUserMutation = gql`
 export const UPDATE_STUDENT_MUTATION = gql`
 	${studentsFragment}
 	mutation (
-		$updateStudentId2: String!
+		$id: String!
 		$studentId: String
 		$firstName: String
 		$lastName: String
 		$updateStudentMiddleName2: String
 		$city: String
 		$street: String
+		$birthDate: String
 		$phoneNumber: String
 		$status: StudentStatus
 		$mfaSecret: String
@@ -48,13 +49,14 @@ export const UPDATE_STUDENT_MUTATION = gql`
 		$schoolName: String
 	) {
 		updateStudent(
-			id: $updateStudentId2
+			id: $id
 			studentId: $studentId
 			firstName: $firstName
 			lastName: $lastName
 			middleName: $updateStudentMiddleName2
 			city: $city
 			street: $street
+			birthDate: $birthDate
 			phoneNumber: $phoneNumber
 			status: $status
 			mfaSecret: $mfaSecret

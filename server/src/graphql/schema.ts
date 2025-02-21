@@ -35,6 +35,7 @@ export const typeDefs = gql`
 			city: String
 			street: String
 			phoneNumber: String
+			birthDate: String
 			status: StudentStatus
 			mfaSecret: String
 			mfaEnabled: Boolean
@@ -122,6 +123,7 @@ export const typeDefs = gql`
 		phoneNumber: String
 		status: StudentStatus
 		mfaSecret: String
+		birthDate: String
 		mfaEnabled: Boolean
 		yearLevel: Int
 		schoolName: String

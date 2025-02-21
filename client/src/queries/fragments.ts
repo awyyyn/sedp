@@ -41,6 +41,7 @@ export const studentsFragment = gql`
 		status
 		mfaSecret
 		mfaEnabled
+		birthDate
 		yearLevel
 		schoolName
 		createdAt
