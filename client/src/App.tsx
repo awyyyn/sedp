@@ -19,6 +19,7 @@ import StudentForgotPassword from "@/pages/auth/student/forgot-password";
 import Unauthorized from "@/pages/unauthorized";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import StudentProfile from "./pages/account";
 
 interface RouteType {
 	[key: string]: {
@@ -86,6 +87,7 @@ function App() {
 			</Route>
 
 			<Route path="/" element={<Home />} />
+			<Route path="/account" element={<StudentProfile />} />
 
 			{/* <Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />}>
 				{routes.student.map((link) => (

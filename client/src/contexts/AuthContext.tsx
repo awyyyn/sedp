@@ -4,14 +4,20 @@ import {
 	useState,
 	useEffect,
 	ReactNode,
+	Dispatch,
+	SetStateAction,
 } from "react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { toast } from "sonner";
+
+import { Student } from "@/types";
 
 export type ROLE = "SUPER_ADMIN" | "ADMIN" | "STUDENT";
 
 interface AuthContextProps {
 	role: ROLE | null;
+	studentUser: Student | null;
+	setStudentUser: Dispatch<SetStateAction<Student | null>>;
 	loading: boolean;
 	login: (token: string) => void;
 	logout: () => void;
@@ -32,6 +38,8 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [role, setRole] = useState<ROLE | null>(null);
+	const [studentUser, setStudentUser] =
+		useState<AuthContextProps["studentUser"]>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [loading, setLoading] = useState(true);
 
@@ -66,6 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 				setIsAuthenticated(true);
 				setRole(data.data.user.role as ROLE);
+				setStudentUser(data.data.user);
 				localStorage.setItem("accessToken", data.data.accessToken);
 			} catch (err) {
 				localStorage.clear();
@@ -107,7 +116,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	return (
 		<AuthContext.Provider
-			value={{ role, loading, login, logout, isAuthenticated }}>
+			value={{
+				role,
+				loading,
+				login,
+				logout,
+				isAuthenticated,
+				setStudentUser,
+				studentUser,
+			}}>
 			{children}
 		</AuthContext.Provider>
 	);

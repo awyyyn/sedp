@@ -1,0 +1,557 @@
+import * as yup from "yup";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Input } from "@heroui/input";
+import { Icon } from "@iconify/react";
+import { Divider } from "@heroui/divider";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Formik } from "formik";
+import { formatDate } from "date-fns";
+import { Select, SelectItem } from "@heroui/select";
+import { toast } from "sonner";
+import { useMutation } from "@apollo/client";
+import { DatePicker } from "@heroui/date-picker";
+import {
+	DateValue,
+	getLocalTimeZone,
+	parseDate,
+	today,
+} from "@internationalized/date";
+import { useDateFormatter } from "@react-aria/i18n";
+
+import places from "../../places.json";
+
+import { UPDATE_STUDENT_MUTATION } from "@/queries";
+import { years } from "@/constants";
+import { useAuth } from "@/contexts";
+
+const formSchema = yup.object({
+	firstName: yup.string().required(),
+	lastName: yup.string().required(),
+	middleName: yup.string(),
+	city: yup.string().required(),
+	street: yup.string().required(),
+	phoneNumber: yup
+		.string()
+		.matches(/^9\d{9}$/, "Phone Number must start with 9 and be 10 digits long")
+		.required("Phone Number is required"),
+	schoolName: yup.string().required(),
+	yearLevel: yup.string().required("Year Level is required"),
+	birthDate: yup.string().required("Birth Date is required"),
+});
+
+export default function StudentProfile() {
+	const [isEditing, setIsEditing] = useState(false);
+	const { studentUser } = useAuth();
+	let defaultDate = today(getLocalTimeZone());
+	const [value, setValue] = useState<DateValue | null | undefined>(defaultDate);
+
+	let formatter = useDateFormatter({ dateStyle: "full" });
+
+	const [brgys, setBrgys] = useState<string[]>([]);
+	const [handleUpdate] = useMutation(UPDATE_STUDENT_MUTATION);
+
+	const citiesMunicipalities = useMemo(
+		() => places.map((place) => place.name),
+		[]
+	);
+
+	useEffect(() => {
+		if (studentUser?.address.city) {
+			const brgys =
+				places
+					.find((place) => place.name === studentUser.address.city)
+					?.barangays.flat() ?? [];
+
+			setBrgys(brgys);
+		}
+	}, []);
+
+	const handleEditInfo = async (values: yup.InferType<typeof formSchema>) => {
+		try {
+			handleUpdate({
+				variables: {
+					id: String(studentUser?.id),
+					firstName: values.firstName,
+					middleName: values.middleName,
+					lastName: values.lastName,
+					phoneNumber: values.phoneNumber,
+					birthDate: new Date(values.birthDate).toISOString(),
+					city: values.city,
+					street: values.street,
+					yearLevel: Number(values.yearLevel),
+					schoolName: values.schoolName,
+				},
+			});
+		} catch (error) {
+			toast.error((error as Error).message, {
+				richColors: true,
+				position: "top-center",
+				dismissible: true,
+				duration: 5000,
+				icon: <Icon icon="bitcoin-icons:verify-filled" />,
+			});
+		}
+	};
+
+	return (
+		<Formik
+			validationSchema={formSchema}
+			enableReinitialize
+			initialValues={{
+				firstName: studentUser?.firstName ?? "",
+				city: studentUser?.address?.city ?? "",
+				lastName: studentUser?.lastName ?? "",
+				middleName: studentUser?.middleName ?? "",
+				birthDate: new Date(studentUser?.birthDate || new Date()).toISOString(),
+				// bday!
+				// ? formatDate(new Date(bday).toISOString(), "yyyy-MM-dd")
+				// : formatDate(new Date().toISOString(), "yyyy-MM-dd"),
+
+				phoneNumber: studentUser?.phoneNumber ?? "",
+				street: studentUser?.address?.street ?? "",
+				yearLevel: studentUser?.yearLevel.toString() ?? "",
+				schoolName: studentUser?.schoolName ?? "",
+			}}
+			onSubmit={handleEditInfo}>
+			{({
+				values,
+				setFieldValue,
+				handleChange,
+				handleBlur,
+				touched,
+				handleSubmit,
+				handleReset,
+				isSubmitting,
+				errors,
+			}) => {
+				return (
+					<div className="container mx-auto  max-w-3xl py-8 space-y-8">
+						<div className="flex items-center justify-between">
+							<div>
+								<h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+								<p className="text-muted-foreground">
+									Manage your personal information and preferences
+								</p>
+							</div>
+							<Button
+								onPress={() => {
+									handleReset();
+									setIsEditing((prev) => !prev);
+								}}>
+								{isEditing ? "Cancel" : "Edit Profile"}
+							</Button>
+						</div>
+
+						<div className="space-y-6">
+							{/* Personal Information */}
+							<Card>
+								<CardHeader className="px-6 pt-4">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:info-square-broken"
+											width="24"
+											height="24"
+										/>
+										Personal Information
+									</h1>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6 space-y-4">
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Student ID
+											</p>
+											<p className="font-medium">{studentUser?.studentId}</p>
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Status
+											</p>
+											<p className="font-medium">{studentUser?.status}</p>
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												First Name
+											</p>
+											{isEditing ? (
+												<Input
+													type="text"
+													name="firstName"
+													isReadOnly={isSubmitting}
+													value={values.firstName}
+													variant="flat"
+													radius="sm"
+													onChange={handleChange}
+													onBlur={handleBlur}
+													isInvalid={!!touched.firstName && !!errors.firstName}
+													errorMessage={touched.firstName && errors.firstName}
+												/>
+											) : (
+												<p className="font-medium">{values.firstName}</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Last Name
+											</p>
+											{isEditing ? (
+												<Input
+													type="text"
+													name="lastName"
+													isReadOnly={isSubmitting}
+													value={values.lastName}
+													radius="sm"
+													onChange={handleChange}
+													onBlur={handleBlur}
+													isInvalid={!!touched.lastName && !!errors.lastName}
+													errorMessage={touched.lastName && errors.lastName}
+												/>
+											) : (
+												<p className="font-medium">{values.lastName}</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Middle Name
+											</p>
+											{isEditing ? (
+												<Input
+													type="text"
+													name="middleName"
+													isReadOnly={isSubmitting}
+													value={values.middleName}
+													variant="flat"
+													radius="sm"
+													onChange={handleChange}
+													onBlur={handleBlur}
+													isInvalid={
+														!!touched.middleName && !!errors.middleName
+													}
+													errorMessage={touched.middleName && errors.middleName}
+												/>
+											) : (
+												<p className="font-medium">{values.middleName || ""}</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Birth Date
+											</p>
+											{isEditing ? (
+												<>
+													<DatePicker value={value} onChange={setValue} />
+													<p className="text-default-500 text-sm">
+														Selected date:{" "}
+														{value
+															? formatter.format(
+																	value.toDate(getLocalTimeZone())
+																)
+															: "--"}
+													</p>
+												</>
+											) : (
+												// <Input
+												// 	type="date"
+												// 	name="birthDate"
+												// 	onChange={handleChange}
+												// 	onBlur={handleBlur}
+												// 	value={studentUser?.birthDate}
+												// 	isReadOnly={isSubmitting}
+												// 	variant="flat"
+												// 	radius="sm"
+												// 	isInvalid={
+												// 		!!touched.middleName && !!errors.middleName
+												// 	}
+												// 	errorMessage={touched.middleName && errors.middleName}
+												// />
+												<p className="font-medium">
+													{JSON.stringify(values.birthDate)}
+													{formatDate(values.birthDate, "MMMM dd, yyyy")}
+												</p>
+											)}
+										</div>
+									</div>
+								</CardBody>
+							</Card>
+
+							{/* Contact Information */}
+							<Card>
+								<CardHeader className="px-6 pt-4">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:phone-rounded-broken"
+											width="24"
+											height="24"
+										/>
+										Contact Information
+									</h1>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6 space-y-4">
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Email
+											</p>
+											<p className="font-medium">{studentUser?.email}</p>
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Phone Number
+											</p>
+											{isEditing ? (
+												<Input
+													startContent={
+														<span className="text-sm text-gray-500">+63</span>
+													}
+													name="phoneNumber"
+													isReadOnly={isSubmitting}
+													value={values.phoneNumber}
+													variant="flat"
+													radius="sm"
+													onChange={handleChange}
+													onBlur={handleBlur}
+													isInvalid={
+														!!touched.phoneNumber && !!errors.phoneNumber
+													}
+													errorMessage={
+														touched.phoneNumber && errors.phoneNumber
+													}
+												/>
+											) : (
+												<p className="font-medium">+63 {values.phoneNumber}</p>
+											)}
+										</div>
+									</div>
+								</CardBody>
+							</Card>
+
+							{/* Address */}
+							<Card>
+								<CardHeader className="px-6 pt-4">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:point-on-map-broken"
+											width="24"
+											height="24"
+										/>
+										Address
+									</h1>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6 space-y-4">
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												City / Municipality
+											</p>
+											{isEditing ? (
+												<Suspense
+													fallback={
+														<Input
+															fullWidth
+															readOnly
+															label="Select City / Municipality"
+														/>
+													}>
+													<Autocomplete
+														inputProps={{
+															size: "sm",
+														}}
+														name="city"
+														defaultInputValue={values.city}
+														label="Select City / Municipality"
+														// isInvalid={!!touched.city && !!errors.city}
+														onSelectionChange={(value) => {
+															// setFieldValue("city", value);
+															const brgys =
+																places
+																	.find((place) => place.name === value)
+																	?.barangays.flat() ?? [];
+
+															setFieldValue("barangay", "");
+															setBrgys(brgys);
+														}}
+														size="md"
+														onBlur={handleBlur}
+														errorMessage={touched.city && errors.city}
+														fullWidth>
+														{citiesMunicipalities.map((ci) => (
+															<AutocompleteItem
+																key={ci}
+																value={ci}
+																className="capitalize">
+																{ci}
+															</AutocompleteItem>
+														))}
+													</Autocomplete>
+												</Suspense>
+											) : (
+												<p className="font-medium">{values.city}</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Street
+											</p>
+											{isEditing ? (
+												<Suspense
+													fallback={
+														<Input
+															fullWidth
+															readOnly
+															label="Select City / Municipality"
+														/>
+													}>
+													<Autocomplete
+														inputProps={{
+															size: "sm",
+														}}
+														name="barangay"
+														label="Select Barangay"
+														onSelectionChange={(value) => {
+															setFieldValue("street", value);
+														}}
+														onBlur={handleBlur}
+														defaultInputValue={values.street}
+														errorMessage={touched.street && errors.street}
+														fullWidth
+														isInvalid={!!touched.street && !!errors.street}
+														value={values.street}>
+														{brgys.map((brgy) => (
+															<AutocompleteItem
+																key={brgy}
+																value={brgy}
+																className="capitalize">
+																{brgy}
+															</AutocompleteItem>
+														))}
+													</Autocomplete>
+												</Suspense>
+											) : (
+												<p className="font-medium">{values.city}</p>
+											)}
+										</div>
+									</div>
+								</CardBody>
+							</Card>
+
+							{/* Academic Information */}
+							<Card>
+								<CardHeader className="px-6 pt-4">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:square-academic-cap-2-outline"
+											width="24"
+											height="24"
+										/>
+										Academic Information
+									</h1>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6 space-y-4">
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												School Name
+											</p>
+											{isEditing ? (
+												<Input value={values.schoolName} size="lg" />
+											) : (
+												<p className="font-medium">{values.schoolName}</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Year Level
+											</p>
+											{isEditing ? (
+												<Select
+													className=""
+													label="Select Year Level"
+													name="yearLevel"
+													size="sm"
+													errorMessage={touched.yearLevel && errors.yearLevel}
+													onBlur={handleBlur}
+													isInvalid={!!touched.yearLevel && !!errors.yearLevel}
+													selectedKeys={[values.yearLevel]}
+													onChange={(v) => {
+														setFieldValue(
+															"yearLevel",
+															v.target.value.toString()
+														);
+													}}>
+													{years.map((year) => (
+														<SelectItem
+															key={year.value.toString()}
+															textValue={year.label}>
+															{year.label}{" "}
+															{year.optional &&
+																"(If Applicable to your program)"}
+														</SelectItem>
+													))}
+												</Select>
+											) : (
+												<p className="font-medium">
+													{years.find(
+														(year) => year.value === Number(values.yearLevel)
+													)?.label ?? values.yearLevel}
+												</p>
+											)}
+										</div>
+									</div>
+								</CardBody>
+							</Card>
+
+							{/* Security */}
+							{/* <Card>
+								<CardHeader className="px-6 pt-4">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:shield-check-broken"
+											width="24"
+											height="24"
+										/>
+										Security
+									</h1>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6">
+									<div className="space-y-4 ">
+										<div className="flex items-center justify-between">
+											<div className="space-y-0.5">
+												<p className="font-medium">Two-Factor Authentication</p>
+												<p className="text-sm text-muted-foreground">
+													{student.mfaEnabled
+														? "Two-factor authentication is enabled"
+														: "Add an extra layer of security to your account"}
+												</p>
+											</div>
+											<Button>
+												{student.mfaEnabled ? "Disable" : "Enable"}
+											</Button>
+										</div>
+									</div>
+								</CardBody>
+							</Card> */}
+
+							{isEditing && (
+								<div className="flex justify-end gap-4">
+									<Button onPress={() => setIsEditing(false)} variant="ghost">
+										Cancel
+									</Button>
+									<Button type="submit" onPress={() => handleSubmit()}>
+										Save Changes
+									</Button>
+								</div>
+							)}
+						</div>
+					</div>
+				);
+			}}
+		</Formik>
+	);
+}

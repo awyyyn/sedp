@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { motion } from "framer-motion";
 import { CarouselProvider, Slider, Slide } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
+import { Link } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
 
 const sedp = [
@@ -148,6 +149,10 @@ export default function Home() {
 					</Slider>
 				</CarouselProvider>
 			</section>
+
+			<Link to="/account" className="fixed bottom-5 right-5 z-50">
+				Account
+			</Link>
 		</div>
 	);
 }

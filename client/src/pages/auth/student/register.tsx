@@ -17,6 +17,7 @@ import places from "../../../../places.json";
 import Step3 from "../components/step3";
 
 import { RowSteps } from "@/components/";
+import { years } from "@/constants";
 
 const steps = [
 	{
@@ -109,14 +110,6 @@ export default function StudentRegister() {
 	}, [activeStep]);
 
 	const handleShowPassword = () => setShowPassword((showPass) => !showPass);
-
-	const years = [
-		{ label: "1st Year", value: 1 },
-		{ label: "2nd Year", value: 2 },
-		{ label: "3rd Year", value: 3 },
-		{ label: "4th Year", value: 4 },
-		{ label: "5th Year", value: 5, optional: true },
-	];
 
 	return (
 		<div className="w-[95%] md:w-[80%] self-start xl:w-[50%] mt-5 p-2">
