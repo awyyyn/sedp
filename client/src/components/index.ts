@@ -7,3 +7,4 @@ export * from "./theme-switch";
 export * from "./sidebar";
 export * from "./send-registration-modal";
 export * from "./delete-modal";
+export * from "./full-calendar";

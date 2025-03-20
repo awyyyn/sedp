@@ -19,16 +19,20 @@ export function AppSidebar() {
 	return (
 		<aside>
 			<Sidebar
-				className="h-full "
+				className="h-full  border-none outline-none ring-0 "
 				collapsedWidth="0"
-				toggled={!false}
+				toggled={false}
 				// onBackdropClick={() => alert("asd")}
-				backgroundColor="white"
+				backgroundColor="#A6F3B235"
 				breakPoint="md">
 				{/* <h1 className="p-5">SEDP</h1> */}
-				<div className="flex flex-col h-full justify-between">
-					<div className="mt-5">
-						<img src={logo} alt="logo" className="rounded-lg mx-auto" />
+				<div className="flex flex-col h-full  justify-between">
+					<div className="mt-5 items-center gap-2 flex px-5 ">
+						<img src={logo} alt="logo" className="rounded-lg h-12 w-12  " />
+						<div>
+							<h2 className="leading-5">SEDP-Simbag sa</h2>
+							<h2 className="leading-5">Pag-asenso, Inc.</h2>
+						</div>
 					</div>
 					<Menu className="mt-2 ">
 						{/* <SubMenu label="Charts">
@@ -69,7 +73,7 @@ export function AppSidebar() {
 						)}
 					</Menu>
 
-					<div className="p-5 bottom-0 mt-auto sabsolute  w-full bg-white">
+					<div className="p-5 bottom-0 mt-auto sabsolute  w-full  ">
 						<Dropdown className="w-full  ">
 							<DropdownTrigger className=" ">
 								<Button
@@ -80,7 +84,7 @@ export function AppSidebar() {
 									<div className="flex items-center gap-2">
 										<Avatar size="sm" />
 										<div className="">
-											<p>Admin</p>
+											<p>Admin name</p>
 											<p className="text-xs text-gray-500 text-start">Role</p>
 										</div>
 									</div>
