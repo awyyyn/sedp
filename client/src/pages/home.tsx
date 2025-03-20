@@ -5,6 +5,8 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 import { Link } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
 
+import heroImg from "@/assets/hero-img.png";
+
 const sedp = [
 	{
 		title: "Empowering",
@@ -30,6 +32,16 @@ const sedp = [
 
 export default function Home() {
 	const matches = useMediaQuery("(min-width: 800px)");
+
+	return (
+		<div className="relative min-h-dvh min-w-full overflow-hidden">
+			<img
+				src={heroImg}
+				alt="Sedp Background"
+				className="md:w-[45vw] absolute md:h-[115dvh] transform rotate-[16deg] bottom-0 opacity-35 -right-[50px] md:rotate-[11deg] md:-right-[4dvw] md:top-[-10dvh]"
+			/>
+		</div>
+	);
 
 	return (
 		<div className="">

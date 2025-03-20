@@ -56,7 +56,7 @@ export default function StudentLogin() {
 	});
 
 	return (
-		<div className="p-5 rounded-md shadow-md min-w-[90%] w-[90%] md:max-w-[380px] md:min-w-[380px] ">
+		<div className=" rounded-none shadow-md min-w-[90%] w-[90%] md:max-w-[680px] md:min-w-[380px] bg-[#A6F3B228] ">
 			<Formik
 				initialValues={{ email: "", password: "", otp: "" }}
 				onSubmit={async (values) => {
@@ -129,8 +129,10 @@ export default function StudentLogin() {
 				}) => {
 					return (
 						<Form onSubmit={handleSubmit}>
-							<h1 className="mb-3">SEDP - PORTAL</h1>
-							<div className="space-y-4">
+							<div className="mb-3 h-[86px] bg-[#A6F3B2] flex items-center justify-center">
+								<h1 className="text-xl">LOGIN TO YOUR ACCOUNT</h1>
+							</div>
+							<div className="space-y-4 px-5 md:px-14 py-10">
 								{!mfaEnabled ? (
 									<>
 										<Input
@@ -194,9 +196,20 @@ export default function StudentLogin() {
 									<Button
 										isLoading={isSubmitting || mutating}
 										type="submit"
+										className="bg-[#A6F3B2]"
 										fullWidth>
 										{mfaEnabled ? "Verify OTP" : "Login"}
 									</Button>
+									{!mfaEnabled && (
+										<div className="flex gap-1 justify-center">
+											<p>Doesn&apos;t have an account?</p>
+											<Link
+												to="/register"
+												className="hover:underline cursor-pointer hover:text-[#266530]">
+												Register
+											</Link>
+										</div>
+									)}
 									{mfaEnabled && (
 										<Button
 											disabled={isSubmitting || mutating}

@@ -56,7 +56,7 @@ export default function Login() {
 	});
 
 	return (
-		<div className="p-5 rounded-md shadow-md min-w-[90%] w-[90%] md:max-w-[380px] md:min-w-[380px] ">
+		<div className="p-5 rounded-md shadow-md min-w-[90%] w-[90%] md:max-w-[380px] md:min-w-[380px] bg-[#A6F3B228] ">
 			<Formik
 				initialValues={{ email: "", password: "", otp: "" }}
 				onSubmit={async (values) => {

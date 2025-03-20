@@ -18,26 +18,31 @@ export default function AdminLayout() {
 	return (
 		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
 			<AppSidebar />
-			<main className="w-full relative  px-4 sm:px-6 md:px-10 overflow-hidden">
-				<div className="absolute px-4 sm:px-6 md:px-10 top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
-					<div className=" pt-4 block md:hidden">
-						<Button isIconOnly variant="flat">
+			<main className="w-full relative px-3 sm:px-0  overflow-hidden  ">
+				<div className="absolute  bg-[#A6F3B235]  top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
+					<div className="gap-2 items-center flex mx-auto container px-3 sm:px-5  ">
+						<Button
+							isIconOnly
+							variant="flat"
+							size="sm"
+							className=" block md:hidden">
 							<Icon fontSize={30} icon="stash:burger-arrow-right" />
 						</Button>
+
+						<Breadcrumbs className="py-4 md:py-6">
+							{breadcrumbs.map((item, index) => (
+								<BreadcrumbItem
+									href={item.href}
+									className="capitalize"
+									key={item.href + index}>
+									{item.label.split("-").join(" ")}
+								</BreadcrumbItem>
+							))}
+						</Breadcrumbs>
 					</div>
-					<Breadcrumbs className="py-4 md:py-6">
-						{breadcrumbs.map((item, index) => (
-							<BreadcrumbItem
-								href={item.href}
-								className="capitalize"
-								key={item.href + index}>
-								{item.label.split("-").join(" ")}
-							</BreadcrumbItem>
-						))}
-					</Breadcrumbs>
 				</div>
 
-				<section className="overflow-y-scroll h-full pt-32 md:pt-20 scrollbar-hide   ">
+				<section className="overflow-y-scroll h-full pt-14 md:pt-20 scrollbar-hide mx-auto container px-3 sm:px-5 ">
 					<Outlet />
 				</section>
 			</main>
