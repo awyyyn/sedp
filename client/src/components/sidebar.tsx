@@ -45,41 +45,41 @@ export function AppSidebar() {
 							icon={<Icon icon="duo-icons:dashboard" />}
 							component={<Link />}
 							className={`${pathname.includes("dashboard") ? "bg-[#A6F3B2]   " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/dashboard">
+							href="/admin/dashboard">
 							Dashboard
 						</MenuItem>
 						<MenuItem
 							component={<Link />}
 							className={`${pathname.includes("scholars") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/scholars"
+							href="/admin/scholars"
 							icon={<Icon icon="academicons:semantic-scholar" />}>
 							Scholars
 						</MenuItem>
 						<MenuItem
 							component={<Link />}
 							className={`${pathname.includes("monthly-submissions") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/monthly-submissions"
+							href="/admin/monthly-submissions"
 							icon={<Icon icon="et:documents" />}>
 							Monthly Submission
 						</MenuItem>
 						<MenuItem
 							component={<Link />}
 							className={`${pathname.includes("events") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/events"
+							href="/admin/events"
 							icon={<Icon icon="mdi:events" />}>
 							Calendar of Events
 						</MenuItem>
 						<MenuItem
 							component={<Link />}
 							className={`${pathname.includes("announcements") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/announcements"
+							href="/admin/announcements"
 							icon={<Icon icon="mingcute:announcement-line" />}>
 							Announcements
 						</MenuItem>
 						{role === "SUPER_ADMIN" && (
 							<MenuItem
 								component={<Link />}
-								href="/system-users"
+								href="/admin/system-users"
 								className={`${pathname.includes("system-users") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
 								icon={<Icon icon="fa-solid:users-cog" />}>
 								System Users
@@ -107,7 +107,7 @@ export function AppSidebar() {
 							</DropdownTrigger>
 							<DropdownMenu aria-label="Static Actions">
 								<DropdownItem
-									href="/admin-account"
+									href="/admin/admin-account"
 									key="account"
 									startContent={
 										<Icon icon="ix:user-profile-filled" fontSize={20} />

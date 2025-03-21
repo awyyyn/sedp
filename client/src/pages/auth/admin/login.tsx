@@ -40,7 +40,7 @@ export default function Login() {
 					className: "bg-green-600 foreground-white",
 					icon: <Icon icon="lets-icons:check-fill" />,
 				});
-				navigate("/dashboard", {
+				navigate("/admin/dashboard", {
 					replace: true,
 				});
 			} else {
@@ -97,7 +97,7 @@ export default function Login() {
 									duration: 5000,
 									icon: <Icon icon="clarity:error-solid" />,
 								});
-								navigate("/dashboard", {
+								navigate("/admin/dashboard", {
 									replace: true,
 								});
 							}

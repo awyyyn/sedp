@@ -16,7 +16,7 @@ export default function NotFound() {
 	const link = isAuthenticated
 		? role === "STUDENT"
 			? "/"
-			: "/dashboard"
+			: "/admin/dashboard"
 		: "/login";
 
 	return (

@@ -16,7 +16,7 @@ export default function Unauthorized() {
 	const link = isAuthenticated
 		? role === "STUDENT"
 			? "/"
-			: "/dashboard"
+			: "/admin/dashboard"
 		: "/login";
 
 	return (
