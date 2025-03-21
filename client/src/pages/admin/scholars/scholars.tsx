@@ -1,3 +1,3 @@
 export default function Scholars() {
-	return <div></div>;
+	return <div>Sc</div>;
 }

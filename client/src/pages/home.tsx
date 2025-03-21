@@ -38,7 +38,7 @@ export default function Home() {
 			<img
 				src={heroImg}
 				alt="Sedp Background"
-				className="md:w-[45vw] absolute md:h-[115dvh] transform rotate-[16deg] bottom-0 opacity-35 -right-[50px] md:rotate-[11deg] md:-right-[4dvw] md:top-[-10dvh]"
+				className="lg:w-[45vw] absolute sm:w-[70vw] md:h-[115dvh] transform rotate-[16deg] bottom-0 opacity-35 -right-[50px] md:rotate-[11deg] md:-right-[4dvw] md:top-[-10dvh]"
 			/>
 		</div>
 	);

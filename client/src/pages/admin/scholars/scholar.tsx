@@ -1,3 +1,3 @@
 export default function Scholar() {
-	return <div></div>;
+	return <div>sc1</div>;
 }

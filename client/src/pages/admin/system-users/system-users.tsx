@@ -14,7 +14,6 @@ import { Pagination } from "@heroui/pagination";
 import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
-
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { useAtom } from "jotai";
@@ -25,6 +24,13 @@ import { PaginationResult, SystemUser } from "@/types";
 import { SendRegistrationModal } from "@/components";
 import DeleteModal from "@/components/delete-modal";
 import { systemUsersAtom } from "@/states";
+import {
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -74,10 +80,9 @@ export default function SystemUsers() {
 			// filterValue: filterValue ?? null,
 			// status: statusFilter ?? null,
 		},
-		ssr: true,
 		onCompleted: (data) => {
 			setTotal(data.systemUsers.count);
-			setSystemUsersState((p) => [...p, ...data.systemUsers.data]);
+			setSystemUsersState(data.systemUsers.data);
 		},
 	});
 
@@ -253,32 +258,10 @@ export default function SystemUsers() {
 								))}
 							</DropdownMenu>
 						</Dropdown> */}
-
-						{/* 
-						<Dropdown>
-							<DropdownTrigger className="hidden sm:flex">
-								<Button
-									endContent={<ChevronDownIcon className="text-small" />}
-									size="sm"
-									variant="flat">
-									Columns
-								</Button>
-							</DropdownTrigger>
-							<DropdownMenu
-								disallowEmptySelection
-								aria-label="Table Columns"
-								closeOnSelect={false}
-								selectedKeys={visibleColumns}
-								selectionMode="multiple"
-								onSelectionChange={setVisibleColumns}>
-								{columns.map((column) => (
-									<DropdownItem key={column.uid} className="capitalize">
-										{capitalize(column.name)}
-									</DropdownItem>
-								))}
-							</DropdownMenu>
-						</Dropdown> */}
-						<SendRegistrationModal type="admin" />
+						<Button as={Link} href="/system-users/add">
+							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
+							Add System User
+						</Button>
 					</div>
 				</div>
 			</div>
