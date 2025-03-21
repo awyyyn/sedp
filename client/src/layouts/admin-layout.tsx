@@ -19,8 +19,8 @@ export default function AdminLayout() {
 		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
 			<AppSidebar />
 			<main className="w-full relative px-3 sm:px-0  overflow-hidden  ">
-				<div className="absolute  bg-[#A6F3B235]  top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
-					<div className="gap-2 items-center flex mx-auto container px-3 sm:px-5  ">
+				<div className="absolute h-16  bg-[#A6F3B235]  top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
+					<div className="gap-2 items-center justify-end h-full flex mx-auto container px-3 sm:px-5  ">
 						<Button
 							isIconOnly
 							variant="flat"
@@ -29,7 +29,7 @@ export default function AdminLayout() {
 							<Icon fontSize={30} icon="stash:burger-arrow-right" />
 						</Button>
 
-						<Breadcrumbs className="py-4 md:py-6">
+						{/* <Breadcrumbs className="py-4 md:py-6">
 							{breadcrumbs.map((item, index) => (
 								<BreadcrumbItem
 									href={item.href}
@@ -38,7 +38,15 @@ export default function AdminLayout() {
 									{item.label.split("-").join(" ")}
 								</BreadcrumbItem>
 							))}
-						</Breadcrumbs>
+						</Breadcrumbs> */}
+						<div className="flex gap-2">
+							<Button isIconOnly variant="light" className="rounded-full">
+								<Icon icon="hugeicons:notification-02" width="24" height="24" />
+							</Button>
+							<Button isIconOnly variant="light" className="rounded-full">
+								<Icon icon="solar:settings-linear" width="24" height="24" />
+							</Button>
+						</div>
 					</div>
 				</div>
 

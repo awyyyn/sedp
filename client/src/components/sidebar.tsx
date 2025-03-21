@@ -9,12 +9,14 @@ import { Link } from "@heroui/link";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react";
+import { useLocation } from "react-router-dom";
 
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { useAuth } from "@/contexts";
 
 export function AppSidebar() {
 	const { role, logout } = useAuth();
+	const { pathname } = useLocation();
 
 	return (
 		<aside>
@@ -34,7 +36,7 @@ export function AppSidebar() {
 							<h2 className="leading-5">Pag-asenso, Inc.</h2>
 						</div>
 					</div>
-					<Menu className="mt-2 ">
+					<Menu className="mt-2  ">
 						{/* <SubMenu label="Charts">
 						<MenuItem> Pie charts </MenuItem>
 						<MenuItem> Line charts </MenuItem>
@@ -42,31 +44,43 @@ export function AppSidebar() {
 						<MenuItem
 							icon={<Icon icon="duo-icons:dashboard" />}
 							component={<Link />}
-							href="/dashboard"
-							active>
+							className={`${pathname.includes("dashboard") ? "bg-[#A6F3B2]   " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/dashboard">
 							Dashboard
 						</MenuItem>
-						<SubMenu
-							label="Scholars"
+						<MenuItem
+							component={<Link />}
+							className={`${pathname.includes("scholars") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/scholars"
 							icon={<Icon icon="academicons:semantic-scholar" />}>
-							<MenuItem
-								icon={<Icon icon="lets-icons:add-duotone" />}
-								component={<Link />}
-								href="/scholars/add"
-								className="  py-0">
-								Add
-							</MenuItem>
-							<MenuItem
-								component={<Link />}
-								href="/scholars"
-								icon={<Icon icon="majesticons:list-box" />}>
-								List
-							</MenuItem>
-						</SubMenu>
+							Scholars
+						</MenuItem>
+						<MenuItem
+							component={<Link />}
+							className={`${pathname.includes("monthly-submissions") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/monthly-submissions"
+							icon={<Icon icon="et:documents" />}>
+							Monthly Submission
+						</MenuItem>
+						<MenuItem
+							component={<Link />}
+							className={`${pathname.includes("events") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/events"
+							icon={<Icon icon="mdi:events" />}>
+							Calendar of Events
+						</MenuItem>
+						<MenuItem
+							component={<Link />}
+							className={`${pathname.includes("announcements") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/announcements"
+							icon={<Icon icon="mingcute:announcement-line" />}>
+							Announcements
+						</MenuItem>
 						{role === "SUPER_ADMIN" && (
 							<MenuItem
 								component={<Link />}
 								href="/system-users"
+								className={`${pathname.includes("system-users") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
 								icon={<Icon icon="fa-solid:users-cog" />}>
 								System Users
 							</MenuItem>
