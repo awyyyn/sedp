@@ -155,7 +155,9 @@ export async function readAllSystemUsers({
 	const users = await prisma.systemUser.findMany({
 		where: {
 			...where,
-			role: "ADMIN",
+			role: {
+				not: "SUPER_ADMIN",
+			},
 		},
 		take: pagination ? pagination.take : undefined,
 		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,

@@ -14,7 +14,6 @@ model SystemUser {
   firstName String
   lastName String
   middleName String?
-  displayName String
   password String
   mfaSecret String?
   phoneNumber String
@@ -23,6 +22,8 @@ model SystemUser {
   address address 
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
+
+  transactions Transactions[]
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -39,18 +40,22 @@ enum SystemUserStatus {
 
 enum SystemUserRole {
   SUPER_ADMIN
-  ADMIN
+  ADMIN_MANAGE_SCHOLAR
+  ADMIN_MANAGE_GATHERINGS
+  ADMIN_MANAGE_DOCUMENTS
+  ADMIN_VIEWER
 }
 
 model student {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  studentId String @unique
+
   email String @unique
   firstName String
   lastName String 
   middleName String?
   address address
   password String
+  gender Gender
   birthDate DateTime
   phoneNumber String
   status StudentStatus @default(SCHOLAR)
@@ -68,6 +73,11 @@ model student {
   updatedAt DateTime @updatedAt
 
   @@map("students")
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
 
 type address {
@@ -114,3 +124,58 @@ model documents {
 
   @@map("documents")
 }
+
+model Events {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  description String
+  date DateTime
+  startTime String
+  endTime String
+  location String
+
+  createdAt DateTime
+  @@map("events")
+}
+
+model Announcement {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  content String
+
+  createdAt DateTime
+
+  @@map("announcements")
+}
+
+model Meeting {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  description String
+
+  startTime String
+  endTime String
+  location String
+  date DateTime
+
+  createdAt DateTime
+
+  @@map("meetings")
+}
+
+
+model Transactions {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  transaction String
+  transactionId String @db.ObjectId
+
+  userId String @db.ObjectId
+  user SystemUser @relation(references: [id], fields: [userId])
+
+  createdAt DateTime @default(now())
+}
+
