@@ -16,10 +16,13 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AddScholar from "@/pages/admin/scholars/add-scholar";
 import AddSystemUser from "@/pages/admin/system-users/add-system-user";
+import Announcements from "./pages/admin/announcements/list";
+import AddAnnouncements from "./pages/admin/announcements/add-announcements";
 
 function App() {
 	const adminRoutes = {
 		element: <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]} />,
+		path: "admin",
 		children: [
 			{
 				element: <AdminLayout />,
@@ -41,12 +44,27 @@ function App() {
 							},
 						],
 					},
+
+					{
+						path: "announcements",
+						children: [
+							{
+								element: <Announcements />,
+								index: true,
+							},
+							{
+								element: <AddAnnouncements />,
+								path: "add",
+							},
+						],
+					},
 				],
 			},
 		],
 	};
 	const superAdminRoutes = {
 		element: <ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />,
+		path: "admin",
 		children: [
 			{
 				element: <AdminLayout />,
