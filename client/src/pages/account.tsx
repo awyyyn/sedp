@@ -162,12 +162,6 @@ export default function StudentProfile() {
 									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 										<div className="space-y-2">
 											<p className="text-sm font-medium text-muted-foreground">
-												Student ID
-											</p>
-											<p className="font-medium">{studentUser?.studentId}</p>
-										</div>
-										<div className="space-y-2">
-											<p className="text-sm font-medium text-muted-foreground">
 												Status
 											</p>
 											<p className="font-medium">{studentUser?.status}</p>

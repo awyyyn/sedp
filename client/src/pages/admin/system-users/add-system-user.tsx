@@ -3,26 +3,23 @@ import { Input } from "@heroui/input";
 import { Form, Formik } from "formik";
 import { Suspense, useMemo, useState } from "react";
 import { RadioGroup, Radio } from "@heroui/radio";
-import {
-	Autocomplete,
-	AutocompleteItem,
-	AutocompleteSection,
-} from "@heroui/autocomplete";
-import { Select, SelectItem } from "@heroui/select";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
+import { useMutation } from "@apollo/client";
 import { DatePicker } from "@heroui/date-picker";
 import { getLocalTimeZone, today } from "@internationalized/date";
+import { toast } from "sonner";
 
 import places from "../../../../places.json";
-import degrees from "../../../../degrees.json";
 
-import { years } from "@/constants";
-import { addScholarSchema } from "@/definitions";
-import { AddScholarSchemaData } from "@/types";
+import { generatePassword } from "@/lib/utils";
+import { addAdminSchema } from "@/definitions";
+import { AddAdminSchemaData } from "@/types";
+import { CREATE_SYSTEM_USER_MUTATION } from "@/queries";
 
 export default function AddSystemUser() {
 	const [streets, setStreet] = useState<string[]>([]);
-
+	const [createSystemUser] = useMutation(CREATE_SYSTEM_USER_MUTATION);
 	const citiesMunicipalities = useMemo(
 		() => places.map((place) => place.name),
 		[]
@@ -40,9 +37,40 @@ export default function AddSystemUser() {
 			<CardBody className="bg-[#A6F3B235]">
 				<div className="lg:max-w-[80%] w-full mx-auto my-5">
 					<Formik
-						validationSchema={addScholarSchema}
-						initialValues={{} as AddScholarSchemaData}
-						onSubmit={() => {}}>
+						validationSchema={addAdminSchema}
+						initialValues={{} as AddAdminSchemaData}
+						validateOnBlur
+						onSubmit={async (values: AddAdminSchemaData, helpers) => {
+							try {
+								const { street, city, ...data } = values;
+
+								await createSystemUser({
+									variables: {
+										...data,
+										address: {
+											city,
+											street,
+										},
+									},
+								});
+
+								helpers.resetForm();
+
+								toast.success("Admin account created successfully", {
+									description:
+										"The new admin account has been created and the registration link has been sent to the provided email address.",
+									position: "top-center",
+									richColors: true,
+								});
+							} catch (err) {
+								toast.error("Failed to create admin account", {
+									description:
+										"There was an error creating the admin account. Please try again.",
+									position: "top-center",
+									richColors: true,
+								});
+							}
+						}}>
 						{({
 							handleSubmit,
 							handleBlur,
@@ -52,6 +80,7 @@ export default function AddSystemUser() {
 							touched,
 							errors,
 							isSubmitting,
+							isValid,
 						}) => {
 							return (
 								<Form
@@ -61,49 +90,95 @@ export default function AddSystemUser() {
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.firstName && !!errors.firstName}
-										errorMessage={touched.email && errors.email}
+										errorMessage={errors.firstName}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-2"
+										name="firstName"
 										label="First Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.middleName && !!errors.middleName}
-										errorMessage={touched.middleName && errors.middleName}
+										errorMessage={errors.middleName}
+										onBlur={handleBlur}
+										onChange={handleChange}
+										name="middleName"
 										className="lg:col-span-2"
 										label="Middle Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.lastName && !!errors.lastName}
-										errorMessage={touched.lastName && errors.lastName}
+										errorMessage={errors.lastName}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-2"
+										name="lastName"
 										label="Last Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.email && !!errors.email}
-										errorMessage={touched.email && errors.email}
+										errorMessage={errors.email}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-3"
 										label="Email Address"
+										name="email"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
-										isInvalid={touched.email && !!errors.email}
-										errorMessage={touched.email && errors.email}
+										isInvalid={touched.phoneNumber && !!errors.phoneNumber}
+										errorMessage={errors.phoneNumber}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-3"
-										label="Email Address"
+										name="phoneNumber"
+										label="Phone Number"
+										startContent={<p className="text-sm">+63</p>}
 									/>
 									<RadioGroup
 										label="Gender"
 										className="lg:col-span-3 "
+										name="gender"
+										isReadOnly={isSubmitting}
+										isInvalid={touched.gender && !!errors.gender}
+										errorMessage={String(errors.gender) || "asd"}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										orientation="horizontal">
-										<Radio value="Male">Male</Radio>
-										<Radio value="Female">Female</Radio>
+										<Radio value="MALE">Male</Radio>
+										<Radio value="FEMALE">Female</Radio>
 									</RadioGroup>
 									<DatePicker
+										showMonthAndYearPickers
 										isReadOnly={isSubmitting}
-										isInvalid={touched.contact && !!errors.contact}
-										errorMessage={touched.contact && errors.contact}
+										isInvalid={touched.birthDate && !!errors.birthDate}
+										errorMessage={String(errors.birthDate)}
+										onBlur={handleBlur}
+										onChange={(e) => {
+											if (e === null) return;
+											const dateValue: {
+												year: number;
+												month: number;
+												day: number;
+											} = e;
+											// console.log(parseAbsoluteToLocal, "qqqdate");
+
+											const jsDate = dateValue
+												? new Date(
+														dateValue.year,
+														dateValue.month - 1,
+														dateValue.day
+													)
+												: null;
+
+											console.log(jsDate, "qqqdate");
+											setFieldValue("birthDate", jsDate);
+
+											// console.log(new Date())
+										}}
 										className="lg:col-span-3"
 										label="Birth Date"
 										maxValue={today(getLocalTimeZone()).subtract({ years: 18 })}
@@ -121,6 +196,8 @@ export default function AddSystemUser() {
 												/>
 											}>
 											<Autocomplete
+												as="ul"
+												isReadOnly={isSubmitting}
 												name="city"
 												label="Select City / Municipality"
 												isInvalid={!!touched.city && !!errors.city}
@@ -140,6 +217,7 @@ export default function AddSystemUser() {
 												fullWidth>
 												{citiesMunicipalities.map((ci) => (
 													<AutocompleteItem
+														as="li"
 														key={ci}
 														value={ci}
 														className="capitalize">
@@ -159,16 +237,18 @@ export default function AddSystemUser() {
 												/>
 											}>
 											<Autocomplete
-												name="barangay"
+												isReadOnly={isSubmitting}
+												name="street"
 												label="Select Barangay"
-												onSelectionChange={(value) => {
-													setFieldValue("barangay", value);
-												}}
-												onBlur={handleBlur}
 												errorMessage={touched.street && errors.street}
+												onBlur={handleBlur}
+												onSelectionChange={(value) => {
+													setFieldValue("street", value);
+												}}
+												isDisabled={!values.city}
 												fullWidth
 												isInvalid={
-													(touched.city && !values.city) ||
+													(touched.street && !values.city) ||
 													(!!touched.street && !!errors.street)
 												}
 												value={values.street}>
@@ -185,22 +265,39 @@ export default function AddSystemUser() {
 									</div>
 
 									<div className="lg:col-span-6 mt-4">
-										<div className="flex justify-between">
+										<div className="flex justify-between py-0.5">
 											<p>Security</p>
-											<Button className="" variant="light" size="sm">
+											<Button
+												type="button"
+												className=""
+												variant="light"
+												size="sm"
+												onPress={() => {
+													setFieldValue("password", generatePassword());
+												}}>
 												Generate password
 											</Button>
 										</div>
 										<Input
 											isReadOnly={isSubmitting}
-											isInvalid={touched.schoolName && !!errors.schoolName}
-											errorMessage={touched.schoolName && errors.schoolName}
+											readOnly={isSubmitting}
+											value={values.password}
+											isInvalid={touched.password && !!errors.password}
+											errorMessage={errors.password}
+											onBlur={handleBlur}
+											onChange={handleChange}
+											name="password"
 											label="Password"
 										/>
 									</div>
 									<RadioGroup
 										label="Role"
 										className="lg:col-span-6 "
+										isReadOnly={isSubmitting}
+										value={values.role ? String(values.role) : null}
+										onChange={handleChange}
+										onBlur={handleBlur}
+										name="role"
 										orientation="horizontal">
 										<Radio value="SUPER_ADMIN">Full Access</Radio>
 										<Radio value="ADMIN_MANAGE_SCHOLAR">Manage Scholar</Radio>
@@ -213,7 +310,26 @@ export default function AddSystemUser() {
 										<Radio value="ADMIN_VIEWER">Viewer</Radio>
 									</RadioGroup>
 									<div className="lg:col-span-6 flex justify-center mt-5">
-										<Button className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
+										<Button
+											type="submit"
+											isDisabled={!isValid || isSubmitting}
+											isLoading={isSubmitting}
+											// onPress={() => {
+											// 	setTouched({
+											// 		birthDate: true,
+											// 		city: true,
+											// 		contact: true,
+											// 		email: true,
+											// 		firstName: true,
+											// 		gender: true,
+											// 		lastName: true,
+											// 		middleName: true,
+											// 		password: true,
+											// 		role: true,
+											// 		street: true,
+											// 	});
+											// }}
+											className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
 											Register Admin
 										</Button>
 									</div>

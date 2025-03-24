@@ -7,6 +7,7 @@ import {
 	TableRow,
 	TableCell,
 	SortDescriptor,
+	Selection,
 } from "@heroui/table";
 import { Spinner } from "@heroui/spinner";
 import { useCallback, useMemo, useState } from "react";
@@ -16,28 +17,47 @@ import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
-import { useAtom } from "jotai";
-
-import { client } from "@/main";
-import { systemUsersQuery } from "@/queries";
-import { PaginationResult, SystemUser } from "@/types";
-import { SendRegistrationModal } from "@/components";
-import DeleteModal from "@/components/delete-modal";
-import { systemUsersAtom } from "@/states";
+import { Button } from "@heroui/button";
+import { useSetAtom } from "jotai";
 import {
 	Dropdown,
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
 } from "@heroui/dropdown";
-import { Button } from "@heroui/button";
+
+import { systemUsersQuery } from "@/queries";
+import { PaginationResult, SystemUser, SystemUserRole } from "@/types";
+import DeleteModal from "@/components/delete-modal";
+import { systemUsersAtom } from "@/states";
+import { getRoleDescription } from "@/lib/utils";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+
+const roleOptions: SystemUserRole[] = [
+	"SUPER_ADMIN",
+	"ADMIN_MANAGE_DOCUMENTS",
+	"ADMIN_MANAGE_GATHERINGS",
+	"ADMIN_MANAGE_SCHOLAR",
+	"ADMIN_VIEWER",
+];
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
 	{ name: "EMAIL", uid: "email", sortable: true },
 	{ name: "PHONE", uid: "phoneNumber", sortable: true },
 	{ name: "ADDRESS", uid: "address" },
+	{ name: "ACCESS", uid: "access" },
 	{ name: "ACTIONS", uid: "actions" },
+];
+
+const INITIAL_VISIBLE_COLUMNS = [
+	"name",
+	"email",
+	"phoneNumber",
+	"address",
+	"access",
+	"status",
+	"actions",
 ];
 
 const rowsPerPageItems = [
@@ -51,44 +71,45 @@ const rowsPerPageItems = [
 
 export default function SystemUsers() {
 	const [deleteModal, setDeleteModal] = useState(false);
-	const [systemUsersState, setSystemUsersState] = useAtom(systemUsersAtom);
+	const setSystemUsersState = useSetAtom(systemUsersAtom);
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
-	const [total, setTotal] = useState(0);
 	const [filterValue, setFilterValue] = useState("");
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
 		SystemUser,
 		"id" | "email"
 	> | null>(null);
+	const [visibleColumns, setVisibleColumns] = useState<Selection>(
+		new Set(INITIAL_VISIBLE_COLUMNS)
+	);
 
 	const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
 		column: "firstName",
 		direction: "ascending",
 	});
-	const [statusFilter] = useState("ALL");
+	// const [roleFilter] = useState<Array<SystemUserRole>>([]);
+	const [roleFilter, setRoleFilter] = useState<Selection>("all");
 	const hasSearchFilter = Boolean(filterValue);
 
-	const { loading } = useQuery<{
+	const { loading, data } = useQuery<{
 		systemUsers: PaginationResult<SystemUser>;
-	}>(systemUsersQuery, {
-		client: client,
-		variables: {
-			// pagination: {
-			// 	take: Number(rowsPerPage),
-			// 	page: page,
-			// },
-			// filterValue: filterValue ?? null,
-			// status: statusFilter ?? null,
-		},
-		onCompleted: (data) => {
-			setTotal(data.systemUsers.count);
-			setSystemUsersState(data.systemUsers.data);
-		},
-	});
+	}>(systemUsersQuery);
+
+	const headerColumns = useMemo(() => {
+		if (visibleColumns === "all") return columns;
+
+		return columns.filter((column) =>
+			Array.from(visibleColumns).includes(column.uid)
+		);
+	}, [visibleColumns]);
 
 	const pages = useMemo(() => {
-		return total ? Math.ceil(total / Number(rowsPerPage)) : 0;
-	}, [total, rowsPerPage]);
+		setSystemUsersState(data?.systemUsers.data || []);
+
+		return data?.systemUsers.count
+			? Math.ceil(data?.systemUsers.count / Number(rowsPerPage))
+			: 0;
+	}, [rowsPerPage, data?.systemUsers.count]);
 
 	const loadingState = loading ? "loading" : "idle";
 
@@ -103,17 +124,6 @@ export default function SystemUsers() {
 
 				return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
 
-			case "role":
-				return (
-					<div className="flex flex-col">
-						<p className="text-bold text-sm capitalize">
-							{cellValue?.toString()}
-						</p>
-						<p className="text-bold text-sm capitalize text-default-400">
-							{/* {user.team} */}
-						</p>
-					</div>
-				);
 			case "address":
 				return (
 					<p>
@@ -127,30 +137,28 @@ export default function SystemUsers() {
 					// 	{cellValue?.toString()}
 					// </Chip>
 				);
+			case "access":
+				return getRoleDescription(user.role);
 			case "actions":
 				return (
 					<div className="relative flex  justify-center items-center gap-2">
 						<Tooltip content="Details">
-							<Link href={`/system-users/${user.id}`}>
+							<Link href={`/admin/system-users/${user.id}`}>
 								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
 									<Icon icon="solar:info-square-bold" color="gray" />
 								</span>
 							</Link>
 						</Tooltip>
-						{/* <Tooltip content="Edit user">
-							<span className="text-lg text-default-400  cursor-pointer active:opacity-50">
-								<Icon icon="solar:clapperboard-edit-bold" color="green" />
-							</span>
-						</Tooltip> */}
-						<Tooltip color="danger" content="Delete user">
+						<Tooltip content="Edit announcement">
+							<Link
+								href={`/admin/announcements/${user.id}/edit`}
+								className="text-lg text-default-400  cursor-pointer active:opacity-50">
+								<Icon icon="fluent:slide-text-edit-28-filled" color="green" />
+							</Link>
+						</Tooltip>
+						<Tooltip color="danger" content="Delete announcement">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
-								<Icon
-									onClick={() => {
-										setDeleteModal(true);
-										setToDeleteItem(user);
-									}}
-									icon="solar:trash-bin-2-bold"
-								/>
+								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
 							</span>
 						</Tooltip>
 					</div>
@@ -163,9 +171,10 @@ export default function SystemUsers() {
 	}, []);
 
 	const filteredItems = useMemo(() => {
-		let filteredUsers = [...(systemUsersState ?? [])];
+		let filteredUsers = [...(data?.systemUsers.data ?? [])];
 
 		if (hasSearchFilter) {
+			setPage(1);
 			filteredUsers = filteredUsers.filter((user) => {
 				const firstName = user.firstName.toLowerCase();
 				const lastName = user.lastName.toLowerCase();
@@ -181,14 +190,17 @@ export default function SystemUsers() {
 			});
 		}
 
-		if (statusFilter !== "ALL") {
+		if (
+			roleFilter !== "all" &&
+			Array.from(roleFilter).length !== roleOptions.length
+		) {
 			filteredUsers = filteredUsers.filter((user) => {
-				return user.status === statusFilter;
+				return Array.from(roleFilter).includes(user.role);
 			});
 		}
 
 		return filteredUsers;
-	}, [systemUsersState, filterValue, statusFilter]);
+	}, [data?.systemUsers.data, filterValue, roleFilter]);
 
 	const items = useMemo(() => {
 		const start = (page - 1) * Number(rowsPerPage);
@@ -232,154 +244,187 @@ export default function SystemUsers() {
 						onValueChange={setFilterValue}
 					/>
 					<div className="flex gap-3 justify-between md:justify-end w-full">
-						{/* <Dropdown>
-							<DropdownTrigger className="">
+						<Dropdown>
+							<DropdownTrigger className="hidden sm:flex">
 								<Button
-									endContent={<Icon icon="mynaui:chevron-down-solid" />}
-									size="md"
+									endContent={
+										<Icon
+											icon="mynaui:chevron-down-solid"
+											width="24"
+											height="24"
+										/>
+									}
 									variant="flat">
-									Status
+									Columns
 								</Button>
 							</DropdownTrigger>
 							<DropdownMenu
-								onSelectionChange={(v) => {
-									if (v.currentKey) {
-										setStatusFilter(v.currentKey.toString());
-									}
-								}}
-								disallowEmptySelection
 								aria-label="Table Columns"
-								defaultSelectedKeys={[statusFilter]}
-								selectionMode="single">
-								{statusOptions.map((status) => (
-									<DropdownItem key={status.value} className={`capitalize `}>
-										{status.label}
+								closeOnSelect={false}
+								selectedKeys={visibleColumns}
+								selectionMode="multiple"
+								disallowEmptySelection
+								onSelectionChange={setVisibleColumns}>
+								{columns.map((column) => (
+									<DropdownItem key={column.uid} className="capitalize">
+										{column.name.toLowerCase()}
 									</DropdownItem>
 								))}
 							</DropdownMenu>
-						</Dropdown> */}
-						<Button as={Link} href="/system-users/add">
-							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
-							Add System User
-						</Button>
+						</Dropdown>
+						<Dropdown>
+							<DropdownTrigger className="">
+								<Button
+									endContent={
+										<Icon
+											icon="mynaui:chevron-down-solid"
+											width="24"
+											height="24"
+										/>
+									}
+									size="md"
+									variant="flat">
+									Access
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu
+								onSelectionChange={setRoleFilter}
+								selectedKeys={roleFilter}
+								closeOnSelect={false}
+								aria-label="Table Columns"
+								selectionMode="multiple">
+								{roleOptions.map((status) => (
+									<DropdownItem key={status} className={`capitalize `}>
+										{getRoleDescription(status)}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown>
 					</div>
 				</div>
 			</div>
 		);
-	}, []);
+	}, [roleFilter, visibleColumns]);
 
 	return (
 		<>
-			<div className="px-5">
-				<div className="leading-loose">
-					<h1 className="text-xl leading-none font-medium">System Users</h1>
-					<p className="text-sm leading-loose text-gray-400">
-						List of system users
-					</p>
-				</div>
-			</div>
-			<Table
-				sortDescriptor={sortDescriptor}
-				onSortChange={setSortDescriptor}
-				aria-label="Example table with custom cells"
-				shadow="none"
-				bottomContentPlacement="outside"
-				topContent={topContent}
-				bottomContent={
-					pages > 0 ? (
-						<div className="flex w-full  justify-between px-5 flex-wrap">
-							<Pagination
-								isCompact
-								showControls={pages > 3}
-								showShadow
-								color="primary"
-								page={page}
-								isDisabled={hasSearchFilter}
-								total={pages}
-								onChange={(page) => {
-									// fetchMore({
-									// 	variables: {
-									// 		pagination: {
-									// 			page: page,
-									// 			take: Number(rowsPerPage),
-									// 		},
-									// 		filterValue: filterValue ?? null,
-									// 		status: statusFilter ?? null,
-									// 	},
-									// });
-									setPage(page);
-								}}
-							/>
-							<div className="flex gap-3 items-center">
-								<p className="min-w-[100px] inline  ">
-									<span className="text-sm">Total Users: </span>
-									{total}
-								</p>
-								<Select
-									className="max-w-[200px] w-[100px] inline"
-									items={rowsPerPageItems}
-									selectedKeys={[rowsPerPage.toString()]}
-									onSelectionChange={(v) => {
-										if (
-											!!v &&
-											v.currentKey?.toString()! !== rowsPerPage &&
-											v.currentKey?.toString()! !== undefined
-										) {
-											setRowsPerPage(v.currentKey?.toString()!);
-										}
-									}}>
-									{rowsPerPageItems.map((row) => (
-										<SelectItem
-											key={row.key}
-											isReadOnly={total < Number(row.key)}
-											isDisabled={total < Number(row.key)}
-											classNames={{
-												// wrapper: "read-only:hover:bg-red-400",
-												base: "read-only:hover:bg-white read-only:focus:bg-yellow-500",
-											}}
-											className="read-only:text-gray-400  read-only:hover:text-gray-400">
-											{row.label}
-										</SelectItem>
-									))}
-								</Select>
-							</div>
+			<Card className="bg-[#A6F3B235]">
+				<CardBody className="pt-8 ">
+					<div className="px-5 flex justify-between">
+						<div className="leading-loose">
+							<h1 className="text-xl leading-none font-medium">System Users</h1>
+							<p className="text-sm leading-loose text-gray-400">
+								List of system users
+							</p>
 						</div>
-					) : null
-				}>
-				<TableHeader columns={columns}>
-					{(column) => (
-						<TableColumn
-							allowsSorting={column.sortable}
-							key={column.uid}
-							align={column.uid === "actions" ? "center" : "start"}>
-							{column.name}
-						</TableColumn>
-					)}
-				</TableHeader>
-				<TableBody
-					emptyContent={"No rows to display."}
-					loadingContent={<Spinner />}
-					loadingState={loadingState}
-					items={sortedItems ?? []}>
-					{(item) => (
-						<TableRow key={`${item.id}`}>
-							{(columnKey) => (
-								<TableCell className="min-w-[140px]">
-									{renderCell(item, columnKey)}
-								</TableCell>
-							)}
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
 
+						<Button as={Link} href="/admin/system-users/add">
+							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
+							Add System User
+						</Button>
+					</div>
+					<Table
+						classNames={{
+							wrapper: "bg-transparent",
+						}}
+						sortDescriptor={sortDescriptor}
+						onSortChange={setSortDescriptor}
+						aria-label="Example table with custom cells"
+						shadow="none"
+						bottomContentPlacement="outside"
+						topContent={topContent}
+						bottomContent={
+							pages > 0 ? (
+								<div className="flex w-full  justify-between px-5 flex-wrap">
+									<Pagination
+										isCompact
+										showControls
+										// showControls={pages > 3}
+										// showShadow
+										color="primary"
+										classNames={{
+											// base: "bg-[#A6F3B2]",
+											cursor: "bg-green-600",
+										}}
+										page={page}
+										isDisabled={hasSearchFilter}
+										total={pages}
+										onChange={setPage}
+									/>
+									<div className="flex gap-3 items-center">
+										<p className="min-w-[100px] inline  ">
+											<span className="text-sm">Total Users: </span>
+											{data?.systemUsers.count || 0}
+										</p>
+										<Select
+											classNames={{
+												trigger: "bg-green-600   group-hover:bg-green-600/95 ",
+												value: " !text-white",
+											}}
+											className="max-w-[200px] text-white w-[100px] inline "
+											items={rowsPerPageItems}
+											selectedKeys={[rowsPerPage.toString()]}
+											onSelectionChange={(v) => {
+												if (
+													!!v &&
+													v.currentKey?.toString()! !== rowsPerPage &&
+													v.currentKey?.toString()! !== undefined
+												) {
+													setRowsPerPage(v.currentKey?.toString()!);
+												}
+											}}>
+											{rowsPerPageItems.map((row) => (
+												<SelectItem
+													color="success"
+													key={row.key}
+													className="data-[hover=true]:text-white data-[selected=true]:text-white data-[focus=true]:text-white data-[focus-visible=true]:text-white data-[hover=true]:bg-green-600   data-[selected=true]:bg-green-600"
+													isReadOnly={
+														(data?.systemUsers.count || 0) < Number(row.key)
+													}>
+													{row.label}
+												</SelectItem>
+											))}
+										</Select>
+									</div>
+								</div>
+							) : null
+						}>
+						<TableHeader columns={headerColumns}>
+							{(column) => (
+								<TableColumn
+									className="bg-[#A6F3B2]"
+									allowsSorting={column.sortable}
+									key={column.uid}
+									align={column.uid === "actions" ? "center" : "start"}>
+									{column.name}
+								</TableColumn>
+							)}
+						</TableHeader>
+						<TableBody
+							emptyContent={"No rows to display."}
+							loadingContent={<Spinner />}
+							loadingState={loadingState}
+							// items={sortedItems ?? []}
+							items={sortedItems ?? []}>
+							{(item) => (
+								<TableRow key={`${item.id}`}>
+									{(columnKey) => (
+										<TableCell className="min-w-[140px]">
+											{renderCell(item, columnKey)}
+										</TableCell>
+									)}
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</CardBody>
+			</Card>
 			{deleteModal && toDeleteItem && (
 				<DeleteModal
 					setSystemUsersState={(id) => {
 						setSystemUsersState((prev) =>
 							prev.filter((user) => user.id !== id)
 						);
-						setTotal((p) => p - 1);
 					}}
 					id={toDeleteItem.id}
 					email={toDeleteItem.email}
