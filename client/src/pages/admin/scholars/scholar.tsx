@@ -1,17 +1,21 @@
 import { useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
-
-import { Student } from "@/types";
-import { READ_STUDENT_QUERY } from "@/queries";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Divider } from "@heroui/divider";
+import { Button } from "@heroui/button";
+import { useState } from "react";
+
+import UpdateStatusModal from "./__components/update-status";
+
+import { Student } from "@/types";
+import { READ_STUDENT_QUERY } from "@/queries";
 import { formatDate } from "@/lib/utils";
 import { years } from "@/constants";
-import { Button } from "@heroui/button";
 
 export default function ScholarInfo() {
 	const { id } = useParams();
+	const [isOpen, setIsOpen] = useState(false);
 	const { loading, error, data } = useQuery<{ student: Student }>(
 		READ_STUDENT_QUERY,
 		{
@@ -27,23 +31,34 @@ export default function ScholarInfo() {
 		<div className="space-y-6 pb-10">
 			{/* Personal Information */}
 			<Card className="py-4">
-				<CardHeader className="gap-2 flex ">
-					<Button
-						as={Link}
-						to="/admin/scholars"
-						color="success"
-						isIconOnly
-						// startContent={<Icon icon="ep:back" />}>
-					>
-						<Icon icon="ep:back" />
-					</Button>
-					<div className="leading-none">
-						<h1 className="text-2xl leading-none">Scholar Information</h1>
-						<p className="text-sm leading-none text-gray-500 text-muted-foreground">
-							Details about the scholar&apos;s personal and academic
-							information.
-						</p>
+				<CardHeader className="flex justify-between flex-wrap ">
+					<div className="flex gap-2 ">
+						<Button
+							as={Link}
+							to="/admin/scholars"
+							color="success"
+							className="text-white"
+							isIconOnly
+							// startContent={<Icon icon="ep:back" />}>
+						>
+							<Icon icon="ep:back" />
+						</Button>
+						<div className="leading-none">
+							<h1 className="text-2xl leading-none">Scholar Information</h1>
+							<p className="text-sm leading-none text-gray-500 text-muted-foreground">
+								Details about the scholar&apos;s personal and academic
+								information.
+							</p>
+						</div>
 					</div>
+					{!data.student.statusUpdatedAt && (
+						<Button
+							className="text-white"
+							color="success"
+							onPress={() => setIsOpen(true)}>
+							Edit Status
+						</Button>
+					)}
 				</CardHeader>
 			</Card>
 			<Card>
@@ -181,37 +196,12 @@ export default function ScholarInfo() {
 				</CardBody>
 			</Card>
 
-			{/* Security */}
-			{/* <Card>
-		<CardHeader className="px-6 pt-4">
-			<h1 className="flex items-center gap-2">
-				<Icon
-					icon="solar:shield-check-broken"
-					width="24"
-					height="24"
-				/>
-				Security
-			</h1>
-		</CardHeader>
-		<Divider />
-		<CardBody className="p-6">
-			<div className="space-y-4 ">
-				<div className="flex items-center justify-between">
-					<div className="space-y-0.5">
-						<p className="font-medium">Two-Factor Authentication</p>
-						<p className="text-sm text-muted-foreground">
-							{student.mfaEnabled
-								? "Two-factor authentication is enabled"
-								: "Add an extra layer of security to your account"}
-						</p>
-					</div>
-					<Button>
-						{student.mfaEnabled ? "Disable" : "Enable"}
-					</Button>
-				</div>
-			</div>
-		</CardBody>
-	</Card> */}
+			{/* Edit Modal */}
+			<UpdateStatusModal
+				data={data.student}
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+			/>
 		</div>
 	);
 }
