@@ -17,6 +17,8 @@ export interface Student {
 	status: StudentStatus;
 	phoneNumber: string;
 
+	statusUpdatedAt: Date | null;
+
 	yearLevel: number;
 	schoolName: string;
 	course: string;
@@ -38,5 +40,5 @@ export type StudentStatus =
 	| "ARCHIVED";
 
 export type StudentUpdateArgs = Partial<
-	Omit<Student, "id" | "createdAt" | "updatedAt">
+	Omit<Student, "createdAt" | "updatedAt">
 > & { id: string };

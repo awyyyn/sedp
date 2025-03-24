@@ -21,6 +21,7 @@ export interface Student {
 	yearLevel: number;
 	schoolName: string;
 	course: string;
+	statusUpdatedAt: string;
 
 	createdAt: Date;
 	updatedAt: Date;
