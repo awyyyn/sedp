@@ -10,9 +10,9 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { useMutation } from "@apollo/client";
-import { deleteSystemUserMutation } from "@/queries";
 import { toast } from "sonner";
 
+import { deleteSystemUserMutation } from "@/queries";
 interface DeleteModalProps {
 	type?: "scholar" | "system-user";
 	isOpen: boolean;
@@ -31,7 +31,9 @@ export default function DeleteModal({
 	id,
 }: DeleteModalProps) {
 	const [emailConfirmation, setEmailConfirmation] = useState("");
-	const [deleteUser, { loading }] = useMutation(deleteSystemUserMutation);
+	const [deleteUser, { loading }] = useMutation(deleteSystemUserMutation, {
+		refetchQueries: [],
+	});
 
 	const handleSubmit = async () => {
 		try {
