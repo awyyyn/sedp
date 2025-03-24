@@ -18,12 +18,14 @@ model SystemUser {
   mfaSecret String?
   phoneNumber String
   birthDate DateTime
+  gender Gender
   mfaEnabled Boolean @default(false) 
   address address 
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
 
   transactions Transactions[]
+  announcements Announcement[]
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -33,6 +35,7 @@ model SystemUser {
 }
 
 enum SystemUserStatus {
+  PENDING
   VERIFIED
   UNVERIFIED
   DELETED
@@ -46,7 +49,7 @@ enum SystemUserRole {
   ADMIN_VIEWER
 }
 
-model student {
+model Student {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
 
   email String @unique
@@ -64,7 +67,8 @@ model student {
   mfaEnabled Boolean @default(false) 
 
   yearLevel Int 
-  schoolName String  
+  schoolName String 
+  course String @default("") 
 
   documents documents[]
 
@@ -110,7 +114,7 @@ enum documentTypeEnum {
 
 model documents {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  student student @relation(fields: [studentId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
   studentId String  @db.ObjectId
   documentType documentTypeEnum @default(photo)
   documentName String
@@ -144,8 +148,10 @@ model Announcement {
 
   title String
   content String
+  createdBy SystemUser   @relation(references: [id], fields: [createdById])
+  createdById String @db.ObjectId 
 
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   @@map("announcements")
 }

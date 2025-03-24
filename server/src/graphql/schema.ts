@@ -15,6 +15,11 @@ export const typeDefs = gql`
 			status: String
 		): StudentsResult
 		student(id: String!): Student
+		announcements(
+			filter: String
+			pagination: PaginationInput
+		): AnnouncementsResult
+		announcement(id: String): Announcement
 	}
 
 	type Mutation {
@@ -42,6 +47,35 @@ export const typeDefs = gql`
 			yearLevel: Int
 			schoolName: String
 		): Student
+		createSystemUser(
+			firstName: String!
+			middleName: String
+			lastName: String!
+			address: AddressInput!
+			email: String!
+			gender: Gender!
+			password: String!
+			role: SystemUserRole!
+			birthDate: String!
+			phoneNumber: String!
+		): SystemUser
+		createStudent(
+			firstName: String!
+			middleName: String
+			lastName: String!
+			address: AddressInput!
+			email: String!
+			course: String!
+			yearLevel: Int!
+			schoolName: String!
+			gender: Gender!
+			password: String!
+			birthDate: String!
+			phoneNumber: String!
+		): Student
+		createAnnouncement(title: String!, content: String!): Announcement
+		updateAnnouncement(id: ID!, title: String!, content: String!): Announcement
+		deleteAnnouncement(id: ID!): Announcement
 	}
 
 	type SendEmailResult {
@@ -64,7 +98,6 @@ export const typeDefs = gql`
 		firstName: String
 		lastName: String
 		middleName: String
-		displayName: String
 		password: String
 		mfaSecret: String
 		phoneNumber: String
@@ -87,7 +120,12 @@ export const typeDefs = gql`
 	}
 
 	type StudentsResult {
-		data: [SystemUser]
+		data: [Student]
+		hasMore: Boolean
+		count: Int
+	}
+	type AnnouncementsResult {
+		data: [Announcement]
 		hasMore: Boolean
 		count: Int
 	}
@@ -98,11 +136,11 @@ export const typeDefs = gql`
 		firstName: String
 		lastName: String
 		middleName: String
-		displayName: String
 		password: String
 		mfaSecret: String
 		phoneNumber: String
 		birthDate: String
+		gender: Gender
 		mfaEnabled: Boolean
 		address: Address
 		role: SystemUserRole
@@ -114,7 +152,6 @@ export const typeDefs = gql`
 
 	type Student {
 		id: String
-		studentId: String
 		email: String
 		firstName: String
 		lastName: String
@@ -122,6 +159,7 @@ export const typeDefs = gql`
 		address: Address
 		phoneNumber: String
 		status: StudentStatus
+		gender: Gender
 		mfaSecret: String
 		birthDate: String
 		mfaEnabled: Boolean
@@ -130,6 +168,11 @@ export const typeDefs = gql`
 
 		createdAt: String
 		updatedAt: String
+	}
+
+	enum Gender {
+		MALE
+		FEMALE
 	}
 
 	enum StudentStatus {
@@ -147,12 +190,24 @@ export const typeDefs = gql`
 
 	enum SystemUserRole {
 		SUPER_ADMIN
-		ADMIN
+		ADMIN_MANAGE_SCHOLAR
+		ADMIN_MANAGE_GATHERINGS
+		ADMIN_MANAGE_DOCUMENTS
+		ADMIN_VIEWER
 	}
 
 	enum SystemUserStatus {
+		PENDING
 		VERIFIED
 		UNVERIFIED
 		DELETED
+	}
+
+	type Announcement {
+		id: ID!
+		createdBy: SystemUser!
+		content: String!
+		title: String!
+		createdAt: String!
 	}
 `;

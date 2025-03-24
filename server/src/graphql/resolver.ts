@@ -10,6 +10,13 @@ import {
 	sendSystemUserRegistrationEmailResolver,
 	sendStudentRegistrationEmailResolver,
 	updateStudentResolver,
+	createSystemUserResolver,
+	createStudentResolver,
+	createAnnouncementResolver,
+	announcementsResolver,
+	announcementResolver,
+	updateAnnouncementResolver,
+	deleteAnnouncementResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -19,6 +26,8 @@ export const resolvers = {
 		systemUser: systemUserResolver,
 		students: studentsResolver,
 		student: studentResolver,
+		announcements: announcementsResolver,
+		announcement: announcementResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
@@ -27,5 +36,10 @@ export const resolvers = {
 		sendSystemUserRegistrationEmail: sendSystemUserRegistrationEmailResolver,
 		sendStudentRegistrationEmail: sendStudentRegistrationEmailResolver,
 		updateStudent: updateStudentResolver,
+		createSystemUser: createSystemUserResolver,
+		createStudent: createStudentResolver,
+		createAnnouncement: createAnnouncementResolver,
+		updateAnnouncement: updateAnnouncementResolver,
+		deleteAnnouncement: deleteAnnouncementResolver,
 	},
 };

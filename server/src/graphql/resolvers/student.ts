@@ -3,9 +3,12 @@ import {
 	readStudent,
 	updateStudent,
 	readAllStudents,
+	createStudent,
+	sendCredentials,
 } from "../../models/index.js";
 import {
 	AppContext,
+	CreateScholarInput,
 	PaginationArgs,
 	StudentUpdateArgs,
 } from "../../types/index.js";
@@ -47,7 +50,8 @@ export const studentsResolver = async (
 		});
 
 		return data;
-	} catch {
+	} catch (err) {
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -86,5 +90,33 @@ export const sendStudentRegistrationEmailResolver = async (
 		return { message: "Email sent successfully!" };
 	} catch {
 		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const createStudentResolver = async (
+	_: never,
+	data: CreateScholarInput,
+	app: AppContext
+) => {
+	try {
+		if (app.role !== "SUPER_ADMIN" && app.role !== "ADMIN_MANAGE_SCHOLAR") {
+			throw new GraphQLError("UnAuthorized Access!");
+		}
+
+		const newScholar = await createStudent(data);
+
+		if (!newScholar) return null;
+		await sendCredentials({
+			email: newScholar.email,
+			password: data.password,
+		});
+		return newScholar;
+	} catch (error) {
+		console.log(error);
+		if (error instanceof GraphQLError) {
+			throw new GraphQLError((error as GraphQLError).message);
+		} else {
+			throw new GraphQLError("Internal Server Error!");
+		}
 	}
 };

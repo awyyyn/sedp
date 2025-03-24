@@ -1,16 +1,18 @@
-import { sendRegistrationLink } from "../../models/email-model.js";
-import { readStudent } from "../../models/student-model.js";
 import {
+	sendCredentials,
+	sendRegistrationLink,
+} from "../../models/email-model.js";
+import {
+	createSystemUser,
 	readAllSystemUsers,
 	readSystemUser,
 	updateSystemUser,
 } from "../../models/system-user-model.js";
-import { generateAccessToken } from "../../services/jwt.js";
+import { getRoleDescription } from "../../services/utils.js";
 import {
 	AppContext,
+	CreateSystemUserInput,
 	PaginationArgs,
-	Student,
-	SystemUser,
 	SystemUserRole,
 	SystemUserUpdateArgs,
 } from "../../types/index.js";
@@ -28,7 +30,8 @@ export const systemUsersResolver = async (
 		});
 
 		return data;
-	} catch {
+	} catch (err) {
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -111,8 +114,36 @@ export const sendSystemUserRegistrationEmailResolver = async (
 		}
 
 		await sendRegistrationLink({ email, role: userRole });
-
+		sendCredentials;
 		return { message: "Email sent successfully!" };
+	} catch (error) {
+		if (error instanceof GraphQLError) {
+			throw new GraphQLError((error as GraphQLError).message);
+		} else {
+			throw new GraphQLError("Internal Server Error!");
+		}
+	}
+};
+
+export const createSystemUserResolver = async (
+	_: never,
+	data: CreateSystemUserInput,
+	app: AppContext
+) => {
+	try {
+		if (app && app.role !== "SUPER_ADMIN") {
+			throw new GraphQLError("UnAuthorized Access!");
+		}
+
+		const systemUser = await createSystemUser(data);
+
+		if (!systemUser) return null;
+		await sendCredentials({
+			email: systemUser.email,
+			password: data.password,
+			role: getRoleDescription(systemUser.role),
+		});
+		return systemUser;
 	} catch (error) {
 		if (error instanceof GraphQLError) {
 			throw new GraphQLError((error as GraphQLError).message);
