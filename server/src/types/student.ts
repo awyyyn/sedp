@@ -1,14 +1,16 @@
+import { Gender } from "./index.js";
 import { SystemUserAddress } from "./system-user.js";
 
 export interface Student {
 	readonly id: string;
-	studentId: string;
+
 	email: string;
 	firstName: string;
 	lastName: string;
 	middleName: string | null;
 	address: SystemUserAddress;
 	password: string;
+	gender: Gender;
 	birthDate: Date;
 	mfaSecret: string | null;
 	mfaEnabled: boolean;
@@ -17,10 +19,16 @@ export interface Student {
 
 	yearLevel: number;
 	schoolName: string;
+	course: string;
 
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+export type CreateScholarInput = Omit<
+	Student,
+	"id" | "createdAt" | "updatedAt" | "status"
+>;
 
 export type StudentStatus =
 	| "REQUESTING"

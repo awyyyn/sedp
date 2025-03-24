@@ -1,8 +1,11 @@
 import { SystemUserAddress } from "./system-user.js";
 
+import { Gender } from "./index.js";
+
 export interface Student {
 	readonly id: string;
-	studentId: string;
+
+	gender: Gender;
 	email: string;
 	firstName: string;
 	lastName: string;
@@ -17,6 +20,7 @@ export interface Student {
 
 	yearLevel: number;
 	schoolName: string;
+	course: string;
 
 	createdAt: Date;
 	updatedAt: Date;

@@ -1,3 +1,5 @@
+import { Gender } from "./index.js";
+
 export interface SystemUser {
 	readonly id: string;
 	email: string;
@@ -8,10 +10,10 @@ export interface SystemUser {
 	role: SystemUserRole;
 	address: SystemUserAddress;
 	birthDate: string;
-	displayName: string;
 	phoneNumber: string;
 	mfaEnabled: boolean;
-	mfaSecret: string;
+	gender: Gender;
+	mfaSecret: string | null;
 	status: SystemUserStatus;
 	createdAt?: string;
 	updatedAt?: string;
@@ -22,6 +24,20 @@ export interface SystemUserAddress {
 	street: string;
 }
 
-export type SystemUserRole = "SUPER_ADMIN" | "ADMIN";
+export type SystemUserRole =
+	| "SUPER_ADMIN"
+	| "ADMIN_MANAGE_SCHOLAR"
+	| "ADMIN_MANAGE_GATHERINGS"
+	| "ADMIN_MANAGE_DOCUMENTS"
+	| "ADMIN_VIEWER";
 
-export type SystemUserStatus = "VERIFIED" | "UNVERIFIED" | "DELETED";
+export type SystemUserStatus =
+	| "VERIFIED"
+	| "UNVERIFIED"
+	| "DELETED"
+	| "PENDING";
+
+export interface Pagination {
+	skip: number;
+	take: number;
+}
