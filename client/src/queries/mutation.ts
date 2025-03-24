@@ -37,7 +37,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 		$studentId: String
 		$firstName: String
 		$lastName: String
-		$updateStudentMiddleName2: String
+		$middleName: String
 		$city: String
 		$street: String
 		$birthDate: String
@@ -53,7 +53,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 			studentId: $studentId
 			firstName: $firstName
 			lastName: $lastName
-			middleName: $updateStudentMiddleName2
+			middleName: $middleName
 			city: $city
 			street: $street
 			birthDate: $birthDate

@@ -19,7 +19,6 @@ export const systemUsersFragment = gql`
 		}
 		role
 		status
-
 		createdAt
 		updatedAt
 	}
@@ -44,6 +43,7 @@ export const studentsFragment = gql`
 		birthDate
 		yearLevel
 		schoolName
+		statusUpdatedAt
 		createdAt
 		updatedAt
 	}
