@@ -7,7 +7,7 @@ export const systemUsersFragment = gql`
 		firstName
 		lastName
 		middleName
-		displayName
+		gender
 		password
 		mfaSecret
 		phoneNumber
@@ -28,10 +28,10 @@ export const systemUsersFragment = gql`
 export const studentsFragment = gql`
 	fragment StudentFragment on Student {
 		id
-		studentId
 		email
 		firstName
 		lastName
+		gender
 		middleName
 		address {
 			city

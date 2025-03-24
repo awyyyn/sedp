@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { studentsFragment } from "./fragments";
+import { studentsFragment, systemUsersFragment } from "./fragments";
 
 export const verifyTOTPMutation = gql`
 	mutation ($secret: String!, $token: String!) {
@@ -65,6 +65,109 @@ export const UPDATE_STUDENT_MUTATION = gql`
 			schoolName: $schoolName
 		) {
 			...StudentFragment
+		}
+	}
+`;
+
+export const CREATE_SYSTEM_USER_MUTATION = gql`
+	${systemUsersFragment}
+	mutation CreateSystemUser(
+		$firstName: String!
+		$lastName: String!
+		$address: AddressInput!
+		$email: String!
+		$gender: Gender!
+		$password: String!
+		$role: SystemUserRole!
+		$birthDate: String!
+		$phoneNumber: String!
+		$middleName: String
+	) {
+		createSystemUser(
+			firstName: $firstName
+			lastName: $lastName
+			address: $address
+			email: $email
+			gender: $gender
+			password: $password
+			role: $role
+			birthDate: $birthDate
+			phoneNumber: $phoneNumber
+			middleName: $middleName
+		) {
+			...SystemUserFragment
+		}
+	}
+`;
+
+export const CREATE_STUDENT_MUTATION = gql`
+	${studentsFragment}
+	mutation (
+		$firstName: String!
+		$lastName: String!
+		$address: AddressInput!
+		$email: String!
+		$course: String!
+		$yearLevel: Int!
+		$schoolName: String!
+		$gender: Gender!
+		$password: String!
+		$birthDate: String!
+		$phoneNumber: String!
+		$middleName: String
+	) {
+		createStudent(
+			firstName: $firstName
+			lastName: $lastName
+			address: $address
+			email: $email
+			course: $course
+			yearLevel: $yearLevel
+			schoolName: $schoolName
+			gender: $gender
+			password: $password
+			birthDate: $birthDate
+			phoneNumber: $phoneNumber
+			middleName: $middleName
+		) {
+			...StudentFragment
+		}
+	}
+`;
+
+export const CREATE_ANNOUNCEMENT_MUTATION = gql`
+	mutation ($title: String!, $content: String!) {
+		announcement: createAnnouncement(title: $title, content: $content) {
+			id
+			content
+			title
+			createdAt
+		}
+	}
+`;
+
+export const UPDATE_ANNOUNCEMENT_MUTATION = gql`
+	mutation ($title: String!, $content: String!, $id: ID!) {
+		announcement: updateAnnouncement(
+			title: $title
+			content: $content
+			id: $id
+		) {
+			id
+			content
+			title
+			createdAt
+		}
+	}
+`;
+
+export const DELETE_ANNOUNCEMENT_MUTATION = gql`
+	mutation ($id: ID!) {
+		deleteAnnouncement(id: $id) {
+			id
+			content
+			title
+			createdAt
 		}
 	}
 `;
