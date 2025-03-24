@@ -16,8 +16,11 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AddScholar from "@/pages/admin/scholars/add-scholar";
 import AddSystemUser from "@/pages/admin/system-users/add-system-user";
-import Announcements from "./pages/admin/announcements/list";
-import AddAnnouncements from "./pages/admin/announcements/add-announcements";
+import Announcements from "@/pages/admin/announcements/list";
+import AddAnnouncement from "@/pages/admin/announcements/add";
+import AnnouncementInfo from "@/pages/admin/announcements/info";
+import EditAnnouncement from "@/pages/admin/announcements/edit";
+import ScholarInfo from "@/pages/admin/scholars/scholar";
 
 function App() {
 	const adminRoutes = {
@@ -42,6 +45,10 @@ function App() {
 								element: <AddScholar />,
 								path: "add",
 							},
+							{
+								path: ":id",
+								element: <ScholarInfo />,
+							},
 						],
 					},
 
@@ -53,8 +60,22 @@ function App() {
 								index: true,
 							},
 							{
-								element: <AddAnnouncements />,
+								element: <AddAnnouncement />,
 								path: "add",
+							},
+							{
+								path: ":id",
+								children: [
+									{
+										index: true,
+										element: <AnnouncementInfo />,
+									},
+
+									{
+										element: <EditAnnouncement />,
+										path: "edit",
+									},
+								],
 							},
 						],
 					},
