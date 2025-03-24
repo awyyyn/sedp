@@ -16,17 +16,15 @@ import { GraphQLError } from "graphql";
 
 export const updateStudentResolver = async (
 	_: never,
-	{ values, id }: { id: string; values: StudentUpdateArgs },
+	{ id, ...values }: StudentUpdateArgs,
 	context: AppContext
 ) => {
 	try {
-		console.log(context.id, "context.id");
-		console.log(id, "id");
 		if (id !== context.id && context.role === "STUDENT") {
 			throw new GraphQLError("UnAuthorized!");
 		}
 
-		const updatedStudent = await updateStudent(context.id, values);
+		const updatedStudent = await updateStudent(id, values);
 
 		if (!updatedStudent) {
 			throw new GraphQLError("Error occurred while updating your information!");

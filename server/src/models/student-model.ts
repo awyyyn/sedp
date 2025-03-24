@@ -57,11 +57,16 @@ export const updateStudent = async (
 	id: string,
 	values: Partial<Student>
 ): Promise<Student> => {
+	let toUpdateData = values;
+
+	if (values.status) {
+		toUpdateData.statusUpdatedAt = new Date();
+	}
+
 	const updatedStudent = await prisma.student.update({
 		data: {
-			...values,
+			...toUpdateData,
 		},
-
 		where: {
 			id,
 		},

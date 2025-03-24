@@ -165,7 +165,7 @@ export const typeDefs = gql`
 		mfaEnabled: Boolean
 		yearLevel: Int
 		schoolName: String
-
+		statusUpdatedAt: String
 		createdAt: String
 		updatedAt: String
 	}

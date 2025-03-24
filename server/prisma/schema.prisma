@@ -70,6 +70,8 @@ model Student {
   schoolName String 
   course String @default("") 
 
+  statusUpdatedAt DateTime? 
+
   documents documents[]
 
   // TimeStamps
