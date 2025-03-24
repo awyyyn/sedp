@@ -1,14 +1,15 @@
 import { environment } from "../environments/environment.js";
 import { prisma } from "../services/prisma.js";
-import { PaginationResult, Student } from "../types/index.js";
+import {
+	CreateScholarInput,
+	PaginationResult,
+	Student,
+} from "../types/index.js";
 import { Prisma } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 
 export const createStudent = async (
-	values: Omit<
-		Student,
-		"id" | "createdAt" | "updatedAt" | "mfaEnabled" | "status"
-	>
+	values: CreateScholarInput
 ): Promise<Student> => {
 	const {
 		address,
@@ -16,10 +17,11 @@ export const createStudent = async (
 		email,
 		firstName,
 		lastName,
-		studentId,
+		gender,
 		mfaSecret,
 		middleName,
 		password,
+		course,
 		schoolName,
 		phoneNumber,
 		yearLevel,
@@ -35,10 +37,11 @@ export const createStudent = async (
 			birthDate: new Date(birthDate).toISOString(),
 			email,
 			firstName,
+			course,
 			lastName,
 			phoneNumber,
 			schoolName,
-			studentId,
+			gender,
 			yearLevel,
 			middleName,
 			status: "SCHOLAR",
@@ -68,7 +71,7 @@ export const updateStudent = async (
 };
 
 export const readStudent = async (id: string): Promise<Student | null> => {
-	let where: Prisma.studentWhereInput = {
+	let where: Prisma.StudentWhereInput = {
 		id: id,
 	};
 
@@ -96,7 +99,7 @@ export async function readAllStudents({
 	filter,
 	pagination,
 }: readAllArgs = {}): Promise<PaginationResult<Student>> {
-	let where: Prisma.studentWhereInput = {};
+	let where: Prisma.StudentWhereInput = {};
 
 	if (filter) {
 		where = {
@@ -119,10 +122,7 @@ export async function readAllStudents({
 	});
 
 	return {
-		data: users.map((user, indx) => ({
-			...user,
-			studentId: user.studentId + indx,
-		})),
+		data: users,
 		hasMore: pagination ? pagination.page * pagination.take < count : false,
 		count,
 	};

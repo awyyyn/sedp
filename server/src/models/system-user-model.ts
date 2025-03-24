@@ -4,16 +4,14 @@ import {
 	SystemUser,
 	PaginationArgs,
 	PaginationResult,
+	CreateSystemUserInput,
 } from "../types/index.js";
 import { Prisma, SystemUserStatus } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
 
-export const createSystemUser = async (
-	values: Omit<SystemUser, "id" | "createdAt" | "updatedAt" | "status">
-) => {
+export const createSystemUser = async (values: CreateSystemUserInput) => {
 	const {
 		address,
-		displayName,
 		email,
 		firstName,
 		lastName,
@@ -22,7 +20,8 @@ export const createSystemUser = async (
 		birthDate,
 		phoneNumber,
 		password,
-		// role,
+		role,
+		gender,
 		middleName,
 	} = values;
 
@@ -36,11 +35,11 @@ export const createSystemUser = async (
 			firstName,
 			lastName,
 			birthDate: new Date(birthDate).toISOString(),
-			role: "SUPER_ADMIN",
+			role,
 			address,
 			phoneNumber,
-			status: SystemUserStatus.VERIFIED,
-			displayName,
+			gender,
+			status: SystemUserStatus.PENDING,
 			mfaEnabled,
 			mfaSecret,
 			middleName,
@@ -59,7 +58,6 @@ export const updateSystemUser = async (
 	const {
 		address,
 		status,
-		displayName,
 		email,
 		firstName,
 		lastName,
@@ -82,7 +80,6 @@ export const updateSystemUser = async (
 			address,
 			phoneNumber,
 			status,
-			displayName,
 			mfaEnabled,
 			mfaSecret,
 			middleName,
@@ -130,7 +127,6 @@ export async function readAllSystemUsers({
 		where = {
 			OR: [
 				{ email: { contains: filter } },
-				{ displayName: { contains: filter } },
 				{ firstName: { contains: filter } },
 				{ lastName: { contains: filter } },
 			],
@@ -166,7 +162,9 @@ export async function readAllSystemUsers({
 	const count = await prisma.systemUser.count({
 		where: {
 			...where,
-			role: "ADMIN",
+			role: {
+				not: "SUPER_ADMIN",
+			},
 		},
 	});
 
