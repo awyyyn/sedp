@@ -10,6 +10,9 @@ import {
 } from "@heroui/autocomplete";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
+import { DatePicker } from "@heroui/date-picker";
+import { getLocalTimeZone, today } from "@internationalized/date";
+import { useMutation } from "@apollo/client";
 
 import places from "../../../../places.json";
 import degrees from "../../../../degrees.json";
@@ -17,12 +20,13 @@ import degrees from "../../../../degrees.json";
 import { addScholarSchema } from "@/definitions";
 import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
-import { DatePicker } from "@heroui/date-picker";
-import { sub } from "date-fns";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { generatePassword } from "@/lib/utils";
+import { CREATE_STUDENT_MUTATION } from "@/queries";
+import { toast } from "sonner";
 
 export default function AddScholar() {
 	const [streets, setStreet] = useState<string[]>([]);
+	const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
 
 	const citiesMunicipalities = useMemo(
 		() => places.map((place) => place.name),
@@ -42,7 +46,38 @@ export default function AddScholar() {
 					<Formik
 						validationSchema={addScholarSchema}
 						initialValues={{} as AddScholarSchemaData}
-						onSubmit={() => {}}>
+						onSubmit={async (values: AddScholarSchemaData, helpers) => {
+							try {
+								const { street, city, ...data } = values;
+
+								await createStudent({
+									variables: {
+										...data,
+										yearLevel: Number(data.yearLevel),
+										address: {
+											city,
+											street,
+										},
+									},
+								});
+
+								helpers.resetForm();
+
+								toast.success("Scholar account created successfully", {
+									description:
+										"The new admin account has been created and the registration link has been sent to the provided email address.",
+									richColors: true,
+									position: "top-center",
+								});
+							} catch (err) {
+								toast.error("Failed to create scholar account", {
+									description:
+										"There was an error creating the scholar account. Please try again.",
+									richColors: true,
+									position: "top-center",
+								});
+							}
+						}}>
 						{({
 							handleSubmit,
 							handleBlur,
@@ -51,8 +86,11 @@ export default function AddScholar() {
 							values,
 							touched,
 							errors,
+							isValid,
 							isSubmitting,
 						}) => {
+							console.log(errors, "qqq");
+
 							return (
 								<Form
 									className="grid grid-cols-12 gap-x-4 gap-y-2 lg:grid-cols-6"
@@ -61,49 +99,94 @@ export default function AddScholar() {
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.firstName && !!errors.firstName}
-										errorMessage={touched.email && errors.email}
+										errorMessage={errors.firstName}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-2"
+										name="firstName"
 										label="First Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.middleName && !!errors.middleName}
-										errorMessage={touched.middleName && errors.middleName}
+										errorMessage={errors.middleName}
+										onBlur={handleBlur}
+										onChange={handleChange}
+										name="middleName"
 										className="lg:col-span-2"
 										label="Middle Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.lastName && !!errors.lastName}
-										errorMessage={touched.lastName && errors.lastName}
+										errorMessage={errors.lastName}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-2"
+										name="lastName"
 										label="Last Name"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.email && !!errors.email}
-										errorMessage={touched.email && errors.email}
+										errorMessage={errors.email}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										className="lg:col-span-3"
 										label="Email Address"
+										name="email"
 									/>
 									<Input
 										isReadOnly={isSubmitting}
-										isInvalid={touched.email && !!errors.email}
-										errorMessage={touched.email && errors.email}
+										isInvalid={touched.phoneNumber && !!errors.phoneNumber}
+										errorMessage={errors.phoneNumber}
+										onBlur={handleBlur}
+										onChange={handleChange}
+										name="phoneNumber"
 										className="lg:col-span-3"
-										label="Email Address"
+										label="Phone Number"
+										startContent={<p className="text-sm">+63</p>}
 									/>
 									<RadioGroup
 										label="Gender"
 										className="lg:col-span-3 "
+										name="gender"
+										isReadOnly={isSubmitting}
+										isInvalid={touched.gender && !!errors.gender}
+										errorMessage={String(errors.gender) || "asd"}
+										onBlur={handleBlur}
+										onChange={handleChange}
 										orientation="horizontal">
-										<Radio value="Male">Male</Radio>
-										<Radio value="Female">Female</Radio>
+										<Radio value="MALE">Male</Radio>
+										<Radio value="FEMALE">Female</Radio>
 									</RadioGroup>
 									<DatePicker
+										showMonthAndYearPickers
 										isReadOnly={isSubmitting}
-										isInvalid={touched.contact && !!errors.contact}
-										errorMessage={touched.contact && errors.contact}
+										isInvalid={touched.birthDate && !!errors.birthDate}
+										errorMessage={String(errors.birthDate)}
+										onBlur={handleBlur}
+										onChange={(e) => {
+											if (e === null) return;
+											const dateValue: {
+												year: number;
+												month: number;
+												day: number;
+											} = e;
+											// console.log(parseAbsoluteToLocal, "qqqdate");
+
+											const jsDate = dateValue
+												? new Date(
+														dateValue.year,
+														dateValue.month - 1,
+														dateValue.day
+													)
+												: null;
+
+											setFieldValue("birthDate", jsDate);
+
+											// console.log(new Date())
+										}}
 										className="lg:col-span-3"
 										label="Birth Date"
 										maxValue={today(getLocalTimeZone()).subtract({ years: 18 })}
@@ -121,6 +204,8 @@ export default function AddScholar() {
 												/>
 											}>
 											<Autocomplete
+												as="ul"
+												isReadOnly={isSubmitting}
 												name="city"
 												label="Select City / Municipality"
 												isInvalid={!!touched.city && !!errors.city}
@@ -140,6 +225,7 @@ export default function AddScholar() {
 												fullWidth>
 												{citiesMunicipalities.map((ci) => (
 													<AutocompleteItem
+														as="li"
 														key={ci}
 														value={ci}
 														className="capitalize">
@@ -159,16 +245,18 @@ export default function AddScholar() {
 												/>
 											}>
 											<Autocomplete
-												name="barangay"
+												isReadOnly={isSubmitting}
+												name="street"
 												label="Select Barangay"
-												onSelectionChange={(value) => {
-													setFieldValue("barangay", value);
-												}}
-												onBlur={handleBlur}
 												errorMessage={touched.street && errors.street}
+												onBlur={handleBlur}
+												onSelectionChange={(value) => {
+													setFieldValue("street", value);
+												}}
+												isDisabled={!values.city}
 												fullWidth
 												isInvalid={
-													(touched.city && !values.city) ||
+													(touched.street && !values.city) ||
 													(!!touched.street && !!errors.street)
 												}
 												value={values.street}>
@@ -183,12 +271,14 @@ export default function AddScholar() {
 											</Autocomplete>
 										</Suspense>
 									</div>
-
 									<div className="lg:col-span-6  mt-4">School Information</div>
 									<Input
 										isReadOnly={isSubmitting}
 										isInvalid={touched.schoolName && !!errors.schoolName}
-										errorMessage={touched.schoolName && errors.schoolName}
+										errorMessage={errors.schoolName}
+										onBlur={handleBlur}
+										onChange={handleChange}
+										name="schoolName"
 										className="lg:col-span-3"
 										label="School Name"
 									/>
@@ -197,16 +287,17 @@ export default function AddScholar() {
 										className="lg:col-span-3"
 										label="Year Level"
 										name="yearLevel"
-										errorMessage={touched.yearLevel && errors.yearLevel}
+										isInvalid={touched.yearLevel && !!errors.yearLevel}
+										errorMessage={errors.yearLevel}
+										disallowEmptySelection
+										selectionMode="single"
+										value={values.yearLevel}
 										onBlur={handleBlur}
-										isInvalid={!!touched.yearLevel && !!errors.yearLevel}
-										selectedKeys={[values.yearLevel]}
-										onChange={(v) => {
-											setFieldValue("yearLevel", v.target.value.toString());
-										}}>
+										onChange={handleChange}>
 										{years.map((year) => (
 											<SelectItem
 												className="w-full"
+												value={year.value.toString()}
 												key={year.value.toString()}
 												textValue={year.label}>
 												{year.label}{" "}
@@ -217,28 +308,25 @@ export default function AddScholar() {
 									<Suspense
 										fallback={<Input fullWidth readOnly label="Course" />}>
 										<Autocomplete
-											name="barangay"
+											name="course"
 											className="lg:col-span-6"
 											label="Course"
 											onSelectionChange={(value) => {
-												setFieldValue("", value);
+												setFieldValue("course", value?.toString());
 											}}
 											onBlur={handleBlur}
-											errorMessage={touched.street && errors.street}
+											errorMessage={errors.course}
 											fullWidth
-											isInvalid={
-												(touched.city && !values.city) ||
-												(!!touched.street && !!errors.street)
-											}
-											value={values.street}>
+											isInvalid={touched.course && !!errors.course}
+											value={values.course}>
 											{degrees.map((degree, indx) => (
 												<AutocompleteSection
 													showDivider
 													title={degree.category}
 													key={indx}>
-													{degree.programs.map((program, index) => (
+													{degree.programs.map((program) => (
 														<AutocompleteItem
-															key={`${degree}-${index}`}
+															key={program}
 															value={program}
 															className="capitalize">
 															{program}
@@ -250,21 +338,37 @@ export default function AddScholar() {
 									</Suspense>
 
 									<div className="lg:col-span-6 mt-4">
-										<div className="flex justify-between">
+										<div className="flex justify-between py-0.5">
 											<p>Security</p>
-											<Button className="" variant="light" size="sm">
+											<Button
+												type="button"
+												className=""
+												variant="light"
+												size="sm"
+												onPress={() => {
+													setFieldValue("password", generatePassword());
+												}}>
 												Generate password
 											</Button>
 										</div>
 										<Input
 											isReadOnly={isSubmitting}
-											isInvalid={touched.schoolName && !!errors.schoolName}
-											errorMessage={touched.schoolName && errors.schoolName}
+											readOnly={isSubmitting}
+											value={values.password}
+											isInvalid={touched.password && !!errors.password}
+											errorMessage={errors.password}
+											onBlur={handleBlur}
+											onChange={handleChange}
+											name="password"
 											label="Password"
 										/>
 									</div>
 									<div className="lg:col-span-6 flex justify-center mt-5">
-										<Button className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
+										<Button
+											type="submit"
+											isDisabled={!isValid || isSubmitting}
+											isLoading={isSubmitting}
+											className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
 											Register Scholar
 										</Button>
 									</div>
