@@ -23,6 +23,7 @@ model SystemUser {
   address address 
   role SystemUserRole
   status SystemUserStatus @default(UNVERIFIED)
+  verifiedAt DateTime?
 
   transactions Transactions[]
   announcements Announcement[]

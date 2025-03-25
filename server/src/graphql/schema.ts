@@ -145,7 +145,7 @@ export const typeDefs = gql`
 		address: Address
 		role: SystemUserRole
 		status: SystemUserStatus
-
+		verifiedAt: String
 		createdAt: String
 		updatedAt: String
 	}
