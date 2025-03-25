@@ -137,12 +137,13 @@ model Events {
 
   title String
   description String
-  date DateTime
   startTime String
   endTime String
   location String
+  startDate String
+  endDate String
 
-  createdAt DateTime
+  createdAt DateTime@default(now())
   @@map("events")
 }
 
@@ -170,7 +171,7 @@ model Meeting {
   location String
   date DateTime
 
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   @@map("meetings")
 }

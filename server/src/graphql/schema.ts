@@ -210,4 +210,28 @@ export const typeDefs = gql`
 		title: String!
 		createdAt: String!
 	}
+
+	type Meeting {
+		id: ID!
+		title: String!
+		description: String
+		startTime: String!
+		endTime: String!
+		location: String
+		date: String
+		createdAt: String
+	}
+
+	type Event {
+		id: ID!
+		title: String!
+		description: String
+		startTime: String!
+		endTime: String!
+		location: String
+		startDate: String
+		endDate: String
+
+		createdAt: String
+	}
 `;
