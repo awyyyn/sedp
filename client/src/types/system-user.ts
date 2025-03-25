@@ -15,6 +15,7 @@ export interface SystemUser {
 	gender: Gender;
 	mfaSecret: string | null;
 	status: SystemUserStatus;
+	verifiedAt?: string;
 	createdAt?: string;
 	updatedAt?: string;
 }
