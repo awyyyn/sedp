@@ -12,6 +12,7 @@ import {
 import { Select, SelectItem } from "@heroui/select";
 import { Selection } from "@react-types/shared";
 import { Dispatch, SetStateAction, useState } from "react";
+import { toast } from "sonner";
 
 import {
 	READ_STUDENT_QUERY,
@@ -19,7 +20,6 @@ import {
 	UPDATE_STUDENT_MUTATION,
 } from "@/queries";
 import { Student, StudentStatus } from "@/types";
-import { toast } from "sonner";
 
 interface UpdateStatusModalProps {
 	isOpen: boolean;
@@ -64,7 +64,6 @@ export default function UpdateStatusModal({
 
 			setIsOpen(false);
 		} catch (erro) {
-			console.log(erro, "qqq");
 			toast.error("Failed to update scholar status", {
 				description: "There was an error updating the scholar's status.",
 				position: "top-center",
@@ -140,7 +139,7 @@ export default function UpdateStatusModal({
 									isDisabled={
 										confirm !== "confirm" || Array.from(value).length === 0
 									}
-									variant="light"
+									className="text-white"
 									onPress={handleDeletion}>
 									Update
 								</Button>

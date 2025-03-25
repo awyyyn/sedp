@@ -17,6 +17,8 @@ interface DeleteModalProps {
 	handleDeletion: VoidFunction;
 	loading: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
+	deleteLabel?: string;
+	hideNote: boolean;
 }
 
 export function DeleteModal({
@@ -26,6 +28,8 @@ export function DeleteModal({
 	description,
 	handleDeletion,
 	loading,
+	deleteLabel = "Delete",
+	hideNote = false,
 }: DeleteModalProps) {
 	const [confirm, setConfirm] = useState("");
 
@@ -59,7 +63,11 @@ export function DeleteModal({
 								<Input
 									value={confirm}
 									onValueChange={setConfirm}
-									placeholder="Type here..."
+									placeholder="Type 'confirm' here..."
+									description={
+										!hideNote &&
+										"NOTE: Deleting this data is a permanent action and cannot be undone."
+									}
 								/>
 							</ModalBody>
 							<ModalFooter>
@@ -71,7 +79,7 @@ export function DeleteModal({
 									isDisabled={confirm !== "confirm"}
 									variant="light"
 									onPress={handleDeletion}>
-									Delete
+									{deleteLabel}
 								</Button>
 							</ModalFooter>
 						</>
