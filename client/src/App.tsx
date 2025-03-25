@@ -6,7 +6,7 @@ import ForgotPassword from "@/pages/auth/admin/forgot-password";
 import ProtectedRoute from "@/components/protected-route";
 import Dashboard from "@/pages/admin/dashboard";
 import AdminLayout from "@/layouts/admin-layout";
-import Scholars from "@/pages/admin/scholars/scholars";
+import Scholars from "@/pages/admin/scholars/list";
 import SystemUsers from "@/pages/admin/system-users/system-users";
 import SystemUser from "@/pages/admin/system-users/system-user";
 import StudentLogin from "@/pages/auth/student/login";
@@ -14,13 +14,13 @@ import StudentForgotPassword from "@/pages/auth/student/forgot-password";
 import Unauthorized from "@/pages/unauthorized";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import AddScholar from "@/pages/admin/scholars/add-scholar";
+import AddScholar from "@/pages/admin/scholars/create";
 import AddSystemUser from "@/pages/admin/system-users/add-system-user";
 import Announcements from "@/pages/admin/announcements/list";
 import AddAnnouncement from "@/pages/admin/announcements/add";
 import AnnouncementInfo from "@/pages/admin/announcements/info";
 import EditAnnouncement from "@/pages/admin/announcements/edit";
-import ScholarInfo from "@/pages/admin/scholars/scholar";
+import ScholarInfo from "@/pages/admin/scholars/info";
 
 function App() {
 	const adminRoutes = {
