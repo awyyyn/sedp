@@ -138,15 +138,16 @@ export async function readAllSystemUsers({
 			...where,
 			status: SystemUserStatus[status as SystemUserStatus],
 		};
-	} else
-		[
-			(where = {
-				...where,
-				status: {
-					not: SystemUserStatus.DELETED,
-				},
-			}),
-		];
+	}
+	// else
+	// [
+	// 	(where = {
+	// 		...where,
+	// 		// status: {
+	// 		// 	not: SystemUserStatus.DELETED,
+	// 		// },
+	// 	}),
+	// ];
 
 	const users = await prisma.systemUser.findMany({
 		where: {

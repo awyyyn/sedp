@@ -55,12 +55,12 @@ export const updateSystemUserResolver = async (
 	{ values }: { values: SystemUserUpdateArgs },
 	context: AppContext
 ) => {
-	if (values.id !== context.id) {
+	if (context.role !== "SUPER_ADMIN" && values.id !== context.id) {
 		throw new GraphQLError("UnAuthorized!");
 	}
 
 	try {
-		const updatedUser = await updateSystemUser(context.id, values);
+		const updatedUser = await updateSystemUser(values.id, values);
 
 		if (!updatedUser) {
 			throw new GraphQLError("Error occurred while updating your information!");
