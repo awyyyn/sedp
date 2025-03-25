@@ -4,50 +4,43 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { CustomButtonInput } from "@fullcalendar/core/index.js";
-import { isSameMonth } from "date-fns";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { useWindowSize } from "usehooks-ts";
 
-// Sample events data
-
-export function FCalendar({ events }: { events: Events }) {
+export function FCalendar({ events }: { events: any[] }) {
 	const calendarRef = React.useRef<any>(null);
-	const [weekends, setWeekends] = React.useState(true);
+	const [currentView, setCurrentView] = React.useState("dayGridMonth");
 
-	// Custom toolbar component
-	const renderToolbar = {
-		right: "dayGridMonth,timeGridWeek,listWeek prev,next",
-		// start: "prev,title,next",
-
-		// right: "dayGridMonth,timeGridWeek,listWeek",
-	};
-
-	// Custom button rendering
+	// Custom buttons with Tailwind styling
 	const customButtons = {
 		prev: {
-			// text: <ChevronLeft className="h-4 w-4" />,
-			icon: "chevron-left",
+			text: (
+				<Icon
+					icon="mynaui:chevron-left-solid"
+					className="w-5 h-5 text-gray-600 hover:text-[#17c964]"
+				/>
+			),
 			click: () => {
 				if (calendarRef.current) {
-					if (isSameMonth(new Date(), calendarRef.current.getApi().getDate())) {
-						return;
-					}
-
 					calendarRef.current.getApi().prev();
 				}
 			},
-		} as CustomButtonInput,
+		},
 		next: {
-			icon: "chevron-right",
+			text: (
+				<Icon
+					icon="mynaui:chevron-right-solid"
+					className="w-5 h-5 text-gray-600 hover:text-[#17c964]"
+				/>
+			),
 			click: () => {
 				if (calendarRef.current) {
 					calendarRef.current.getApi().next();
 				}
 			},
-		} as CustomButtonInput,
+		},
 		today: {
 			text: "Today",
-
 			click: () => {
 				if (calendarRef.current) {
 					calendarRef.current.getApi().today();
@@ -56,109 +49,80 @@ export function FCalendar({ events }: { events: Events }) {
 		},
 	};
 
-	// Handle view change
-	// const handleViewChange = (newView: string) => {
-	// 	if (calendarRef.current) {
-	// 		const calendar = calendarRef.current.getApi();
-	// 		calendar.changeView(newView);
-	// 		setViewMode(newView);
-	// 	}
-	// };
+	// Customized toolbar configuration
+	const headerToolbar = {
+		left: "title",
+		center: "",
+		right: "prev,next",
+	};
 
-	// Custom event rendering
-	// const renderEvent = (eventInfo: any) => {
-	// 	return (
-	// 		<Link
-	// 			href={`/events/${eventInfo.event.id}/info`}
-	// 			className="relative overflow-hidden p-2"
-	// 			suppressHydrationWarning>
-	// 			{/* <GripVertical className="h-3 w-3" /> */}
-	// 			<h1 className="block  ">{eventInfo.event.title}</h1>
-
-	// 			<p className="block  ">
-	// 				{getEventDescription({
-	// 					startDate: eventInfo.event.start,
-	// 					endDate: eventInfo.event.end,
-	// 					location: eventInfo.event.location,
-	// 					startTime: new Date(
-	// 						new Date().setHours(
-	// 							getHours(eventInfo.event.start),
-	// 							getMinutes(eventInfo.event.start),
-	// 							0,
-	// 							0
-	// 						)
-	// 					),
-	// 					endTime: new Date(
-	// 						new Date().setHours(
-	// 							getHours(eventInfo.event.end),
-	// 							getMinutes(eventInfo.event.end),
-	// 							0,
-	// 							0
-	// 						)
-	// 					),
-	// 					slug: eventInfo.event.id,
-	// 					name: eventInfo.event.title,
-	// 				} as EventWithPagination)}
-	// 			</p>
-	// 		</Link>
-	// 	);
-	// };
-
-	const memoizedEvents = React.useMemo(() => {
-		return (
+	// Memoized events to prevent unnecessary re-renders
+	const memoizedEvents = React.useMemo(
+		() =>
 			events.map((event) => ({
 				...event,
 				id: String(event.id),
 				editable: false,
 				durationEditable: false,
-				interactive: true,
-			})) ?? []
-		);
-	}, [events]);
+			})) ?? [],
+		[events]
+	);
+
+	// Custom button rendering for view switcher
+	const buttonClassNames = (view: string) =>
+		`px-3 py-1 text-sm transition-colors duration-200 ${
+			currentView === view
+				? "bg-[#17c964] text-white"
+				: "text-gray-600 hover:bg-[#17c964]/10"
+		}`;
+
+	const Switcher = () => (
+		<div className="space-x-2 bg-gray-100 rounded-md p-1">
+			{["dayGridMonth", "timeGridWeek", "listWeek"].map((view) => (
+				<button
+					key={view}
+					onClick={() => {
+						if (calendarRef.current) {
+							calendarRef.current.getApi().changeView(view);
+							setCurrentView(view);
+						}
+					}}
+					className={buttonClassNames(view)}>
+					{view === "dayGridMonth"
+						? "Month"
+						: view === "timeGridWeek"
+							? "Week"
+							: "List"}
+				</button>
+			))}
+		</div>
+	);
 
 	return (
-		<Card>
-			<CardHeader>
-				<div className="flex items-center justify-between">
-					<div className="space-y-1">
-						<h2 className="text-2xl">SEDP Calendar</h2>
-						<p>Manage events, announcements, and meetings.</p>
-					</div>
-					<div className="flex items-center gap-4">
-						{/* <DropdownMenu>
-							<DropdownMenuTrigger
-								asChild
-								className="md:flex justify-center hidden">
-								<Button variant="outline" size="icon">
-									{viewMode.includes("list") ? (
-										<List className="h-4 w-4" />
-									) : (
-										<LayoutGrid className="h-4 w-4" />
-									)}
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem
-									onClick={() => handleViewChange("dayGridMonth")}>
-									Month view
-								</DropdownMenuItem>
-								<DropdownMenuItem
-									onClick={() => handleViewChange("timeGridWeek")}>
-									Week view
-								</DropdownMenuItem>
-								<DropdownMenuItem
-									onClick={() => handleViewChange("timeGridDay")}>
-									Day view
-								</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => handleViewChange("listWeek")}>
-									List view
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu> */}
-					</div>
+		<div className="w-full max-w-full bg-white shadow-md rounded-lg overflow-hidden">
+			{/* Header */}
+			<div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+				<div>
+					<h2 className="text-2xl font-semibold text-gray-800 flex items-center">
+						<Icon
+							icon="fluent-color:calendar-28"
+							className="mr-2 w-6 h-6 text-[#17c964]"
+						/>
+						SEDP Calendar
+					</h2>
+					<p className="text-sm text-gray-500 mt-1">
+						Manage events, announcements, and meetings
+					</p>
 				</div>
-			</CardHeader>
-			<CardBody>
+
+				{/* View Switcher */}
+				<div className="hidden md:flex ">
+					<Switcher />
+				</div>
+			</div>
+
+			{/* Calendar */}
+			<div className="p-4">
 				<FullCalendar
 					ref={calendarRef}
 					plugins={[
@@ -168,19 +132,20 @@ export function FCalendar({ events }: { events: Events }) {
 						listPlugin,
 					]}
 					initialView="dayGridMonth"
-					headerToolbar={renderToolbar}
-					customButtons={customButtons}
+					headerToolbar={headerToolbar}
+					customButtons={customButtons as any}
 					events={memoizedEvents}
-					// eventContent={renderEvent}
-					weekends={weekends}
+					// Styling and Interaction
 					editable={false}
-					selectable={false}
+					selectable={true}
 					selectMirror={true}
 					dayMaxEvents={true}
 					weekNumbers={true}
-					// nowIndicator={true}
-					height={"80vh"}
-					stickyHeaderDates={true}
+					height="auto"
+					// Color Customization
+					eventColor="#17c964"
+					eventTextColor="white"
+					// View-specific formatting
 					views={{
 						dayGridMonth: {
 							titleFormat: { year: "numeric", month: "long" },
@@ -188,16 +153,51 @@ export function FCalendar({ events }: { events: Events }) {
 						timeGridWeek: {
 							titleFormat: { year: "numeric", month: "long", day: "numeric" },
 						},
-						timeGridDay: {
-							titleFormat: { year: "numeric", month: "long", day: "numeric" },
-						},
 						listWeek: {
 							titleFormat: { year: "numeric", month: "long" },
 						},
 					}}
+					// Buttons appearance customization
+					buttonText={{
+						today: "Today",
+						month: "Month",
+						week: "Week",
+						list: "List",
+					}}
 				/>
-			</CardBody>
-		</Card>
+			</div>
+
+			{/* Mobile View Switcher */}
+			<div className="md:hidden flex justify-center pb-4 px-4">
+				<div className="inline-flex rounded-md shadow-sm">
+					{["dayGridMonth", "timeGridWeek", "listWeek"].map((view) => (
+						<button
+							key={view}
+							onClick={() => {
+								if (calendarRef.current) {
+									calendarRef.current.getApi().changeView(view);
+									setCurrentView(view);
+								}
+							}}
+							className={`
+                                px-4 py-2 text-sm border border-gray-200 
+                                first:rounded-l-lg last:rounded-r-lg
+                                ${
+																	currentView === view
+																		? "bg-[#17c964] text-white"
+																		: "text-gray-600 bg-white hover:bg-gray-50"
+																}
+                            `}>
+							{view === "dayGridMonth"
+								? "Month"
+								: view === "timeGridWeek"
+									? "Week"
+									: "List"}
+						</button>
+					))}
+				</div>
+			</div>
+		</div>
 	);
 }
 
