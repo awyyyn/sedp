@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
 	Table,
 	TableHeader,
@@ -16,7 +16,6 @@ import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { useSetAtom } from "jotai";
 import {
@@ -25,13 +24,21 @@ import {
 	DropdownMenu,
 	DropdownTrigger,
 } from "@heroui/dropdown";
+import { Card, CardBody } from "@heroui/card";
+import { Link } from "react-router-dom";
 
-import { systemUsersQuery } from "@/queries";
-import { PaginationResult, SystemUser, SystemUserRole } from "@/types";
-import DeleteModal from "@/components/delete-modal";
+import { systemUsersQuery, UPDATE_SYSTEM_USER_MUTATION } from "@/queries";
+import {
+	PaginationResult,
+	SystemUser,
+	SystemUserRole,
+	SystemUserStatus,
+} from "@/types";
 import { systemUsersAtom } from "@/states";
 import { getRoleDescription } from "@/lib/utils";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+
+import { DeleteModal } from "../__components";
+import { toast } from "sonner";
 
 const roleOptions: SystemUserRole[] = [
 	"SUPER_ADMIN",
@@ -75,10 +82,7 @@ export default function SystemUsers() {
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
-	const [toDeleteItem, setToDeleteItem] = useState<Pick<
-		SystemUser,
-		"id" | "email"
-	> | null>(null);
+	const [toDeleteItem, setToDeleteItem] = useState<SystemUser | null>(null);
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(
 		new Set(INITIAL_VISIBLE_COLUMNS)
 	);
@@ -94,6 +98,12 @@ export default function SystemUsers() {
 	const { loading, data } = useQuery<{
 		systemUsers: PaginationResult<SystemUser>;
 	}>(systemUsersQuery);
+	const [updateSystemUserStatus, { loading: updatingSystemUser }] = useMutation(
+		UPDATE_SYSTEM_USER_MUTATION,
+		{
+			refetchQueries: [systemUsersQuery],
+		}
+	);
 
 	const headerColumns = useMemo(() => {
 		if (visibleColumns === "all") return columns;
@@ -142,25 +152,47 @@ export default function SystemUsers() {
 			case "actions":
 				return (
 					<div className="relative flex  justify-center items-center gap-2">
-						<Tooltip content="Details">
-							<Link href={`/admin/system-users/${user.id}`}>
-								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-									<Icon icon="solar:info-square-bold" color="gray" />
-								</span>
-							</Link>
+						<Tooltip content="View Full Details">
+							<Button
+								size="sm"
+								variant="light"
+								isIconOnly
+								as={Link}
+								className="text-lg text-default-400 cursor-pointer active:opacity-50"
+								to={`/admin/system-users/${user.id}`}>
+								<Icon icon="solar:info-square-bold" color="gray" />
+							</Button>
 						</Tooltip>
-						<Tooltip content="Edit announcement">
-							<Link
-								href={`/admin/announcements/${user.id}/edit`}
+						<Tooltip content="Update Status">
+							<Button
+								size="sm"
+								variant="light"
+								isIconOnly
+								as={Link}
+								to={`/admin/announcements/${user.id}/edit`}
 								className="text-lg text-default-400  cursor-pointer active:opacity-50">
 								<Icon icon="fluent:slide-text-edit-28-filled" color="green" />
-							</Link>
+							</Button>
 						</Tooltip>
-						<Tooltip color="danger" content="Delete announcement">
-							<span className="text-lg text-danger cursor-pointer active:opacity-50">
-								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
-							</span>
+						<Tooltip
+							color="danger"
+							content={`${user.status === "DELETED" ? "Unblock" : "Block"} System User`}>
+							<Button
+								size="sm"
+								variant="light"
+								isIconOnly
+								onPress={() => {
+									setToDeleteItem(user);
+									setDeleteModal(true);
+								}}
+								className="text-lg text-danger cursor-pointer active:opacity-50">
+								<Icon
+									icon={`${user.status === "DELETED" ? "gg:unblock" : "gg:block"}`}
+									color="red"
+								/>
+							</Button>
 						</Tooltip>
+						{user.status}
 					</div>
 				);
 			case "phoneNumber":
@@ -419,19 +451,62 @@ export default function SystemUsers() {
 					</Table>
 				</CardBody>
 			</Card>
-			{deleteModal && toDeleteItem && (
-				<DeleteModal
-					setSystemUsersState={(id) => {
-						setSystemUsersState((prev) =>
-							prev.filter((user) => user.id !== id)
+
+			<DeleteModal
+				deleteLabel={`${toDeleteItem?.status === "DELETED" ? "Unblock" : "Block"} `}
+				loading={updatingSystemUser}
+				handleDeletion={async () => {
+					try {
+						if (!toDeleteItem) return;
+						await updateSystemUserStatus({
+							variables: {
+								values: {
+									id: toDeleteItem.id,
+									status:
+										toDeleteItem.status === "DELETED"
+											? toDeleteItem.verifiedAt
+												? "VERIFIED"
+												: "UNVERIFIED"
+											: "DELETED",
+								},
+							},
+						});
+						toast.success(
+							toDeleteItem.status === "DELETED"
+								? "System user status updated successfully"
+								: "System user status reverted successfully",
+							{
+								description:
+									toDeleteItem.status === "DELETED"
+										? "The system user's status has been updated."
+										: "The system user's status has been reverted.",
+								position: "top-center",
+								richColors: true,
+							}
 						);
-					}}
-					id={toDeleteItem.id}
-					email={toDeleteItem.email}
-					isOpen={deleteModal}
-					setState={setDeleteModal}
-				/>
-			)}
+						setDeleteModal(false);
+					} catch (erro) {
+						toast.error("Please try again later.", {
+							description: "If the problem persists, contact support.",
+							position: "top-center",
+							richColors: true,
+						});
+					}
+				}}
+				open={deleteModal}
+				setOpen={setDeleteModal}
+				hideNote={toDeleteItem?.status === "DELETED"}
+				title={
+					toDeleteItem?.status === "DELETED"
+						? "Unblock System User"
+						: "Delete System User"
+				}
+				description={
+					toDeleteItem?.status === "DELETED"
+						? "Are you sure you want to unblock this system user?"
+						: "Are you sure you want to delete this system user?"
+				}
+			/>
 		</>
 	);
 }
