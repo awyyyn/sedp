@@ -171,3 +171,11 @@ export const DELETE_ANNOUNCEMENT_MUTATION = gql`
 		}
 	}
 `;
+export const UPDATE_SYSTEM_USER_MUTATION = gql`
+	${systemUsersFragment}
+	mutation UpdateSystemUser($values: updateSystemUserInput) {
+		updateSystemUser(values: $values) {
+			...SystemUserFragment
+		}
+	}
+`;

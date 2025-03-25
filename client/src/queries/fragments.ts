@@ -19,6 +19,7 @@ export const systemUsersFragment = gql`
 		}
 		role
 		status
+		verifiedAt
 		createdAt
 		updatedAt
 	}
