@@ -103,6 +103,12 @@ export default function ScholarInfo() {
 								{formatDate(Number(data.student.birthDate))}
 							</p>
 						</div>
+						<div className="space-y-2">
+							<p className="text-sm font-medium text-muted-foreground">
+								Gender
+							</p>
+							<p className="font-medium">{data.student.gender}</p>
+						</div>
 					</div>
 				</CardBody>
 			</Card>
@@ -190,6 +196,15 @@ export default function ScholarInfo() {
 								{years.find(
 									(year) => year.value === Number(data.student.yearLevel)
 								)?.label ?? data.student.yearLevel}
+							</p>
+						</div>
+						<div className="space-y-2 sm:col-span-2">
+							<p className="text-sm font-medium text-muted-foreground">
+								Course
+							</p>
+							<p
+								className={`font-medium ${!data.student.course && "italic text-gray-400"}`}>
+								{data.student.course || "No data"}
 							</p>
 						</div>
 					</div>

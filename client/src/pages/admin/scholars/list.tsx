@@ -30,6 +30,7 @@ import { Card, CardBody } from "@heroui/card";
 import { READ_STUDENTS_QUERY } from "@/queries";
 import { PaginationResult, Student, StudentStatus, SystemUser } from "@/types";
 import { systemUsersAtom } from "@/states";
+import UpdateStatusModal from "./__components/update-status";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -69,15 +70,17 @@ const rowsPerPageItems = [
 ];
 
 export default function Scholars() {
-	const [deleteModal, setDeleteModal] = useState(false);
-	const setSystemUsersState = useSetAtom(systemUsersAtom);
 	const [rowsPerPage, setRowsPerPage] = useState<string>("2");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
+
+	const [openModal, setOpenModal] = useState(false);
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
 		SystemUser,
 		"id" | "email"
 	> | null>(null);
+	const [toUpdateScholar, setToUpdateScholar] = useState<Student | null>(null);
+
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(
 		new Set(INITIAL_VISIBLE_COLUMNS)
 	);
@@ -144,18 +147,26 @@ export default function Scholars() {
 								</span>
 							</Link>
 						</Tooltip>
-						<Tooltip content="Update Status">
-							<Link
-								href={`/admin/announcements/${user.id}/edit`}
-								className="text-lg text-default-400  cursor-pointer active:opacity-50">
-								<Icon icon="fluent:status-12-filled" color="green" />
-							</Link>
-						</Tooltip>
-						<Tooltip color="danger" content="Delete announcement">
+						{!user.statusUpdatedAt && (
+							<Tooltip content="Update Status">
+								<Button
+									size="sm"
+									isIconOnly
+									variant="light"
+									onPress={() => {
+										setToUpdateScholar(user);
+										setOpenModal(true);
+									}}
+									className="text-lg text-default-400  cursor-pointer active:opacity-50">
+									<Icon icon="fluent:status-12-filled" color="green" />
+								</Button>
+							</Tooltip>
+						)}
+						{/* <Tooltip color="danger" content="Delete announcement">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
 							</span>
-						</Tooltip>
+						</Tooltip> */}
 					</div>
 				);
 			case "phoneNumber":
@@ -431,6 +442,13 @@ export default function Scholars() {
 					</Table>
 				</CardBody>
 			</Card>
+			{toUpdateScholar && (
+				<UpdateStatusModal
+					isOpen={openModal}
+					setIsOpen={setOpenModal}
+					data={toUpdateScholar}
+				/>
+			)}
 		</>
 	);
 }
