@@ -26,19 +26,14 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { Link } from "react-router-dom";
-
-import { systemUsersQuery, UPDATE_SYSTEM_USER_MUTATION } from "@/queries";
-import {
-	PaginationResult,
-	SystemUser,
-	SystemUserRole,
-	SystemUserStatus,
-} from "@/types";
-import { systemUsersAtom } from "@/states";
-import { getRoleDescription } from "@/lib/utils";
+import { toast } from "sonner";
 
 import { DeleteModal } from "../__components";
-import { toast } from "sonner";
+
+import { systemUsersQuery, UPDATE_SYSTEM_USER_MUTATION } from "@/queries";
+import { PaginationResult, SystemUser, SystemUserRole } from "@/types";
+import { systemUsersAtom } from "@/states";
+import { getRoleDescription } from "@/lib/utils";
 
 const roleOptions: SystemUserRole[] = [
 	"SUPER_ADMIN",
@@ -189,10 +184,11 @@ export default function SystemUsers() {
 								<Icon
 									icon={`${user.status === "DELETED" ? "gg:unblock" : "gg:block"}`}
 									color="red"
+									height={20}
+									width={20}
 								/>
 							</Button>
 						</Tooltip>
-						{user.status}
 					</div>
 				);
 			case "phoneNumber":

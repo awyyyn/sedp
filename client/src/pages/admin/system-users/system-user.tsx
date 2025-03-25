@@ -1,19 +1,25 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
-import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-
 import { Divider } from "@heroui/divider";
-
-import { systemUserQuery } from "@/queries";
-import { SystemUser } from "@/types";
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import { toast } from "sonner";
+import { useState } from "react";
+
+import { DeleteModal } from "../__components";
+
+import {
+	systemUserQuery,
+	systemUsersQuery,
+	UPDATE_SYSTEM_USER_MUTATION,
+} from "@/queries";
+import { SystemUser } from "@/types";
 import { formatDate, getRoleDescription } from "@/lib/utils";
 
 export default function SystemUserPage() {
 	const { id } = useParams();
-
+	const [isOpen, setIsOpen] = useState(false);
 	const { data, loading } = useQuery<{ systemUser: SystemUser }>(
 		systemUserQuery,
 		{
@@ -23,7 +29,16 @@ export default function SystemUserPage() {
 		}
 	);
 
+	const [updateSystemUserStatus, { loading: updatingSystemUser }] = useMutation(
+		UPDATE_SYSTEM_USER_MUTATION,
+		{
+			refetchQueries: [systemUsersQuery, systemUserQuery],
+		}
+	);
+
 	if (loading || !data) return "loading...";
+
+	const isBlocked = data.systemUser.status === "DELETED";
 
 	return (
 		<div className="space-y-6 pb-10">
@@ -47,14 +62,13 @@ export default function SystemUserPage() {
 							</p>
 						</div>
 					</div>
-					{/* {!data.systemUser.statusUpdatedAt && (
-						<Button
-							className="text-white"
-							color="success"
-							onPress={() => setIsOpen(true)}>
-							Edit Status
-						</Button>
-					)} */}
+
+					<Button
+						className="text-white"
+						color="danger"
+						onPress={() => setIsOpen(true)}>
+						{isBlocked ? "Unblock" : "Block"}
+					</Button>
 				</CardHeader>
 			</Card>
 
@@ -191,6 +205,55 @@ export default function SystemUserPage() {
 					</div>
 				</CardBody>
 			</Card>
+
+			<DeleteModal
+				deleteLabel={`${isBlocked ? "Unblock" : "Block"} `}
+				loading={updatingSystemUser}
+				handleDeletion={async () => {
+					try {
+						await updateSystemUserStatus({
+							variables: {
+								values: {
+									id: data.systemUser.id,
+									status: isBlocked
+										? data.systemUser.verifiedAt
+											? "VERIFIED"
+											: "UNVERIFIED"
+										: "DELETED",
+								},
+							},
+						});
+						toast.success(
+							isBlocked
+								? "System user status updated successfully"
+								: "System user status reverted successfully",
+							{
+								description: isBlocked
+									? "The system user's status has been updated."
+									: "The system user's status has been reverted.",
+								position: "top-center",
+								richColors: true,
+							}
+						);
+						setIsOpen(false);
+					} catch (erro) {
+						toast.error("Please try again later.", {
+							description: "If the problem persists, contact support.",
+							position: "top-center",
+							richColors: true,
+						});
+					}
+				}}
+				open={isOpen}
+				setOpen={setIsOpen}
+				hideNote={isBlocked}
+				title={isBlocked ? "Unblock System User" : "Delete System User"}
+				description={
+					isBlocked
+						? "Are you sure you want to unblock this system user?"
+						: "Are you sure you want to delete this system user?"
+				}
+			/>
 		</div>
 	);
 }
