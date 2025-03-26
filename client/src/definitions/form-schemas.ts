@@ -57,3 +57,27 @@ export const AddAnnouncementSchema = yup.object({
 	title: yup.string().required("Title is required!"),
 	content: yup.string().required("Content is required"),
 });
+
+export const AddEventSchema = yup.object({
+	title: yup.string().required("Title must be at least 2 characters."),
+	description: yup.string().required("Description is required."),
+	location: yup.string().required("Location must be at least 2 characters."),
+	startDate: yup.string().required("Start date is required."),
+	endDate: yup.string().optional(),
+	// endDate: yup.string().required({
+	// 	required_error: "End date is required.",
+	// }),
+	startTime: yup.string().required("Start time is required."),
+	endTime: yup.string().required("End time is required."),
+});
+
+export const AddMeetingSchema = yup.object({
+	title: yup.string().required("Title must be at least 2 characters."),
+	description: yup
+		.string()
+		.required("Description must be at least 10 characters."),
+	location: yup.string().required("Location must be at least 2 characters."),
+	date: yup.string().required("Start date is required."),
+	startTime: yup.string().required("Start time is required."),
+	endTime: yup.string().required("End time is required."),
+});
