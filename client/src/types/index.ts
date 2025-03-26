@@ -4,6 +4,8 @@ import * as yup from "yup";
 import {
 	addAdminSchema,
 	AddAnnouncementSchema,
+	AddEventSchema,
+	AddMeetingSchema,
 	addScholarSchema,
 } from "@/definitions";
 
@@ -14,12 +16,15 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export * from "./system-user";
 export * from "./student";
 export * from "./announcement";
+export * from "./event";
 
 export type AddScholarSchemaData = yup.InferType<typeof addScholarSchema>;
 export type AddAdminSchemaData = yup.InferType<typeof addAdminSchema>;
 export type AddAnnouncementSchemaData = yup.InferType<
 	typeof AddAnnouncementSchema
 >;
+export type AddEventSchemaData = yup.InferType<typeof AddEventSchema>;
+export type AddMeetingSchemaData = yup.InferType<typeof AddMeetingSchema>;
 
 export interface PaginationResult<T> {
 	count: number;
