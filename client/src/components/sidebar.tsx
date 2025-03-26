@@ -1,4 +1,4 @@
-import { Menu, MenuItem, Sidebar, SubMenu } from "react-pro-sidebar";
+import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import {
 	Dropdown,
 	DropdownTrigger,
@@ -68,6 +68,13 @@ export function AppSidebar() {
 							href="/admin/events"
 							icon={<Icon icon="mdi:events" />}>
 							Calendar of Events
+						</MenuItem>
+						<MenuItem
+							component={<Link />}
+							className={`${pathname.includes("meetings") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+							href="/admin/meetings"
+							icon={<Icon icon="healthicons:group-discussion-meetingx3" />}>
+							Meetings
 						</MenuItem>
 						<MenuItem
 							component={<Link />}
