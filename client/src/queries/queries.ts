@@ -1,6 +1,11 @@
 import { gql } from "@apollo/client";
 
-import { studentsFragment, systemUsersFragment } from "./fragments";
+import {
+	eventFragment,
+	meetingFragment,
+	studentsFragment,
+	systemUsersFragment,
+} from "./fragments";
 
 export const generateTOTPQuery = gql`
 	query {
@@ -85,6 +90,50 @@ export const READ_STUDENT_QUERY = gql`
 	query ($id: String!) {
 		student(id: $id) {
 			...StudentFragment
+		}
+	}
+`;
+
+export const READ_EVENTS_QUERY = gql`
+	${eventFragment}
+	query ($filter: String, $pagination: PaginationInput) {
+		events(filter: $filter, pagination: $pagination) {
+			count
+			hasMore
+			data {
+				...EventFragment
+			}
+		}
+	}
+`;
+
+export const READ_EVENT_QUERY = gql`
+	${eventFragment}
+	query ($eventId: ID!) {
+		event(id: $eventId) {
+			...EventFragment
+		}
+	}
+`;
+
+export const READ_MEETING_QUERY = gql`
+	${meetingFragment}
+	query ($meetingId: ID!) {
+		meeting(id: $meetingId) {
+			...MeetingFragment
+		}
+	}
+`;
+
+export const READ_MEETINGS_QUERY = gql`
+	${meetingFragment}
+	query ($pagination: PaginationInput, $filter: String) {
+		meetings(pagination: $pagination, filter: $filter) {
+			data {
+				...MeetingFragment
+			}
+			hasMore
+			count
 		}
 	}
 `;

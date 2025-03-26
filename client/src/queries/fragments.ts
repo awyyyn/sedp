@@ -49,3 +49,30 @@ export const studentsFragment = gql`
 		updatedAt
 	}
 `;
+
+export const eventFragment = gql`
+	fragment EventFragment on Event {
+		id
+		title
+		description
+		startTime
+		endTime
+		location
+		startDate
+		endDate
+		createdAt
+	}
+`;
+
+export const meetingFragment = gql`
+	fragment MeetingFragment on Meeting {
+		id
+		title
+		description
+		startTime
+		endTime
+		location
+		date
+		createdAt
+	}
+`;

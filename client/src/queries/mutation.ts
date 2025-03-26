@@ -1,6 +1,10 @@
 import { gql } from "@apollo/client";
 
-import { studentsFragment, systemUsersFragment } from "./fragments";
+import {
+	eventFragment,
+	studentsFragment,
+	systemUsersFragment,
+} from "./fragments";
 
 export const verifyTOTPMutation = gql`
 	mutation ($secret: String!, $token: String!) {
@@ -176,6 +180,58 @@ export const UPDATE_SYSTEM_USER_MUTATION = gql`
 	mutation UpdateSystemUser($values: updateSystemUserInput) {
 		updateSystemUser(values: $values) {
 			...SystemUserFragment
+		}
+	}
+`;
+
+export const CREATE_EVENT_MUTATION = gql`
+	${eventFragment}
+	mutation (
+		$description: String!
+		$startTime: String!
+		$endTime: String!
+		$location: String!
+		$startDate: String!
+		$endDate: String!
+		$title: String!
+	) {
+		event: createEvent(
+			description: $description
+			startTime: $startTime
+			endTime: $endTime
+			location: $location
+			startDate: $startDate
+			endDate: $endDate
+			title: $title
+		) {
+			...EventFragment
+		}
+	}
+`;
+
+export const UPDATE_EVENT_MUTATION = gql`
+	${eventFragment}
+	mutation (
+		$description: String!
+		$startTime: String!
+		$endTime: String!
+		$location: String!
+		$startDate: String!
+		$endDate: String!
+		$title: String!
+		$id: ID!
+	) {
+		event: updateEvent(
+			description: $description
+			startTime: $startTime
+			endTime: $endTime
+			location: $location
+			startDate: $startDate
+			endDate: $endDate
+			title: $title
+			id: $id
+		) {
+			...EventFragment
 		}
 	}
 `;
