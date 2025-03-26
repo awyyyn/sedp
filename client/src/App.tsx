@@ -21,6 +21,14 @@ import AddAnnouncement from "@/pages/admin/announcements/add";
 import AnnouncementInfo from "@/pages/admin/announcements/info";
 import EditAnnouncement from "@/pages/admin/announcements/edit";
 import ScholarInfo from "@/pages/admin/scholars/info";
+import EventLists from "@/pages/admin/events/list";
+import AddEvent from "@/pages/admin/events/add";
+import EventInfo from "@/pages/admin/events/info";
+import EditEvent from "@/pages/admin/events/edit";
+import Meetings from "@/pages/admin/meetings/list";
+import AddMeeting from "@/pages/admin/meetings/add";
+import MeetingInfo from "@/pages/admin/meetings/info";
+import EditMeeting from "@/pages/admin/meetings/edit";
 
 function App() {
 	const adminRoutes = {
@@ -51,7 +59,58 @@ function App() {
 							},
 						],
 					},
-
+					{
+						path: "events",
+						children: [
+							{
+								element: <EventLists />,
+								index: true,
+							},
+							{
+								element: <AddEvent />,
+								path: "add",
+							},
+							{
+								path: ":id",
+								children: [
+									{
+										element: <EventInfo />,
+										index: true,
+									},
+									{
+										element: <EditEvent />,
+										path: "edit",
+									},
+								],
+							},
+						],
+					},
+					{
+						path: "meetings",
+						children: [
+							{
+								element: <Meetings />,
+								index: true,
+							},
+							{
+								element: <AddMeeting />,
+								path: "add",
+							},
+							{
+								path: ":id",
+								children: [
+									{
+										element: <MeetingInfo />,
+										index: true,
+									},
+									{
+										element: <EditMeeting />,
+										path: "edit",
+									},
+								],
+							},
+						],
+					},
 					{
 						path: "announcements",
 						children: [

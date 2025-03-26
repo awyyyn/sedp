@@ -346,7 +346,7 @@ export default function SystemUsers() {
 							</p>
 						</div>
 
-						<Button as={Link} href="/admin/system-users/add">
+						<Button as={Link} to="/admin/system-users/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add System User
 						</Button>
