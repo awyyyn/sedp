@@ -20,6 +20,10 @@ export const typeDefs = gql`
 			pagination: PaginationInput
 		): AnnouncementsResult
 		announcement(id: String): Announcement
+		events(filter: String, pagination: PaginationInput): EventsResult
+		event(id: ID!): Event
+		meeting(id: ID!): Meeting
+		meetings(filter: String, pagination: PaginationInput): MeetingsResult
 	}
 
 	type Mutation {
@@ -76,6 +80,41 @@ export const typeDefs = gql`
 		createAnnouncement(title: String!, content: String!): Announcement
 		updateAnnouncement(id: ID!, title: String!, content: String!): Announcement
 		deleteAnnouncement(id: ID!): Announcement
+		createEvent(
+			description: String!
+			startTime: String!
+			endTime: String!
+			location: String!
+			startDate: String!
+			endDate: String!
+			title: String!
+		): Event
+		updateEvent(
+			description: String!
+			startTime: String!
+			endTime: String!
+			location: String!
+			startDate: String!
+			endDate: String!
+			title: String!
+			id: ID!
+		): Event
+		createMeeting(
+			description: String!
+			startTime: String!
+			endTime: String!
+			location: String!
+			date: String!
+			title: String!
+		): Meeting
+		updateMeeting(
+			startTime: String!
+			endTime: String!
+			location: String!
+			date: String!
+			id: ID!
+			title: String!
+		): Meeting
 	}
 
 	type SendEmailResult {
@@ -126,6 +165,17 @@ export const typeDefs = gql`
 	}
 	type AnnouncementsResult {
 		data: [Announcement]
+		hasMore: Boolean
+		count: Int
+	}
+
+	type EventsResult {
+		data: [Event]
+		hasMore: Boolean
+		count: Int
+	}
+	type MeetingsResult {
+		data: [Meeting]
 		hasMore: Boolean
 		count: Int
 	}

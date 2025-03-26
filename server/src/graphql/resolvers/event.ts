@@ -23,15 +23,18 @@ export const createEventResolver = async (
 			throw new GraphQLError("Unauthorized!");
 		}
 
-		const newEvent = await upsertEvent({
-			description,
-			endDate,
-			endTime,
-			location,
-			startDate,
-			startTime,
-			title,
-		});
+		const newEvent = await upsertEvent(
+			{
+				description,
+				endDate,
+				endTime,
+				location,
+				startDate,
+				startTime,
+				title,
+			},
+			"67dfd118d8898db58de87455"
+		);
 
 		if (!newEvent) throw new GraphQLError("Failed to create event!");
 

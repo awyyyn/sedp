@@ -17,6 +17,14 @@ import {
 	announcementResolver,
 	updateAnnouncementResolver,
 	deleteAnnouncementResolver,
+	createMeetingResolver,
+	createEventResolver,
+	updateMeetingResolver,
+	updateEventResolver,
+	eventsResolver,
+	eventResolver,
+	meetingsResolver,
+	meetingResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -28,6 +36,10 @@ export const resolvers = {
 		student: studentResolver,
 		announcements: announcementsResolver,
 		announcement: announcementResolver,
+		events: eventsResolver,
+		event: eventResolver,
+		meetings: meetingsResolver,
+		meeting: meetingResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
@@ -41,5 +53,9 @@ export const resolvers = {
 		createAnnouncement: createAnnouncementResolver,
 		updateAnnouncement: updateAnnouncementResolver,
 		deleteAnnouncement: deleteAnnouncementResolver,
+		createMeeting: createMeetingResolver,
+		createEvent: createEventResolver,
+		updateMeeting: updateMeetingResolver,
+		updateEvent: updateEventResolver,
 	},
 };
