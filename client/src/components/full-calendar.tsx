@@ -5,9 +5,28 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useWindowSize } from "usehooks-ts";
+import { Link } from "react-router-dom";
 
-export function FCalendar({ events }: { events: any[] }) {
+/*  
+  	id: string;
+	editable: boolean;
+	durationEditable: boolean;
+	interactive: boolean;
+	start: Date;
+	end: Date;
+	title: string;
+	location: string;
+	backgroundColor?: string;
+	borderColor?: string;
+*/
+
+export function FCalendar<T>({
+	events,
+	type = "EVENT",
+}: {
+	events: T[];
+	type: "MEETING" | "EVENT";
+}) {
 	const calendarRef = React.useRef<any>(null);
 	const [currentView, setCurrentView] = React.useState("dayGridMonth");
 
@@ -135,6 +154,19 @@ export function FCalendar({ events }: { events: any[] }) {
 					headerToolbar={headerToolbar}
 					customButtons={customButtons as any}
 					events={memoizedEvents}
+					eventContent={(eventInfo) => {
+						console.log(eventInfo, "qqq event");
+
+						return (
+							<Link
+								to={`/admin/events/${eventInfo.event.id}`}
+								className="relative overflow-hidden p-2"
+								suppressHydrationWarning>
+								<h1 className="block  ">{eventInfo.event.title}</h1>
+								<p className="block  ">{(eventInfo.event as any).location}</p>
+							</Link>
+						);
+					}}
 					// Styling and Interaction
 					editable={false}
 					selectable={true}

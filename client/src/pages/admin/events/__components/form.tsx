@@ -16,12 +16,17 @@ import {
 } from "@internationalized/date";
 import { TimeInput, TimeInputValue } from "@heroui/date-input";
 import { useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "date-fns";
 
 import { AddEventSchema } from "@/definitions";
-import { AddEventSchemaData, Event } from "@/types";
+import {
+	AddEventSchemaData,
+	CalendarEvent,
+	Event,
+	PaginationResult,
+} from "@/types";
 import {
 	CREATE_EVENT_MUTATION,
 	READ_EVENTS_QUERY,
@@ -44,15 +49,8 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 		edit ? UPDATE_EVENT_MUTATION : CREATE_EVENT_MUTATION
 	);
 
-	console.log(
-		"qqqq",
-		defaultValues &&
-			formatDate(
-				parseAbsoluteToLocal(
-					new Date(defaultValues.endDate).toISOString()
-				).toDate(),
-				"yyyy-MM-dd"
-			)
+	const { data } = useQuery<{ events: PaginationResult<Event> }>(
+		READ_EVENTS_QUERY
 	);
 
 	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>({
@@ -75,6 +73,23 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 	});
 
 	const navigate = useNavigate();
+
+	const disabledRanges = (data?.events.data || []).map((event: Event) => {
+		const startDate = parseDate(
+			formatDate(
+				parseAbsoluteToLocal(new Date(event.startDate).toISOString()).toDate(),
+				"yyyy-MM-dd"
+			)
+		);
+		const endDate = parseDate(
+			formatDate(
+				parseAbsoluteToLocal(new Date(event.endDate).toISOString()).toDate(),
+				"yyyy-MM-dd"
+			)
+		);
+
+		return [startDate, endDate];
+	});
 
 	return (
 		<Card className="rounded-md shadow-md mb-10 ">
@@ -163,8 +178,6 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 							isValid,
 							isSubmitting,
 						}) => {
-							console.log(errors, "qqq");
-
 							return (
 								<Form
 									className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
@@ -196,6 +209,27 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 									/>
 
 									<DateRangePicker
+										visibleMonths={2}
+										isDateUnavailable={(date) =>
+											disabledRanges.some(
+												(interval) =>
+													date.compare(interval[0]) >= 0 &&
+													date.compare(interval[1]) <= 0
+											)
+										}
+										validate={(value) =>
+											disabledRanges.some(
+												(interval) =>
+													value &&
+													// @ts-ignore
+													value.end.compare(interval[0]) >= 0 &&
+													// @ts-ignore
+													value.start.compare(interval[1]) <= 0
+											)
+												? "Selected date range may not include unavailable dates."
+												: null
+										}
+										validationBehavior="native"
 										showMonthAndYearPickers
 										isReadOnly={isSubmitting}
 										isInvalid={touched.startDate && !!errors.startDate}

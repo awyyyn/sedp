@@ -33,3 +33,13 @@ export interface PaginationResult<T> {
 }
 
 export type Gender = "MALE" | "FEMALE";
+
+export interface CalendarEvent {
+	id: string;
+	start: string;
+	end: string;
+	location: string;
+	title: string;
+	backgroundColor: string;
+	borderColor: string;
+}

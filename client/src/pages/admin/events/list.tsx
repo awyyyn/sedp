@@ -31,9 +31,11 @@ import { toast } from "sonner";
 import { DeleteModal } from "../__components";
 
 import { DELETE_EVENT_MUTATION, READ_EVENTS_QUERY } from "@/queries";
-import { Event, PaginationResult, StudentStatus } from "@/types";
+import { CalendarEvent, Event, PaginationResult, StudentStatus } from "@/types";
 import { FCalendar } from "@/components";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
+import { useSetAtom } from "jotai";
+import { eventsAtom } from "@/states";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -73,6 +75,7 @@ export default function EventList() {
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
 	const [openModal, setOpenModal] = useState(false);
+	const setEvents = useSetAtom(eventsAtom);
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
 		Event,
 		"id" | "title"
@@ -94,8 +97,12 @@ export default function EventList() {
 
 	const { loading, data } = useQuery<{
 		events: PaginationResult<Event>;
+		calendarEvents: CalendarEvent[];
 	}>(READ_EVENTS_QUERY, {
 		// nextFetchPolicy: "standby",
+		onCompleted: (data) => {
+			setEvents(data?.events.data || []);
+		},
 	});
 
 	const headerColumns = useMemo(() => {
@@ -433,7 +440,7 @@ export default function EventList() {
 							</Table>
 						</Tab>
 						<Tab key="calendar" title="Calendar">
-							<FCalendar events={[]} />
+							<FCalendar type="EVENT" events={data?.calendarEvents || []} />
 						</Tab>
 					</Tabs>
 				</CardBody>

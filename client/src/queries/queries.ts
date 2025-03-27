@@ -104,6 +104,16 @@ export const READ_EVENTS_QUERY = gql`
 				...EventFragment
 			}
 		}
+
+		calendarEvents {
+			id
+			start
+			end
+			title
+			location
+			backgroundColor
+			borderColor
+		}
 	}
 `;
 
@@ -134,6 +144,20 @@ export const READ_MEETINGS_QUERY = gql`
 			}
 			hasMore
 			count
+		}
+	}
+`;
+
+export const GET_CALENDAR_EVENTS_QUERY = gql`
+	query {
+		calendarEvents {
+			id
+			start
+			end
+			title
+			location
+			backgroundColor
+			borderColor
 		}
 	}
 `;
