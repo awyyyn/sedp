@@ -109,8 +109,8 @@ export const READ_EVENTS_QUERY = gql`
 
 export const READ_EVENT_QUERY = gql`
 	${eventFragment}
-	query ($eventId: ID!) {
-		event(id: $eventId) {
+	query ($id: ID!) {
+		event(id: $id) {
 			...EventFragment
 		}
 	}
