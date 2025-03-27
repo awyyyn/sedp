@@ -1,5 +1,10 @@
 import { Events } from "@prisma/client";
-import { readAllEvents, readEvent, upsertEvent } from "../../models/event.js";
+import {
+	deleteEvent,
+	readAllEvents,
+	readEvent,
+	upsertEvent,
+} from "../../models/event.js";
 import { AppContext, PaginationArgs } from "../../types/index.js";
 import { GraphQLError } from "graphql";
 
@@ -106,6 +111,19 @@ export const eventsResolver = async (
 export const eventResolver = async (_: never, { id }: { id: string }) => {
 	try {
 		const event = await readEvent(id);
+
+		if (!event) throw new GraphQLError("Failed to create event!");
+
+		return event;
+	} catch (err) {
+		console.log(err);
+		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const deleteEventResolver = async (_: never, { id }: { id: string }) => {
+	try {
+		const event = await deleteEvent(id);
 
 		if (!event) throw new GraphQLError("Failed to create event!");
 

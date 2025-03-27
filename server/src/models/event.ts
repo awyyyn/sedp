@@ -78,3 +78,9 @@ export async function readEvent(id: string) {
 		},
 	});
 }
+
+export const deleteEvent = async (id: string) => {
+	return await prisma.events.delete({
+		where: { id },
+	});
+};
