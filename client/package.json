@@ -45,6 +45,7 @@
 		"@heroui/theme": "2.4.5",
 		"@heroui/tooltip": "^2.2.8",
 		"@internationalized/date": "3.7.0",
+		"@react-aria/i18n": "3.12.6",
 		"@react-aria/visually-hidden": "3.8.12",
 		"@react-types/shared": "3.26.0",
 		"@tiptap/pm": "^2.11.5",
