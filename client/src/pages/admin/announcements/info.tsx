@@ -28,7 +28,7 @@ export default function AnnouncementInfo() {
 	const announcement = data.announcement;
 
 	return (
-		<div className="max-w-7xl mx-auto p-6">
+		<div className="max-w-screen-lg mx-auto p-6">
 			<div className="flex flex-col   mb-6">
 				<Button
 					variant="flat"
