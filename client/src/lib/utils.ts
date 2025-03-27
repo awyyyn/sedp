@@ -1,4 +1,9 @@
-import { formatDate as formatDateFns } from "date-fns";
+import {
+	format,
+	formatDate as formatDateFns,
+	isSameDay,
+	isSameMonth,
+} from "date-fns";
 
 export function generatePassword(length = 12) {
 	const charset =
@@ -17,6 +22,7 @@ export function generatePassword(length = 12) {
 }
 
 import { SystemUserRole } from "../types/system-user.js";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 
 export function getRoleDescription(role: SystemUserRole): string {
 	switch (role) {
@@ -40,4 +46,33 @@ export const formatDate = (date: string | number) => {
 		new Date(isNaN(Number(date)) ? date : Number(date)),
 		"MMMM dd, yyyy"
 	);
+};
+
+export const formatEventDate = (startDate: string, endDate: string) => {
+	const sameDay = isSameDay(new Date(startDate), new Date(endDate));
+
+	const formattedStartDate = parseAbsoluteToLocal(startDate).toAbsoluteString();
+	const formattedEndDate = parseAbsoluteToLocal(endDate).toAbsoluteString();
+
+	const sameMonth = isSameMonth(new Date(startDate), new Date(endDate));
+
+	const sameDateLabel = formatDateFns(
+		parseAbsoluteToLocal(startDate).toAbsoluteString(),
+		"MMM dd, yyyy"
+	);
+	const sameMonthLabel = `${formatDateFns(formattedStartDate, "MMM dd")} - ${formatDateFns(formattedEndDate, "dd yyyy")}`;
+	const twoOrMoreMonthLabel = `${formatDateFns(formattedStartDate, "MMM dd")} - ${formatDateFns(formattedEndDate, "MMM dd, yyyy")}`;
+
+	return sameDay
+		? sameDateLabel
+		: sameMonth
+			? sameMonthLabel
+			: twoOrMoreMonthLabel;
+};
+
+export const formatEventTime = (startTime: string, endTime: string) => {
+	const formattedStartTime = parseAbsoluteToLocal(startTime).toAbsoluteString();
+	const formattedEndTime = parseAbsoluteToLocal(endTime).toAbsoluteString();
+
+	return `${format(formattedStartTime, "hh:mm a")} - ${format(formattedEndTime, "hh:mm a")}`;
 };
