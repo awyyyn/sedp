@@ -75,3 +75,11 @@ export async function readMeeting(id: string) {
 		},
 	});
 }
+
+export async function deleteMeeting(id: string) {
+	return await prisma.meeting.delete({
+		where: {
+			id,
+		},
+	});
+}

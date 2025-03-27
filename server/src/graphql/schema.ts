@@ -116,6 +116,7 @@ export const typeDefs = gql`
 			title: String!
 		): Meeting
 		deleteEvent(id: ID!): Event
+		deleteMeeting(id: ID!): Meeting
 	}
 
 	type SendEmailResult {

@@ -26,6 +26,7 @@ import {
 	meetingsResolver,
 	meetingResolver,
 	deleteEventResolver,
+	deleteMeetingResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -59,5 +60,6 @@ export const resolvers = {
 		updateMeeting: updateMeetingResolver,
 		updateEvent: updateEventResolver,
 		deleteEvent: deleteEventResolver,
+		deleteMeeting: deleteMeetingResolver,
 	},
 };
