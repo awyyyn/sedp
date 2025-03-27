@@ -1,3 +1,6 @@
+import type { RangeValue } from "@react-types/shared";
+import type { DateValue } from "@internationalized/date";
+
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input, Textarea } from "@heroui/input";
 import { Form, Formik } from "formik";
@@ -7,16 +10,23 @@ import { DateRangePicker } from "@heroui/date-picker";
 import {
 	getLocalTimeZone,
 	parseAbsoluteToLocal,
+	parseDate,
 	Time,
 	today,
 } from "@internationalized/date";
 import { TimeInput, TimeInputValue } from "@heroui/date-input";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { formatDate } from "date-fns";
 
 import { AddEventSchema } from "@/definitions";
 import { AddEventSchemaData, Event } from "@/types";
-import { CREATE_EVENT_MUTATION, UPDATE_EVENT_MUTATION } from "@/queries";
+import {
+	CREATE_EVENT_MUTATION,
+	READ_EVENTS_QUERY,
+	UPDATE_EVENT_MUTATION,
+} from "@/queries";
 
 interface EventFormProps {
 	edit?: boolean;
@@ -24,7 +34,9 @@ interface EventFormProps {
 }
 
 export default function EventForm({ edit, defaultValues }: EventFormProps) {
-	let [startTime, setStartTime] = useState<TimeInputValue | null>();
+	let [startTime, setStartTime] = useState<TimeInputValue | null>(
+		defaultValues ? parseAbsoluteToLocal(defaultValues.startTime) : null
+	);
 	let [endTime, setEndTime] = useState<TimeInputValue | null>(
 		defaultValues ? parseAbsoluteToLocal(defaultValues.endTime) : null
 	);
@@ -32,21 +44,63 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 		edit ? UPDATE_EVENT_MUTATION : CREATE_EVENT_MUTATION
 	);
 
-	// let formatter = useDateFormatter({ dateStyle: "short", timeStyle: "long" });
+	console.log(
+		"qqqq",
+		defaultValues &&
+			formatDate(
+				parseAbsoluteToLocal(
+					new Date(defaultValues.endDate).toISOString()
+				).toDate(),
+				"yyyy-MM-dd"
+			)
+	);
+
+	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>({
+		start: parseDate(
+			formatDate(
+				parseAbsoluteToLocal(
+					new Date(defaultValues?.startDate || new Date()).toISOString()
+				).toDate(),
+				"yyyy-MM-dd"
+			)
+		),
+		end: parseDate(
+			formatDate(
+				parseAbsoluteToLocal(
+					new Date(defaultValues?.endDate || new Date()).toISOString()
+				).toDate(),
+				"yyyy-MM-dd"
+			)
+		),
+	});
+
+	const navigate = useNavigate();
 
 	return (
 		<Card className="rounded-md shadow-md mb-10 ">
 			<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-				<h1 className="text-2xl">Create New Event</h1>
+				<h1 className="text-2xl">{edit ? "Edit" : "Create New"} Event</h1>
 				<p>
-					Fill in the details to create a new event and manage its settings.
+					{edit
+						? "Edit the details of the event."
+						: "Fill in the details to create a new event and manage its settings."}
 				</p>
 			</CardHeader>
 			<CardBody className="bg-[#A6F3B235]">
 				<div className="lg:max-w-[80%] w-full mx-auto my-5">
 					<Formik
 						validationSchema={AddEventSchema}
-						initialValues={{} as AddEventSchemaData}
+						initialValues={
+							{
+								title: defaultValues?.title || "",
+								location: defaultValues?.location || "",
+								description: defaultValues?.description || "",
+								startDate: defaultValues?.startDate || "",
+								endDate: defaultValues?.startDate || "",
+								startTime: defaultValues?.startTime || "",
+								endTime: defaultValues?.endTime || "",
+							} as AddEventSchemaData
+						}
 						onSubmit={async (values: AddEventSchemaData, helpers) => {
 							try {
 								const variables = {
@@ -56,9 +110,22 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 
 								await upsertEvent({
 									variables,
+									refetchQueries: [READ_EVENTS_QUERY],
 								});
 
-								helpers.resetForm();
+								navigate("/admin/events");
+
+								helpers.resetForm({
+									values: {
+										description: "",
+										endTime: "",
+										location: "",
+										startDate: "",
+										startTime: "",
+										title: "",
+										endDate: "",
+									},
+								});
 
 								toast.success(
 									edit
@@ -134,6 +201,8 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 										isInvalid={touched.startDate && !!errors.startDate}
 										errorMessage={String(errors.startDate)}
 										onBlur={handleBlur}
+										// @ts-ignore
+										value={dateRange}
 										onChange={(e) => {
 											if (e === null) return;
 											const dateValue: {
@@ -166,6 +235,7 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 													)
 												: null;
 
+											setDateRange(e);
 											setFieldValue("startDate", startDate?.toISOString());
 											setFieldValue("endDate", endDate?.toISOString());
 										}}
@@ -176,19 +246,6 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 
 									<TimeInput
 										name="startTime"
-										// onChange={(e) => {
-										// 	if (!e) return;
-
-										// 	const time = new Date(
-										// 		new Date().setHours(e.hour, Number(e.minute))
-										// 	).toISOString();
-
-										// 	// const time = parseAbsoluteToLocal(
-										// 	// 	"2025-03-25T18:03:54.068Z"
-										// 	// );
-										// 	setFieldValue("startTime", time);
-										// }}
-
 										value={startTime}
 										onChange={(time) => {
 											if (!time) return;
@@ -199,6 +256,8 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 
 											setFieldValue("startTime", value);
 										}}
+										isInvalid={touched.startTime && !!errors.startTime}
+										errorMessage={errors.startTime}
 										className="h-full lg:col-span-3"
 										size="lg"
 									/>
@@ -206,6 +265,8 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 									<TimeInput
 										size="lg"
 										name="endTime"
+										isInvalid={touched.endTime && !!errors.endTime}
+										errorMessage={errors.endTime}
 										minValue={new Time(startTime?.hour)}
 										className="h-full lg:col-span-3"
 										onBlur={handleBlur}
