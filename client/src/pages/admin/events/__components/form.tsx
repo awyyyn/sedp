@@ -53,24 +53,28 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 		READ_EVENTS_QUERY
 	);
 
-	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>({
-		start: parseDate(
-			formatDate(
-				parseAbsoluteToLocal(
-					new Date(defaultValues?.startDate || new Date()).toISOString()
-				).toDate(),
-				"yyyy-MM-dd"
-			)
-		),
-		end: parseDate(
-			formatDate(
-				parseAbsoluteToLocal(
-					new Date(defaultValues?.endDate || new Date()).toISOString()
-				).toDate(),
-				"yyyy-MM-dd"
-			)
-		),
-	});
+	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(
+		defaultValues
+			? {
+					start: parseDate(
+						formatDate(
+							parseAbsoluteToLocal(
+								new Date(defaultValues?.startDate || new Date()).toISOString()
+							).toDate(),
+							"yyyy-MM-dd"
+						)
+					),
+					end: parseDate(
+						formatDate(
+							parseAbsoluteToLocal(
+								new Date(defaultValues?.endDate || new Date()).toISOString()
+							).toDate(),
+							"yyyy-MM-dd"
+						)
+					),
+				}
+			: null
+	);
 
 	const navigate = useNavigate();
 
@@ -110,8 +114,8 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 								title: defaultValues?.title || "",
 								location: defaultValues?.location || "",
 								description: defaultValues?.description || "",
-								startDate: defaultValues?.startDate || "",
-								endDate: defaultValues?.startDate || "",
+								startDate: defaultValues ? defaultValues.startDate : "",
+								endDate: defaultValues ? defaultValues.endDate : "",
 								startTime: defaultValues?.startTime || "",
 								endTime: defaultValues?.endTime || "",
 							} as AddEventSchemaData
