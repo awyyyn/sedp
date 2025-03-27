@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
 	Table,
 	TableHeader,
@@ -25,12 +25,15 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
-import { READ_EVENTS_QUERY } from "@/queries";
-import { Event, PaginationResult, Student, StudentStatus } from "@/types";
+import { DeleteModal } from "../__components";
+
+import { DELETE_EVENT_MUTATION, READ_EVENTS_QUERY } from "@/queries";
+import { Event, PaginationResult, StudentStatus } from "@/types";
 import { FCalendar } from "@/components";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
-import { Link } from "react-router-dom";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -76,6 +79,9 @@ export default function EventList() {
 	> | null>(null);
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(
 		new Set(INITIAL_VISIBLE_COLUMNS)
+	);
+	const [deleteEvent, { loading: deletingEvent }] = useMutation(
+		DELETE_EVENT_MUTATION
 	);
 
 	const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -147,12 +153,19 @@ export default function EventList() {
 								<Icon icon="fluent:status-12-filled" color="green" />
 							</Button>
 						</Tooltip>
-
-						{/* <Tooltip color="danger" content="Delete announcement">
-							<span className="text-lg text-danger cursor-pointer active:opacity-50">
+						<Tooltip color="danger" content="Delete event">
+							<Button
+								size="sm"
+								isIconOnly
+								variant="light"
+								onPress={() => {
+									setToDeleteItem(event);
+									setOpenModal(true);
+								}}
+								className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
-							</span>
-						</Tooltip> */}
+							</Button>
+						</Tooltip>
 					</div>
 				);
 			default:
@@ -425,6 +438,39 @@ export default function EventList() {
 					</Tabs>
 				</CardBody>
 			</Card>
+
+			<DeleteModal
+				hideNote={false}
+				deleteLabel={`Delete event`}
+				loading={deletingEvent}
+				handleDeletion={async () => {
+					try {
+						if (!toDeleteItem) return;
+						await deleteEvent({
+							variables: {
+								id: toDeleteItem.id,
+							},
+							refetchQueries: [READ_EVENTS_QUERY],
+						});
+						toast.success("Event deleted successfully", {
+							description: "The event has been deleted.",
+							position: "top-center",
+							richColors: true,
+						});
+						setOpenModal(false);
+					} catch (erro) {
+						toast.error("Please try again later.", {
+							description: "If the problem persists, contact support.",
+							position: "top-center",
+							richColors: true,
+						});
+					}
+				}}
+				open={openModal}
+				setOpen={setOpenModal}
+				title={"Delete Event"}
+				description={"Are you sure you want to delete this event?"}
+			/>
 		</>
 	);
 }

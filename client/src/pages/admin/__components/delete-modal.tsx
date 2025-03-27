@@ -78,7 +78,10 @@ export function DeleteModal({
 									isLoading={loading}
 									isDisabled={confirm !== "confirm"}
 									variant="light"
-									onPress={handleDeletion}>
+									onPress={() => {
+										handleDeletion();
+										setConfirm("");
+									}}>
 									{deleteLabel}
 								</Button>
 							</ModalFooter>
