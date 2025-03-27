@@ -16,7 +16,6 @@ import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import {
 	Dropdown,
@@ -27,9 +26,11 @@ import {
 import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
 
-import { READ_STUDENTS_QUERY } from "@/queries";
-import { PaginationResult, Student, StudentStatus, SystemUser } from "@/types";
+import { READ_EVENTS_QUERY } from "@/queries";
+import { Event, PaginationResult, Student, StudentStatus } from "@/types";
 import { FCalendar } from "@/components";
+import { formatEventDate, formatEventTime } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -40,26 +41,22 @@ const statusOptions: StudentStatus[] = [
 ];
 
 export const columns = [
-	{ name: "NAME", uid: "name", sortable: true },
-	{ name: "EMAIL", uid: "email", sortable: true },
-	{ name: "PHONE", uid: "phoneNumber", sortable: true },
-	{ name: "ADDRESS", uid: "address" },
-	{ name: "STATUS", uid: "status" },
+	{ name: "TITLE", uid: "title", sortable: true },
+	{ name: "DATE", uid: "date" },
+	{ name: "TIME", uid: "time" },
+	// { name: "STATUS", uid: "status" },
 	{ name: "ACTIONS", uid: "actions" },
 ];
 
 const INITIAL_VISIBLE_COLUMNS = [
-	"name",
-	"email",
-	"phoneNumber",
-	"address",
-	"status",
+	"title",
+	"date",
+	"time",
+	// "status",
 	"actions",
 ];
 
 const rowsPerPageItems = [
-	{ key: "2", label: "2" },
-	{ key: "4", label: "4" },
 	{ key: "25", label: "25" },
 	{ key: "50", label: "50" },
 	{
@@ -69,17 +66,14 @@ const rowsPerPageItems = [
 ];
 
 export default function EventList() {
-	const [rowsPerPage, setRowsPerPage] = useState<string>("2");
+	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
-
 	const [openModal, setOpenModal] = useState(false);
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
-		SystemUser,
-		"id" | "email"
+		Event,
+		"id" | "title"
 	> | null>(null);
-	const [toUpdateScholar, setToUpdateScholar] = useState<Student | null>(null);
-
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(
 		new Set(INITIAL_VISIBLE_COLUMNS)
 	);
@@ -90,12 +84,13 @@ export default function EventList() {
 	});
 	// const [statusFilter] = useState<Array<SystemUserRole>>([]);
 	const [statusFilter, setStatusFilter] = useState<Selection>("all");
-	const [showFullCalendar, setShowFullCalender] = useState(false);
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading, data } = useQuery<{
-		students: PaginationResult<Student>;
-	}>(READ_STUDENTS_QUERY);
+		events: PaginationResult<Event>;
+	}>(READ_EVENTS_QUERY, {
+		// nextFetchPolicy: "standby",
+	});
 
 	const headerColumns = useMemo(() => {
 		if (visibleColumns === "all") return columns;
@@ -106,62 +101,53 @@ export default function EventList() {
 	}, [visibleColumns]);
 
 	const pages = useMemo(() => {
-		return data?.students.count
-			? Math.ceil(data?.students.count / Number(rowsPerPage))
+		return data?.events.count
+			? Math.ceil(data?.events.count / Number(rowsPerPage))
 			: 0;
-	}, [rowsPerPage, data?.students.count]);
+	}, [rowsPerPage, data?.events.count]);
 
 	const loadingState = loading ? "loading" : "idle";
 
-	const renderCell = useCallback((user: Student, columnKey: React.Key) => {
-		const cellValue = user[columnKey as keyof Student];
+	const renderCell = useCallback((event: Event, columnKey: React.Key) => {
+		const cellValue = event[columnKey as keyof Event];
 
 		switch (columnKey) {
-			case "name":
-				const middleName = user.middleName
-					? ` ${user.middleName[0].toUpperCase()}.`
-					: "";
+			case "title":
+				return <p>{event.title.substring(0, 25)}</p>;
 
-				return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
+			case "date":
+				return formatEventDate(event.startDate, event.endDate);
 
-			case "address":
-				return (
-					<p>
-						{user.address.street}, {user.address.city}
-					</p>
-					// <Chip
-					// 	className="capitalize"
-					// 	color={statusColorMap[user.status]}
-					// 	size="sm"
-					// 	variant="flat">
-					// 	{cellValue?.toString()}
-					// </Chip>
-				);
+			case "time":
+				return formatEventTime(event.startTime, event.endTime);
+
 			case "actions":
 				return (
 					<div className="relative flex  justify-center items-center gap-2">
 						<Tooltip content="Details">
-							<Link href={`/admin/events/${user.id}`}>
-								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-									<Icon icon="solar:info-square-bold" color="gray" />
-								</span>
-							</Link>
+							<Button
+								size="sm"
+								isIconOnly
+								variant="light"
+								as={Link}
+								to={`/admin/events/${event.id}`}
+								className="text-lg text-default-400 cursor-pointer active:opacity-50">
+								<Icon icon="solar:info-square-bold" color="gray" />
+							</Button>
 						</Tooltip>
-						{!user.statusUpdatedAt && (
-							<Tooltip content="Update Status">
-								<Button
-									size="sm"
-									isIconOnly
-									variant="light"
-									onPress={() => {
-										setToUpdateScholar(user);
-										setOpenModal(true);
-									}}
-									className="text-lg text-default-400  cursor-pointer active:opacity-50">
-									<Icon icon="fluent:status-12-filled" color="green" />
-								</Button>
-							</Tooltip>
-						)}
+
+						<Tooltip content="Edit Event">
+							<Button
+								size="sm"
+								isIconOnly
+								variant="light"
+								as={Link}
+								to={`/admin/events/${event.id}/edit`}
+								className="text-lg text-default-400  cursor-pointer active:opacity-50">
+								<Icon icon="fluent:status-12-filled" color="green" />
+							</Button>
+						</Tooltip>
+
 						{/* <Tooltip color="danger" content="Delete announcement">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
@@ -169,46 +155,34 @@ export default function EventList() {
 						</Tooltip> */}
 					</div>
 				);
-			case "phoneNumber":
-				return <p>+63 {cellValue?.toString()}</p>;
-			case "status":
-				return <p className="capitalize">{user.status.toLocaleLowerCase()}</p>;
 			default:
 				return cellValue?.toString();
 		}
 	}, []);
 
 	const filteredItems = useMemo(() => {
-		let filteredUsers = [...(data?.students.data ?? [])];
+		let filteredEvents = [...(data?.events.data ?? [])];
 
 		if (hasSearchFilter) {
 			setPage(1);
-			filteredUsers = filteredUsers.filter((user) => {
-				const firstName = user.firstName.toLowerCase();
-				const lastName = user.lastName.toLowerCase();
-
-				const fullName = `${firstName} ${lastName}`;
+			filteredEvents = filteredEvents.filter((event) => {
 				const filterVal = filterValue.toLowerCase();
 
-				return (
-					firstName.includes(filterVal) ||
-					lastName.toLowerCase().includes(filterVal) ||
-					fullName.includes(filterVal)
-				);
+				return event.title.toLowerCase().includes(filterVal);
 			});
 		}
 
-		if (
-			statusFilter !== "all" &&
-			Array.from(statusFilter).length !== statusOptions.length
-		) {
-			filteredUsers = filteredUsers.filter((user) => {
-				return Array.from(statusFilter).includes(user.status);
-			});
-		}
+		// if (
+		// 	statusFilter !== "all" &&
+		// 	Array.from(statusFilter).length !== statusOptions.length
+		// ) {
+		// 	filteredEvents = filteredEvents.filter((user) => {
+		// 		return Array.from(statusFilter).includes(user.);
+		// 	});
+		// }
 
-		return filteredUsers;
-	}, [data?.students.data, filterValue, statusFilter]);
+		return filteredEvents;
+	}, [data?.events.data, filterValue, statusFilter]);
 
 	const items = useMemo(() => {
 		const start = (page - 1) * Number(rowsPerPage);
@@ -218,15 +192,9 @@ export default function EventList() {
 	}, [page, filteredItems, rowsPerPage]);
 
 	const sortedItems = useMemo(() => {
-		return [...(items ?? [])].sort((a: Student, b: Student) => {
-			const first =
-				sortDescriptor.column === "name"
-					? a["firstName"]
-					: a[sortDescriptor.column as keyof Student]!;
-			const second =
-				sortDescriptor.column === "name"
-					? b["firstName"]
-					: b[sortDescriptor.column as keyof Student]!;
+		return [...(items ?? [])].sort((a: Event, b: Event) => {
+			const first = a[sortDescriptor.column as keyof Event]!;
+			const second = b[sortDescriptor.column as keyof Event]!;
 			const cmp = first < second ? -1 : first > second ? 1 : 0;
 
 			return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -244,7 +212,7 @@ export default function EventList() {
 							input: " placeholder:text-[#1f4e26]/60",
 							inputWrapper: "border-1 bg-[#A6F3B2]  !border-green-600",
 						}}
-						placeholder="Search by name..."
+						placeholder="Search by title..."
 						size="md"
 						startContent={<Icon icon="icon-park-solid:search" />}
 						// value={filterValue}
@@ -341,7 +309,7 @@ export default function EventList() {
 							color="success"
 							className="text-white/90"
 							as={Link}
-							href="/admin/events/add">
+							to="/admin/events/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Event
 						</Button>
@@ -354,9 +322,6 @@ export default function EventList() {
 							cursor: "bg-success ",
 							panel: "md:mx-4",
 						}}>
-						<Tab key="calendar" title="Calendar">
-							<FCalendar events={[]} />
-						</Tab>
 						<Tab key="list-table" title="List Table">
 							<Table
 								classNames={{
@@ -390,7 +355,7 @@ export default function EventList() {
 											<div className="flex gap-3 items-center">
 												<p className="min-w-[100px] inline  ">
 													<span className="text-sm">Total Events: </span>
-													{data?.students.count || 0}
+													{data?.events.count || 0}
 												</p>
 												<Select
 													classNames={{
@@ -416,7 +381,7 @@ export default function EventList() {
 															key={row.key}
 															className="data-[hover=true]:text-white data-[selected=true]:text-white data-[focus=true]:text-white data-[focus-visible=true]:text-white data-[hover=true]:bg-green-600   data-[selected=true]:bg-green-600"
 															isReadOnly={
-																(data?.students.count || 0) < Number(row.key)
+																(data?.events.count || 0) < Number(row.key)
 															}>
 															{row.label}
 														</SelectItem>
@@ -441,7 +406,6 @@ export default function EventList() {
 									emptyContent={"No rows to display."}
 									loadingContent={<Spinner />}
 									loadingState={loadingState}
-									// items={sortedItems ?? []}
 									items={sortedItems ?? []}>
 									{(item) => (
 										<TableRow key={`${item.id}`}>
@@ -454,6 +418,9 @@ export default function EventList() {
 									)}
 								</TableBody>
 							</Table>
+						</Tab>
+						<Tab key="calendar" title="Calendar">
+							<FCalendar events={[]} />
 						</Tab>
 					</Tabs>
 				</CardBody>
