@@ -3,6 +3,7 @@ import {
 	deleteEvent,
 	readAllEvents,
 	readEvent,
+	readEventAsCalendar,
 	upsertEvent,
 } from "../../models/event.js";
 import { AppContext, PaginationArgs } from "../../types/index.js";
@@ -128,6 +129,18 @@ export const deleteEventResolver = async (_: never, { id }: { id: string }) => {
 		if (!event) throw new GraphQLError("Failed to create event!");
 
 		return event;
+	} catch (err) {
+		console.log(err);
+		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const calendarEventsResolver = async () => {
+	try {
+		const events = await readEventAsCalendar();
+		console.log(events);
+
+		return events;
 	} catch (err) {
 		console.log(err);
 		throw new GraphQLError("Internal Server Error!");

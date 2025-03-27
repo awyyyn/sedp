@@ -2,6 +2,7 @@ import { prisma } from "../services/prisma.js";
 import { Events, Prisma } from "@prisma/client";
 import { PaginationArgs } from "../types/system-user.js";
 import { PaginationResult } from "../types/index.js";
+import { format } from "date-fns";
 
 export const upsertEvent = async (
 	{
@@ -82,5 +83,58 @@ export async function readEvent(id: string) {
 export const deleteEvent = async (id: string) => {
 	return await prisma.events.delete({
 		where: { id },
+	});
+};
+
+interface CalendarEvent {
+	id: string;
+	start: string;
+	end: string;
+	location: string;
+	title: string;
+	backgroundColor: string;
+	borderColor: string;
+}
+
+export const readEventAsCalendar = async (): Promise<CalendarEvent[]> => {
+	const allEvents = await prisma.events.findMany({});
+
+	// const futureEvents = allEvents.data.filter((event) =>
+	// 	isFuture(event.startDate)
+	// );
+
+	const setTimeOnDate = (date: Date, timeString: string) => {
+		// Split the timeString into hours and minutes
+		const [hours, minutes] = timeString.split(":").map(Number);
+
+		// Set the hours and minutes on the provided date
+		date.setHours(hours, minutes, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
+		return date;
+	};
+
+	return allEvents.map((event) => {
+		// Start Date & Time
+		const start = setTimeOnDate(
+			new Date(event.startDate),
+			format(event.startTime, "HH:mm")
+		);
+
+		// End Date & Time
+		const end = setTimeOnDate(
+			new Date(event.endDate),
+			format(event.endTime, "HH:mm")
+		);
+
+		const color = `hsl(${Math.floor(Math.random() * 360)}, 70%, 70%)`;
+
+		return {
+			id: event.id,
+			start: start.toISOString(),
+			end: end.toISOString(),
+			location: event.location,
+			title: event.title,
+			backgroundColor: color,
+			borderColor: color,
+		} as CalendarEvent;
 	});
 };

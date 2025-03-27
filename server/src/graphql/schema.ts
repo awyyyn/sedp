@@ -24,6 +24,7 @@ export const typeDefs = gql`
 		event(id: ID!): Event
 		meeting(id: ID!): Meeting
 		meetings(filter: String, pagination: PaginationInput): MeetingsResult
+		calendarEvents: [CalendarEvent]
 	}
 
 	type Mutation {
@@ -285,5 +286,15 @@ export const typeDefs = gql`
 		endDate: String
 
 		createdAt: String
+	}
+
+	type CalendarEvent {
+		id: ID!
+		start: String!
+		end: String!
+		title: String!
+		location: String!
+		backgroundColor: String!
+		borderColor: String!
 	}
 `;
