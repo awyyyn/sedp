@@ -5,6 +5,7 @@ import {
 	deleteMeeting,
 	readAllMeetings,
 	readMeeting,
+	readMeetingAsCalendar,
 	upsertMeeting,
 } from "../../models/meeting.js";
 
@@ -24,14 +25,17 @@ export const createMeetingResolver = async (
 			throw new GraphQLError("Unauthorized!");
 		}
 
-		const newMeeting = await upsertMeeting({
-			description,
-			date: new Date(date),
-			endTime,
-			location,
-			startTime,
-			title,
-		});
+		const newMeeting = await upsertMeeting(
+			{
+				description,
+				date,
+				endTime,
+				location,
+				startTime,
+				title,
+			},
+			"67dfd118d8898db58de87455"
+		);
 
 		if (!newMeeting) throw new GraphQLError("Failed to create event!");
 
@@ -67,7 +71,7 @@ export const updateMeetingResolver = async (
 				description,
 				endTime,
 				location,
-				date: new Date(date),
+				date,
 				startTime,
 				title,
 			},
@@ -116,6 +120,18 @@ export const deleteMeetingResolver = async (
 ) => {
 	try {
 		return await deleteMeeting(id);
+	} catch (err) {
+		console.log(err);
+		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const calendarMeetingsResolver = async () => {
+	try {
+		const events = await readMeetingAsCalendar();
+		console.log(events);
+
+		return events;
 	} catch (err) {
 		console.log(err);
 		throw new GraphQLError("Internal Server Error!");

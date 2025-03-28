@@ -247,8 +247,56 @@ export const DELETE_EVENT_MUTATION = gql`
 `;
 export const DELETE_MEETING_MUTATION = gql`
 	${meetingFragment}
-	mutation DeleteEvent($id: ID!) {
-		deleteEvent(id: $id) {
+	mutation ($id: ID!) {
+		deleteMeeting(id: $id) {
+			...MeetingFragment
+		}
+	}
+`;
+
+export const CREATE_MEETING_MUTATION = gql`
+	${meetingFragment}
+	mutation (
+		$description: String!
+		$startTime: String!
+		$endTime: String!
+		$location: String!
+		$date: String!
+		$title: String!
+	) {
+		meeting: createMeeting(
+			description: $description
+			startTime: $startTime
+			endTime: $endTime
+			location: $location
+			date: $date
+			title: $title
+		) {
+			...MeetingFragment
+		}
+	}
+`;
+
+export const UPDATE_MEETING_MUTATION = gql`
+	${meetingFragment}
+	mutation UpdateMeeting(
+		$startTime: String!
+		$endTime: String!
+		$location: String!
+		$date: String!
+		$id: ID!
+		$title: String!
+		$description: String!
+	) {
+		updateMeeting(
+			startTime: $startTime
+			endTime: $endTime
+			location: $location
+			date: $date
+			id: $id
+			title: $title
+			description: $description
+		) {
 			...MeetingFragment
 		}
 	}
