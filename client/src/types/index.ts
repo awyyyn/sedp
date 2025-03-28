@@ -17,6 +17,7 @@ export * from "./system-user";
 export * from "./student";
 export * from "./announcement";
 export * from "./event";
+export * from "./meeting";
 
 export type AddScholarSchemaData = yup.InferType<typeof addScholarSchema>;
 export type AddAdminSchemaData = yup.InferType<typeof addAdminSchema>;
