@@ -1,7 +1,7 @@
 import { prisma } from "../services/prisma.js";
 import { Events, Prisma } from "@prisma/client";
 import { PaginationArgs } from "../types/system-user.js";
-import { PaginationResult } from "../types/index.js";
+import { CalendarEvent, PaginationResult } from "../types/index.js";
 import { format } from "date-fns";
 
 export const upsertEvent = async (
@@ -85,16 +85,6 @@ export const deleteEvent = async (id: string) => {
 		where: { id },
 	});
 };
-
-interface CalendarEvent {
-	id: string;
-	start: string;
-	end: string;
-	location: string;
-	title: string;
-	backgroundColor: string;
-	borderColor: string;
-}
 
 export const readEventAsCalendar = async (): Promise<CalendarEvent[]> => {
 	const allEvents = await prisma.events.findMany({});
