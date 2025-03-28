@@ -169,7 +169,7 @@ model Meeting {
   startTime String
   endTime String
   location String
-  date DateTime
+  date String
 
   createdAt DateTime @default(now())
 
