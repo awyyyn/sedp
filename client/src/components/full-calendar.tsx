@@ -78,7 +78,7 @@ export function FCalendar<T>({
 	// Memoized events to prevent unnecessary re-renders
 	const memoizedEvents = React.useMemo(
 		() =>
-			events.map((event) => ({
+			events.map((event: any) => ({
 				...event,
 				id: String(event.id),
 				editable: false,
@@ -155,15 +155,15 @@ export function FCalendar<T>({
 					customButtons={customButtons as any}
 					events={memoizedEvents}
 					eventContent={(eventInfo) => {
-						console.log(eventInfo, "qqq event");
-
 						return (
 							<Link
-								to={`/admin/events/${eventInfo.event.id}`}
+								to={`/admin/${type === "EVENT" ? "events" : "meetings"}/${eventInfo.event.id}`}
 								className="relative overflow-hidden p-2"
 								suppressHydrationWarning>
 								<h1 className="block  ">{eventInfo.event.title}</h1>
-								<p className="block  ">{(eventInfo.event as any).location}</p>
+								<p className="block text-gray-600 ">
+									@{eventInfo.event.extendedProps.location}
+								</p>
 							</Link>
 						);
 					}}

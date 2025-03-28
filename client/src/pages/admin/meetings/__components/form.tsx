@@ -3,41 +3,152 @@ import { Input, Textarea } from "@heroui/input";
 import { Form, Formik } from "formik";
 import { Button } from "@heroui/button";
 import { toast } from "sonner";
-import { DatePicker, DateRangePicker } from "@heroui/date-picker";
-import { getLocalTimeZone, Time, today } from "@internationalized/date";
+import { DatePicker } from "@heroui/date-picker";
+import {
+	DateValue,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	parseDate,
+	Time,
+	today,
+} from "@internationalized/date";
 import { TimeInput, TimeInputValue } from "@heroui/date-input";
 import { useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { formatDate } from "date-fns";
 
 import { AddMeetingSchema } from "@/definitions";
-import { AddEventSchemaData } from "@/types";
+import { AddMeetingSchemaData, Meeting, PaginationResult } from "@/types";
+import {
+	CREATE_MEETING_MUTATION,
+	READ_EVENTS_QUERY,
+	READ_MEETINGS_QUERY,
+	UPDATE_MEETING_MUTATION,
+} from "@/queries";
 
-interface EventFormProps {
+interface MeetingFormProps {
 	edit?: boolean;
-	defaultValue?: any;
+	defaultValues?: Meeting;
 }
 
-export default function EventForm({ edit }: EventFormProps) {
-	let [startTime, setStartTime] = useState<TimeInputValue | null>();
-	let [endTime, setEndTime] = useState<TimeInputValue | null>(null);
+export default function MeetingForm({ edit, defaultValues }: MeetingFormProps) {
+	let [startTime, setStartTime] = useState<TimeInputValue | null>(
+		defaultValues ? parseAbsoluteToLocal(defaultValues.startTime) : null
+	);
+	let [endTime, setEndTime] = useState<TimeInputValue | null>(
+		defaultValues ? parseAbsoluteToLocal(defaultValues.endTime) : null
+	);
+	const [upsertMeeting] = useMutation(
+		edit ? UPDATE_MEETING_MUTATION : CREATE_MEETING_MUTATION
+	);
+	const [date, setDate] = useState<DateValue | null>(
+		defaultValues
+			? parseDate(
+					formatDate(
+						parseAbsoluteToLocal(
+							new Date(defaultValues.date).toISOString()
+						).toDate(),
+						"yyyy-MM-dd"
+					)
+				)
+			: null
+	);
 
-	// let formatter = useDateFormatter({ dateStyle: "short", timeStyle: "long" });
+	/* const { data } = useQuery<{ meetings: PaginationResult<Meeting> }>(
+		READ_MEETINGS_QUERY
+	); */
+
+	/* 	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(
+		defaultValues
+			? {
+					start: parseDate(
+						formatDate(
+							parseAbsoluteToLocal(
+								new Date(defaultValues?.startDate || new Date()).toISOString()
+							).toDate(),
+							"yyyy-MM-dd"
+						)
+					),
+					end: parseDate(
+						formatDate(
+							parseAbsoluteToLocal(
+								new Date(defaultValues?.endDate || new Date()).toISOString()
+							).toDate(),
+							"yyyy-MM-dd"
+						)
+					),
+				}
+			: null
+	); */
+
+	const navigate = useNavigate();
+
+	/* const disabledRanges = (data?.meetings.data || []).map((meeting: Meeting) => {
+		const startDate = parseDate(
+			formatDate(
+				parseAbsoluteToLocal(new Date(meeting.startDate).toISOString()).toDate(),
+				"yyyy-MM-dd"
+			)
+		);
+		const endDate = parseDate(
+			formatDate(
+				parseAbsoluteToLocal(new Date(meeting.endDate).toISOString()).toDate(),
+				"yyyy-MM-dd"
+			)
+		);
+
+		return [startDate, endDate];
+	}); */
 
 	return (
 		<Card className="rounded-md shadow-md mb-10 ">
 			<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-				<h1 className="text-2xl">Create New Meeting</h1>
+				<h1 className="text-2xl">{edit ? "Edit" : "Create New"} Meeting</h1>
 				<p>
-					Fill in the details to create a new meeting and manage its settings.
+					{edit
+						? "Edit the details of the meeting."
+						: "Fill in the details to create a new meeting and manage its settings."}
 				</p>
 			</CardHeader>
 			<CardBody className="bg-[#A6F3B235]">
 				<div className="lg:max-w-[80%] w-full mx-auto my-5">
 					<Formik
 						validationSchema={AddMeetingSchema}
-						initialValues={{} as AddEventSchemaData}
-						onSubmit={async (values: AddEventSchemaData, helpers) => {
+						initialValues={
+							{
+								title: defaultValues?.title || "",
+								location: defaultValues?.location || "",
+								description: defaultValues?.description || "",
+								date: defaultValues ? defaultValues.date : "",
+								startTime: defaultValues?.startTime || "",
+								endTime: defaultValues?.endTime || "",
+							} as AddMeetingSchemaData
+						}
+						onSubmit={async (values: AddMeetingSchemaData, helpers) => {
 							try {
-								helpers.resetForm();
+								const variables = {
+									...values,
+									id: defaultValues ? defaultValues.id : "no-id",
+								};
+
+								await upsertMeeting({
+									variables,
+									refetchQueries: [READ_MEETINGS_QUERY],
+								});
+
+								navigate("/admin/meetings");
+
+								helpers.resetForm({
+									values: {
+										description: "",
+										endTime: "",
+										location: "",
+										date: "",
+										startTime: "",
+										title: "",
+									},
+								});
 
 								toast.success(
 									edit
@@ -83,7 +194,7 @@ export default function EventForm({ edit }: EventFormProps) {
 								<Form
 									className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
 									onSubmit={handleSubmit}>
-									<div className="lg:col-span-6">Event Information</div>
+									<div className="lg:col-span-6">Meeting Information</div>
 									<Input
 										isReadOnly={isSubmitting}
 										value={values.title}
@@ -93,7 +204,7 @@ export default function EventForm({ edit }: EventFormProps) {
 										onChange={handleChange}
 										className="lg:col-span-6"
 										name="title"
-										label="Event Name"
+										label="Meeting Name"
 									/>
 
 									<Textarea
@@ -101,17 +212,19 @@ export default function EventForm({ edit }: EventFormProps) {
 										isInvalid={touched.description && !!errors.description}
 										errorMessage={errors.description}
 										onBlur={handleBlur}
+										onChange={handleChange}
+										value={values.description}
 										onValueChange={handleChange}
 										className="lg:col-span-6 "
 										name="description"
-										label="Event Description"
+										label="Meeting Description"
 									/>
 
 									<DatePicker
 										showMonthAndYearPickers
 										isReadOnly={isSubmitting}
-										isInvalid={touched.startDate && !!errors.startDate}
-										errorMessage={String(errors.startDate)}
+										isInvalid={touched.date && !!errors.date}
+										errorMessage={String(errors.date)}
 										onBlur={handleBlur}
 										onChange={(e) => {
 											if (e === null) return;
@@ -122,7 +235,7 @@ export default function EventForm({ edit }: EventFormProps) {
 											} = e;
 											// console.log(parseAbsoluteToLocal, "qqqdate");
 
-											const startDate = dateValue
+											const date = dateValue
 												? new Date(
 														dateValue.year,
 														dateValue.month - 1,
@@ -130,8 +243,11 @@ export default function EventForm({ edit }: EventFormProps) {
 													)
 												: null;
 
-											setFieldValue("startDate", startDate?.toISOString());
+											setDate(e);
+											setFieldValue("date", date?.toISOString());
 										}}
+										// @ts-ignore
+										value={date}
 										className="lg:col-span-6"
 										label="Date"
 										minValue={today(getLocalTimeZone())}
@@ -139,19 +255,6 @@ export default function EventForm({ edit }: EventFormProps) {
 
 									<TimeInput
 										name="startTime"
-										// onChange={(e) => {
-										// 	if (!e) return;
-
-										// 	const time = new Date(
-										// 		new Date().setHours(e.hour, Number(e.minute))
-										// 	).toISOString();
-
-										// 	// const time = parseAbsoluteToLocal(
-										// 	// 	"2025-03-25T18:03:54.068Z"
-										// 	// );
-										// 	setFieldValue("startTime", time);
-										// }}
-
 										value={startTime}
 										onChange={(time) => {
 											if (!time) return;
@@ -162,6 +265,8 @@ export default function EventForm({ edit }: EventFormProps) {
 
 											setFieldValue("startTime", value);
 										}}
+										isInvalid={touched.startTime && !!errors.startTime}
+										errorMessage={errors.startTime}
 										className="h-full lg:col-span-3"
 										size="lg"
 									/>
@@ -169,6 +274,8 @@ export default function EventForm({ edit }: EventFormProps) {
 									<TimeInput
 										size="lg"
 										name="endTime"
+										isInvalid={touched.endTime && !!errors.endTime}
+										errorMessage={errors.endTime}
 										minValue={new Time(startTime?.hour)}
 										className="h-full lg:col-span-3"
 										onBlur={handleBlur}
@@ -190,9 +297,10 @@ export default function EventForm({ edit }: EventFormProps) {
 										errorMessage={errors.location}
 										onBlur={handleBlur}
 										onChange={handleChange}
+										value={values.location}
 										className="lg:col-span-6"
 										name="location"
-										label="Event Location"
+										label="Meeting Location"
 									/>
 
 									<div className="lg:col-span-6 flex justify-center mt-5">
@@ -201,7 +309,7 @@ export default function EventForm({ edit }: EventFormProps) {
 											isDisabled={!isValid || isSubmitting}
 											isLoading={isSubmitting}
 											className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
-											Create Meeting
+											{edit ? "Update" : "Create"} Meeting
 										</Button>
 									</div>
 								</Form>
