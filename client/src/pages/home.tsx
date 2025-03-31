@@ -1,3 +1,4 @@
+import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { motion } from "framer-motion";
 import { CarouselProvider, Slider, Slide } from "pure-react-carousel";
@@ -6,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
 
 import heroImg from "@/assets/hero-img.png";
+import UserLayout from "@/layouts/user-layout";
 
 const sedp = [
 	{
@@ -34,11 +36,38 @@ export default function Home() {
 	const matches = useMediaQuery("(min-width: 800px)");
 
 	return (
-		<div className="relative min-h-dvh min-w-full overflow-hidden">
+		<div className="relative min-h-screen flex items-center  min-w-full overflow-hidden">
+			<UserLayout />
+			<div className="h-full px-5 md:px-5 z-50    space-y-5 container mx-auto flex flex-col justify-center py-10">
+				<h1 className="text-[#1B3899] text-5xl md:text-7xl font-extrabold">
+					SEDP - SIMBAG SA
+					<br />
+					PAG-ASENSO, INC.
+				</h1>
+				<p className="max-w-screen-sm">
+					The SEDP Scholarship Program, which began in 2004, provides
+					educational assistance to underprivileged students, helping them
+					achieve their academic goals. Through this scholarship, SEDP continues
+					to empower the youth and invest in the future of communities.
+				</p>
+				<p className="max-w-screen-sm">
+					You can access more updates and announcements by visiting our official
+					Facebook page: <br />
+					SEDP - Simbag sa Pag - Asenso, Inc.
+				</p>
+				<Button
+					as={Link}
+					to="https://www.facebook.com/sedp.ph"
+					target="_blank"
+					className="max-w-fit px-4 bg-[#1B3899] text-white"
+					radius="none">
+					Official FB Page
+				</Button>
+			</div>
 			<img
 				src={heroImg}
 				alt="Sedp Background"
-				className="lg:w-[45vw] absolute sm:w-[70vw] md:h-[115dvh] transform rotate-[16deg] bottom-0 opacity-35 -right-[50px] md:rotate-[11deg] md:-right-[4dvw] md:top-[-10dvh]"
+				className="lg:w-[45vw] absolute sm:w-[70vw] -z-50 md:h-[115dvh] transform rotate-[16deg] bottom-0 opacity-10 md:opacity-35 -right-[50px] md:rotate-[11deg] md:-right-[4dvw] md:top-[-10dvh]"
 			/>
 		</div>
 	);

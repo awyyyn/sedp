@@ -5,7 +5,11 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Icon } from "@iconify/react";
 import { Divider } from "@heroui/divider";
-import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import {
+	Autocomplete,
+	AutocompleteItem,
+	AutocompleteSection,
+} from "@heroui/autocomplete";
 import { Formik } from "formik";
 import { formatDate } from "date-fns";
 import { Select, SelectItem } from "@heroui/select";
@@ -15,12 +19,14 @@ import { DatePicker } from "@heroui/date-picker";
 import {
 	DateValue,
 	getLocalTimeZone,
+	parseAbsoluteToLocal,
 	parseDate,
-	today,
 } from "@internationalized/date";
+import { Radio, RadioGroup } from "@heroui/radio";
 import { useDateFormatter } from "@react-aria/i18n";
 
-import places from "../../places.json";
+import places from "../../../places.json";
+import degrees from "../../../degrees.json";
 
 import { UPDATE_STUDENT_MUTATION } from "@/queries";
 import { years } from "@/constants";
@@ -39,13 +45,24 @@ const formSchema = yup.object({
 	schoolName: yup.string().required(),
 	yearLevel: yup.string().required("Year Level is required"),
 	birthDate: yup.string().required("Birth Date is required"),
+	course: yup.string().required("Course is required"),
+	gender: yup.string().required("Gender is required"),
 });
 
 export default function StudentProfile() {
 	const [isEditing, setIsEditing] = useState(false);
-	const { studentUser } = useAuth();
-	let defaultDate = today(getLocalTimeZone());
-	const [value, setValue] = useState<DateValue | null | undefined>(defaultDate);
+	const { studentUser, setStudentUser } = useAuth();
+
+	const [value, setValue] = useState<DateValue | null>(
+		parseDate(
+			formatDate(
+				parseAbsoluteToLocal(
+					new Date(studentUser?.birthDate!).toISOString()
+				).toDate(),
+				"yyyy-MM-dd"
+			)
+		)
+	);
 
 	let formatter = useDateFormatter({ dateStyle: "full" });
 
@@ -70,20 +87,32 @@ export default function StudentProfile() {
 
 	const handleEditInfo = async (values: yup.InferType<typeof formSchema>) => {
 		try {
-			handleUpdate({
+			const { data } = await handleUpdate({
 				variables: {
 					id: String(studentUser?.id),
 					firstName: values.firstName,
 					middleName: values.middleName,
 					lastName: values.lastName,
 					phoneNumber: values.phoneNumber,
+					address: {
+						city: values.city,
+						street: values.street,
+					},
 					birthDate: new Date(values.birthDate).toISOString(),
-					city: values.city,
-					street: values.street,
 					yearLevel: Number(values.yearLevel),
 					schoolName: values.schoolName,
+					gender: values.gender,
+					course: values.course,
 				},
 			});
+
+			setStudentUser(data.updateStudent);
+			toast.success("Account updated successfully!", {
+				description: "Your account information has been updated.",
+				position: "top-center",
+				richColors: true,
+			});
+			setIsEditing(false);
 		} catch (error) {
 			toast.error((error as Error).message, {
 				richColors: true,
@@ -108,11 +137,12 @@ export default function StudentProfile() {
 				// bday!
 				// ? formatDate(new Date(bday).toISOString(), "yyyy-MM-dd")
 				// : formatDate(new Date().toISOString(), "yyyy-MM-dd"),
-
+				course: studentUser?.course || "",
 				phoneNumber: studentUser?.phoneNumber ?? "",
 				street: studentUser?.address?.street ?? "",
 				yearLevel: studentUser?.yearLevel.toString() ?? "",
 				schoolName: studentUser?.schoolName ?? "",
+				gender: studentUser?.gender ?? "MALE",
 			}}
 			onSubmit={handleEditInfo}>
 			{({
@@ -135,13 +165,26 @@ export default function StudentProfile() {
 									Manage your personal information and preferences
 								</p>
 							</div>
-							<Button
-								onPress={() => {
-									handleReset();
-									setIsEditing((prev) => !prev);
-								}}>
-								{isEditing ? "Cancel" : "Edit Profile"}
-							</Button>
+							<div className="space-y-2 md:space-y-0  md:space-x-2">
+								<Button
+									color={isEditing ? "danger" : "primary"}
+									className="w-full md:w-fit"
+									onPress={() => {
+										handleReset();
+										setIsEditing((prev) => !prev);
+									}}>
+									{isEditing ? "Cancel" : "Edit Profile"}
+								</Button>
+								{isEditing && (
+									<Button
+										color="primary"
+										className="w-full md:w-fit text-white"
+										type="submit"
+										onPress={() => handleSubmit()}>
+										Save Changes
+									</Button>
+								)}
+							</div>
 						</div>
 
 						<div className="space-y-6">
@@ -160,12 +203,6 @@ export default function StudentProfile() {
 								<Divider />
 								<CardBody className="p-6 space-y-4">
 									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-										<div className="space-y-2">
-											<p className="text-sm font-medium text-muted-foreground">
-												Status
-											</p>
-											<p className="font-medium">{studentUser?.status}</p>
-										</div>
 										<div className="space-y-2">
 											<p className="text-sm font-medium text-muted-foreground">
 												First Name
@@ -227,7 +264,36 @@ export default function StudentProfile() {
 													errorMessage={touched.middleName && errors.middleName}
 												/>
 											) : (
-												<p className="font-medium">{values.middleName || ""}</p>
+												<p
+													className={`${!values.middleName.trim() ? "italic text-gray-500" : "font-medium"}`}>
+													{values.middleName || "No data"}
+												</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Gender
+											</p>
+											{isEditing ? (
+												<div className="h-[calc(100%-40%)]  flex items-center">
+													<RadioGroup
+														className="flex justify-start items-center   "
+														name="gender"
+														isReadOnly={isSubmitting}
+														isInvalid={touched.gender && !!errors.gender}
+														errorMessage={String(errors.gender)}
+														value={values.gender}
+														onBlur={handleBlur}
+														onChange={handleChange}
+														orientation="horizontal">
+														<Radio value="MALE">Male</Radio>
+														<Radio value="FEMALE">Female</Radio>
+													</RadioGroup>
+												</div>
+											) : (
+												<p className="font-medium capitalize">
+													{values.gender.toLowerCase()}
+												</p>
 											)}
 										</div>
 										<div className="space-y-2">
@@ -236,7 +302,11 @@ export default function StudentProfile() {
 											</p>
 											{isEditing ? (
 												<>
-													<DatePicker value={value} onChange={setValue} />
+													<DatePicker
+														// @ts-ignore
+														value={value}
+														onChange={setValue}
+													/>
 													<p className="text-default-500 text-sm">
 														Selected date:{" "}
 														{value
@@ -247,22 +317,7 @@ export default function StudentProfile() {
 													</p>
 												</>
 											) : (
-												// <Input
-												// 	type="date"
-												// 	name="birthDate"
-												// 	onChange={handleChange}
-												// 	onBlur={handleBlur}
-												// 	value={studentUser?.birthDate}
-												// 	isReadOnly={isSubmitting}
-												// 	variant="flat"
-												// 	radius="sm"
-												// 	isInvalid={
-												// 		!!touched.middleName && !!errors.middleName
-												// 	}
-												// 	errorMessage={touched.middleName && errors.middleName}
-												// />
 												<p className="font-medium">
-													{JSON.stringify(values.birthDate)}
 													{formatDate(values.birthDate, "MMMM dd, yyyy")}
 												</p>
 											)}
@@ -496,6 +551,50 @@ export default function StudentProfile() {
 												</p>
 											)}
 										</div>
+										<div className="space-y-2 sm:col-span-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Course/Program
+											</p>
+											{isEditing ? (
+												<Suspense
+													fallback={
+														<Input fullWidth readOnly label="Course" />
+													}>
+													<Autocomplete
+														name="course"
+														className="lg:col-span-6"
+														label="Course"
+														onSelectionChange={(value) => {
+															console.log(value, "qqq");
+															setFieldValue("course", value?.toString());
+														}}
+														selectedKey={values.course}
+														onBlur={handleBlur}
+														errorMessage={errors.course}
+														fullWidth
+														isInvalid={touched.course && !!errors.course}
+														value={values.course}>
+														{degrees.map((degree, indx) => (
+															<AutocompleteSection
+																showDivider
+																title={degree.category}
+																key={indx}>
+																{degree.programs.map((program) => (
+																	<AutocompleteItem
+																		key={program}
+																		value={program}
+																		className="capitalize">
+																		{program}
+																	</AutocompleteItem>
+																))}
+															</AutocompleteSection>
+														))}
+													</Autocomplete>
+												</Suspense>
+											) : (
+												<p className="font-medium">{values.course}</p>
+											)}
+										</div>
 									</div>
 								</CardBody>
 							</Card>
@@ -533,11 +632,14 @@ export default function StudentProfile() {
 							</Card> */}
 
 							{isEditing && (
-								<div className="flex justify-end gap-4">
-									<Button onPress={() => setIsEditing(false)} variant="ghost">
+								<div className="flex justify-end gap-2">
+									<Button color="danger" onPress={() => setIsEditing(false)}>
 										Cancel
 									</Button>
-									<Button type="submit" onPress={() => handleSubmit()}>
+									<Button
+										color="primary"
+										type="submit"
+										onPress={() => handleSubmit()}>
 										Save Changes
 									</Button>
 								</div>
