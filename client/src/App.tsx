@@ -29,6 +29,16 @@ import Meetings from "@/pages/admin/meetings/list";
 import AddMeeting from "@/pages/admin/meetings/add";
 import MeetingInfo from "@/pages/admin/meetings/info";
 import EditMeeting from "@/pages/admin/meetings/edit";
+import MonthlySubmission from "@/pages/admin/monthly-submission/info";
+import UserLayout from "@/layouts/user-layout";
+import StudentProfile from "@/pages/account/account";
+import Security from "@/pages/account/security";
+import AccountLayout from "@/pages/account/layout";
+import TimelineLayout from "@/pages/timeline/layout";
+import AnnouncementFeed from "@/pages/timeline/announcements/feed";
+import MeetingFeed from "@/pages/timeline/meetings/feed";
+import EventFeed from "@/pages/timeline/events/feed";
+import TimelinePage from "@/pages/timeline/page";
 
 function App() {
 	const adminRoutes = {
@@ -138,6 +148,11 @@ function App() {
 							},
 						],
 					},
+
+					{
+						path: "monthly-submissions",
+						element: <MonthlySubmission />,
+					},
 				],
 			},
 		],
@@ -170,6 +185,7 @@ function App() {
 			},
 		],
 	};
+
 	const publicRoutes = [
 		{
 			path: "/",
@@ -184,6 +200,57 @@ function App() {
 			path: "*",
 		},
 	];
+
+	const userRoutes = {
+		element: <ProtectedRoute allowedRoles={["STUDENT"]} />,
+		children: [
+			{
+				element: <UserLayout />,
+				children: [
+					{
+						element: <TimelineLayout />,
+						children: [
+							{
+								path: "timeline",
+								children: [
+									{
+										index: true,
+										element: <TimelinePage />,
+									},
+									{
+										element: <EventFeed />,
+										path: "events",
+									},
+									{
+										element: <AnnouncementFeed />,
+										path: "announcements",
+									},
+									{
+										element: <MeetingFeed />,
+										path: "meetings",
+									},
+								],
+							},
+						],
+					},
+					{
+						path: "account",
+						element: <AccountLayout />,
+						children: [
+							{
+								index: true,
+								element: <StudentProfile />,
+							},
+							{
+								element: <Security />,
+								path: "security",
+							},
+						],
+					},
+				],
+			},
+		],
+	};
 
 	const authRoutes = {
 		element: <AuthLayout />,
@@ -217,6 +284,7 @@ function App() {
 		adminRoutes,
 		superAdminRoutes,
 		authRoutes,
+		userRoutes,
 		...publicRoutes,
 	]);
 }
