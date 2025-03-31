@@ -24,6 +24,8 @@ export const updateStudentResolver = async (
 			throw new GraphQLError("UnAuthorized!");
 		}
 
+		console.log(values, "qqq");
+
 		const updatedStudent = await updateStudent(id, values);
 
 		if (!updatedStudent) {

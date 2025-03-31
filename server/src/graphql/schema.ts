@@ -39,19 +39,22 @@ export const typeDefs = gql`
 		sendStudentRegistrationEmail(email: String!): SendEmailResult
 		updateStudent(
 			id: String!
-			studentId: String
 			firstName: String
 			lastName: String
 			middleName: String
-			city: String
-			street: String
+			# city: String
+			# street: String
+			address: AddressInput
+			gender: Gender
 			phoneNumber: String
 			birthDate: String
 			status: StudentStatus
 			mfaSecret: String
 			mfaEnabled: Boolean
+			password: String
 			yearLevel: Int
 			schoolName: String
+			course: String
 		): Student
 		createSystemUser(
 			firstName: String!
@@ -221,6 +224,7 @@ export const typeDefs = gql`
 		yearLevel: Int
 		schoolName: String
 		statusUpdatedAt: String
+		course: String
 		createdAt: String
 		updatedAt: String
 	}
