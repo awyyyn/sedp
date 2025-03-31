@@ -1,4 +1,5 @@
 import { environment } from "../environments/environment.js";
+
 import { prisma } from "../services/prisma.js";
 import {
 	CreateScholarInput,
@@ -49,8 +50,10 @@ export const createStudent = async (
 			mfaSecret,
 		},
 	});
-
-	return newStudentUser;
+	return {
+		...newStudentUser,
+		birthDate: newStudentUser.birthDate.toISOString(),
+	};
 };
 
 export const updateStudent = async (
@@ -58,21 +61,31 @@ export const updateStudent = async (
 	values: Partial<Student>
 ): Promise<Student> => {
 	let toUpdateData = values;
+	let hashedPassword: string | undefined = undefined;
 
 	if (values.status) {
 		toUpdateData.statusUpdatedAt = new Date();
 	}
 
+	if (values.password && values.password.trim()) {
+		const generateSalt = await genSalt(environment.SALT);
+		hashedPassword = await hash(values.password.trim(), generateSalt);
+	}
+
 	const updatedStudent = await prisma.student.update({
 		data: {
 			...toUpdateData,
+			password: hashedPassword,
 		},
 		where: {
 			id,
 		},
 	});
 
-	return updatedStudent;
+	return {
+		...updatedStudent,
+		birthDate: updatedStudent.birthDate.toISOString(),
+	};
 };
 
 export const readStudent = async (id: string): Promise<Student | null> => {
@@ -92,7 +105,10 @@ export const readStudent = async (id: string): Promise<Student | null> => {
 
 	if (!student) return null;
 
-	return student;
+	return {
+		...student,
+		birthDate: student.birthDate.toISOString(),
+	};
 };
 
 interface readAllArgs {
@@ -127,8 +143,25 @@ export async function readAllStudents({
 	});
 
 	return {
-		data: users,
+		data: users.map((user) => ({
+			...user,
+			birthDate: user.birthDate.toISOString(),
+		})),
 		hasMore: pagination ? pagination.page * pagination.take < count : false,
 		count,
 	};
 }
+
+export const changePassword = async (newPassword: string, id: string) => {
+	const generateSalt = await genSalt(environment.SALT);
+	const hashedPassword = await hash(newPassword, generateSalt);
+
+	await prisma.student.update({
+		data: {
+			password: hashedPassword,
+		},
+		where: {
+			id,
+		},
+	});
+};

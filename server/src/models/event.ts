@@ -53,6 +53,9 @@ export async function readAllEvents({
 
 	const events = await prisma.events.findMany({
 		where,
+		orderBy: {
+			startDate: "desc",
+		},
 		take: pagination ? pagination.take : undefined,
 		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
 	});

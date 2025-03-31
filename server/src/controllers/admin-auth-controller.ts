@@ -10,6 +10,7 @@ import * as bcrypt from "bcrypt";
 import {
 	generateAccessToken,
 	generateRefreshToken,
+	PayloadArgs,
 	prisma,
 } from "..//services/index.js";
 import { SystemUserRole } from "@prisma/client";
@@ -110,7 +111,6 @@ export const adminRegisterController = async (req: Request, res: Response) => {
 
 	try {
 		const newUser = await createSystemUser({
-			displayName: "",
 			email,
 			firstName,
 			lastName,
@@ -124,7 +124,7 @@ export const adminRegisterController = async (req: Request, res: Response) => {
 			mfaEnabled: !!mfaSecret,
 			middleName,
 			phoneNumber,
-			role: role ?? SystemUserRole.ADMIN,
+			role: role ?? SystemUserRole.ADMIN_VIEWER,
 		});
 
 		if (!newUser) {
@@ -338,10 +338,13 @@ export const userProfileController = async (req: Request, res: Response) => {
 	const { role, id } = req.body;
 	try {
 		let user;
+		let userRole: PayloadArgs["role"] = "STUDENT";
 		if (role === "STUDENT") {
 			user = await readStudent(id);
+			userRole = "STUDENT";
 		} else {
 			user = await readSystemUser(id);
+			userRole = user?.role as SystemUserRole;
 		}
 
 		if (!user) throw new Error("INTERNAL_SERVER_ERROR");
@@ -351,20 +354,23 @@ export const userProfileController = async (req: Request, res: Response) => {
 		const accessToken = await generateAccessToken({
 			email: user.email,
 			id: user.id,
-			role: role,
+			role: userRole,
 		});
 
 		const refreshToken = await generateRefreshToken({
 			email: user.email,
 			id: user.id,
-			role: role,
+			role: userRole,
 		});
 
 		res.status(200).json({
 			data: {
 				accessToken,
 				refreshToken,
-				user: user,
+				user: {
+					...user,
+					role: userRole,
+				},
 			},
 			error: null,
 		});
