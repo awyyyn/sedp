@@ -5,23 +5,23 @@ import { InputOtp } from "@heroui/input-otp";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react";
 
-import { generateTOTPQuery, verifyTOTPMutation } from "@/queries";
+import { GENERATE_TOTP_QUERY, verifyTOTPMutation } from "@/queries";
 
-interface Step3Props {
+interface SetUpTwoFactorProps {
 	value: string;
 	handleChangeOtp: (value: string) => void;
 	handleSaveSecret: (secret: string) => void;
 }
 
-export default function Step3({
+export default function SetUpTwoFactor({
 	value,
 	handleChangeOtp,
 	handleSaveSecret,
-}: Step3Props) {
+}: SetUpTwoFactorProps) {
 	const [qrImage, setQRImage] = useState<string | null>("");
 	const [err, setErr] = useState("");
 	const [isSuccess, setIsSuccess] = useState(false);
-	const { data, loading, refetch } = useQuery(generateTOTPQuery, {
+	const { data, loading, refetch } = useQuery(GENERATE_TOTP_QUERY, {
 		onCompleted(data) {
 			qrcode.toDataURL(data.totp.otpauthurl, (err, url) => {
 				if (err) {
@@ -91,6 +91,7 @@ export default function Step3({
 							</div>
 
 							<Button
+								color="primary"
 								fullWidth
 								className="md:max-w-[40%]"
 								onPress={() => verifyOTP()}>

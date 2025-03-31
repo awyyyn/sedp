@@ -18,7 +18,7 @@ interface DeleteModalProps {
 	loading: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
 	deleteLabel?: string;
-	hideNote: boolean;
+	hideNote?: boolean;
 }
 
 export function DeleteModal({

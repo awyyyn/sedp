@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
+import { Button } from "@heroui/button";
 
 /*  
   	id: string;
@@ -23,9 +24,11 @@ import { Link } from "react-router-dom";
 export function FCalendar<T>({
 	events,
 	type = "EVENT",
+	handlePress,
 }: {
 	events: T[];
-	type: "MEETING" | "EVENT";
+	type?: "MEETING" | "EVENT";
+	handlePress: (id: string) => void;
 }) {
 	const calendarRef = React.useRef<any>(null);
 	const [currentView, setCurrentView] = React.useState("dayGridMonth");
@@ -152,19 +155,22 @@ export function FCalendar<T>({
 					]}
 					initialView="dayGridMonth"
 					headerToolbar={headerToolbar}
+					weekNumberClassNames={`hidden`}
 					customButtons={customButtons as any}
 					events={memoizedEvents}
 					eventContent={(eventInfo) => {
 						return (
-							<Link
-								to={`/admin/${type === "EVENT" ? "events" : "meetings"}/${eventInfo.event.id}`}
-								className="relative overflow-hidden p-2"
+							<Button
+								onPress={() => handlePress(eventInfo.event.id)}
+								as={"div"}
+								radius="none" // to={`/admin/${type === "EVENT" ? "events" : "meetings"}/${eventInfo.event.id}`}
+								className="border-none h-full justify-start bg-transparent hover:bg-transparent flex flex-col w-full gap-0 items-start relative overflow-hidden p-2 "
 								suppressHydrationWarning>
-								<h1 className="block  ">{eventInfo.event.title}</h1>
-								<p className="block text-gray-600 ">
+								<h1 className="pl-2 block  ">{eventInfo.event.title}</h1>
+								<p className="pl-2 block text-gray-600 ">
 									@{eventInfo.event.extendedProps.location}
 								</p>
-							</Link>
+							</Button>
 						);
 					}}
 					// Styling and Interaction
@@ -178,6 +184,7 @@ export function FCalendar<T>({
 					eventColor="#17c964"
 					eventTextColor="white"
 					// View-specific formatting
+					viewClassNames={"overflow-x-auto"}
 					views={{
 						dayGridMonth: {
 							titleFormat: { year: "numeric", month: "long" },
