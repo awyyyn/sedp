@@ -16,6 +16,7 @@
 		"@fullcalendar/list": "^6.1.15",
 		"@fullcalendar/react": "^6.1.15",
 		"@fullcalendar/timegrid": "^6.1.15",
+		"@heroui/accordion": "^2.2.13",
 		"@heroui/autocomplete": "^2.3.11",
 		"@heroui/avatar": "^2.2.7",
 		"@heroui/breadcrumbs": "^2.2.7",
