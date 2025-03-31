@@ -5,7 +5,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link } from "react-router-dom";
 import { Button } from "@heroui/button";
 
 /*  
@@ -23,7 +22,6 @@ import { Button } from "@heroui/button";
 
 export function FCalendar<T>({
 	events,
-	type = "EVENT",
 	handlePress,
 }: {
 	events: T[];

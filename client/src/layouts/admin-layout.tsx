@@ -1,19 +1,18 @@
-import { Outlet, useLocation } from "react-router-dom";
-import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
+import { Outlet } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 import { AppSidebar } from "@/components";
 
 export default function AdminLayout() {
-	const { pathname } = useLocation();
+	// const { pathname } = useLocation();
 
-	const items = pathname.split("/").filter((item) => item !== "");
+	// const items = pathname.split("/").filter((item) => item !== "");
 
-	const breadcrumbs = items.map((item, index) => ({
-		label: item,
-		href: `/${items.slice(0, index + 1).join("/")}`,
-	}));
+	// const breadcrumbs = items.map((item, index) => ({
+	// 	label: item,
+	// 	href: `/${items.slice(0, index + 1).join("/")}`,
+	// }));
 
 	return (
 		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">

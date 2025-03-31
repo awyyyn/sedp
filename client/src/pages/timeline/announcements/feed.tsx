@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 
 import { READ_ANNOUNCEMENTS_QUERY } from "@/queries";
 import { Announcement, PaginationResult } from "@/types";
-import { AnnouncementCard, FCalendar } from "@/components";
+import { AnnouncementCard } from "@/components";
 
 export default function AnnouncementFeed() {
 	const { data } = useQuery<{ announcements: PaginationResult<Announcement> }>(

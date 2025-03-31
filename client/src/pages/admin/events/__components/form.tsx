@@ -21,12 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDate } from "date-fns";
 
 import { AddEventSchema } from "@/definitions";
-import {
-	AddEventSchemaData,
-	CalendarEvent,
-	Event,
-	PaginationResult,
-} from "@/types";
+import { AddEventSchemaData, Event, PaginationResult } from "@/types";
 import {
 	CREATE_EVENT_MUTATION,
 	READ_EVENTS_QUERY,

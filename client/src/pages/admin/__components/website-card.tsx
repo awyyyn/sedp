@@ -1,4 +1,4 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Card, CardBody } from "@heroui/card";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 export function WebsiteCard({

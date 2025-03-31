@@ -440,7 +440,11 @@ export default function EventList() {
 							</Table>
 						</Tab>
 						<Tab key="calendar" title="Calendar">
-							<FCalendar type="EVENT" events={data?.calendarEvents || []} />
+							<FCalendar
+								handlePress={() => {}}
+								type="EVENT"
+								events={data?.calendarEvents || []}
+							/>
 						</Tab>
 					</Tabs>
 				</CardBody>

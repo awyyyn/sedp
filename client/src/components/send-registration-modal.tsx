@@ -24,7 +24,7 @@ export function SendRegistrationModal({
 }: SendRegistrationModalProps) {
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 	const [values, setValues] = useState<{ email: string; role: SystemUserRole }>(
-		{ email: "", role: "ADMIN" }
+		{ email: "", role: "ADMIN_MANAGE_SCHOLAR" }
 	);
 	const [error, setError] = useState("");
 
@@ -111,9 +111,9 @@ export function SendRegistrationModal({
 										<Checkbox
 											size="sm"
 											name="type"
-											isSelected={values.role === "ADMIN"}
+											isSelected={values.role === "ADMIN_MANAGE_SCHOLAR"}
 											onValueChange={() =>
-												setValues({ ...values, role: "ADMIN" })
+												setValues({ ...values, role: "ADMIN_MANAGE_SCHOLAR" })
 											}>
 											 Manage Scholars
 										</Checkbox>

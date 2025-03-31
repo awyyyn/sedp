@@ -14,15 +14,14 @@ import {
 } from "@internationalized/date";
 import { TimeInput, TimeInputValue } from "@heroui/date-input";
 import { useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "date-fns";
 
 import { AddMeetingSchema } from "@/definitions";
-import { AddMeetingSchemaData, Meeting, PaginationResult } from "@/types";
+import { AddMeetingSchemaData, Meeting } from "@/types";
 import {
 	CREATE_MEETING_MUTATION,
-	READ_EVENTS_QUERY,
 	READ_MEETINGS_QUERY,
 	UPDATE_MEETING_MUTATION,
 } from "@/queries";

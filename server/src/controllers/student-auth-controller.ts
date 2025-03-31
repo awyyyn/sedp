@@ -102,6 +102,10 @@ export const studentRegisterController = async (
 		birthDate,
 		schoolName,
 		yearLevel,
+		course,
+		gender,
+		mfaEnabled,
+		statusUpdatedAt,
 	} = req.body;
 
 	try {
@@ -120,7 +124,10 @@ export const studentRegisterController = async (
 			phoneNumber,
 			schoolName,
 			// TODO: ADD STUDENT ID IN FRONTEND
-			studentId: "",
+			course,
+			gender,
+			mfaEnabled,
+			statusUpdatedAt,
 			yearLevel: Number(yearLevel),
 		});
 

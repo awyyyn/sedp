@@ -18,7 +18,6 @@ import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
-import { useSetAtom } from "jotai";
 import {
 	Dropdown,
 	DropdownItem,
@@ -27,10 +26,10 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 
-import { READ_STUDENTS_QUERY } from "@/queries";
-import { PaginationResult, Student, StudentStatus, SystemUser } from "@/types";
-import { systemUsersAtom } from "@/states";
 import UpdateStatusModal from "./__components/update-status";
+
+import { READ_STUDENTS_QUERY } from "@/queries";
+import { PaginationResult, Student, StudentStatus } from "@/types";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -75,10 +74,7 @@ export default function Scholars() {
 	const [filterValue, setFilterValue] = useState("");
 
 	const [openModal, setOpenModal] = useState(false);
-	const [toDeleteItem, setToDeleteItem] = useState<Pick<
-		SystemUser,
-		"id" | "email"
-	> | null>(null);
+
 	const [toUpdateScholar, setToUpdateScholar] = useState<Student | null>(null);
 
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(

@@ -3,15 +3,11 @@ import {
 	Drawer,
 	DrawerBody,
 	DrawerContent,
-	DrawerFooter,
 	DrawerHeader,
 } from "@heroui/drawer";
 import { Tooltip } from "@heroui/tooltip";
 import { Dispatch, SetStateAction } from "react";
 import { Link } from "react-router-dom";
-import { Image } from "@heroui/image";
-import { Avatar, AvatarGroup } from "@heroui/avatar";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { Skeleton } from "@heroui/skeleton";
 import { formatDate } from "date-fns";
 
@@ -36,7 +32,6 @@ export default function DrawerTimeline({
 	isOpen,
 	onOpenChange,
 	loading = false,
-	type = "EVENT",
 	content,
 }: DrawerTimelineProps) {
 	return (

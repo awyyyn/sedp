@@ -123,6 +123,7 @@ export const adminRegisterController = async (req: Request, res: Response) => {
 			birthDate,
 			mfaEnabled: !!mfaSecret,
 			middleName,
+			gender: "FEMALE",
 			phoneNumber,
 			role: role ?? SystemUserRole.ADMIN_VIEWER,
 		});

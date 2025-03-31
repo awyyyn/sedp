@@ -1,6 +1,5 @@
 import { generateTOTPSecret, verifyTOTP } from "../../services/otpauth.js";
 import { GraphQLError } from "graphql";
-import { AppContext } from "../../types/index.js";
 
 export const twoFactorAuthResolver = async () => {
 	try {
@@ -18,8 +17,7 @@ export const twoFactorAuthResolver = async () => {
 
 export const verifyTOTPResolver = async (
 	_: never,
-	{ secret, token }: { secret: string; token: string },
-	app: AppContext
+	{ secret, token }: { secret: string; token: string }
 ) => {
 	try {
 		const isVerified = await verifyTOTP(secret, token);

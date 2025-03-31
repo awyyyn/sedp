@@ -11,7 +11,11 @@ export default function MeetingFeed() {
 
 	return (
 		<div className="container mx-auto px-5 md:px-5">
-			<FCalendar type="MEETING" events={data?.calendarMeetings || []} />
+			<FCalendar
+				handlePress={() => {}}
+				type="MEETING"
+				events={data?.calendarMeetings || []}
+			/>
 		</div>
 	);
 }

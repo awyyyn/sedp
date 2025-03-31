@@ -8,7 +8,7 @@ export * from "./token.js";
 
 export type CreateSystemUserInput = Omit<
 	SystemUser,
-	"id" | "createdAt" | "updatedAt" | "status"
+	"id" | "createdAt" | "updatedAt" | "status" | "verifiedAt"
 >;
 
 export interface PaginationResult<T> {

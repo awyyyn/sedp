@@ -32,12 +32,7 @@ import { formatDate } from "date-fns";
 import { DeleteModal } from "../__components";
 
 import { DELETE_MEETING_MUTATION, READ_MEETINGS_QUERY } from "@/queries";
-import {
-	CalendarEvent,
-	Meeting,
-	PaginationResult,
-	StudentStatus,
-} from "@/types";
+import { CalendarEvent, Meeting, PaginationResult } from "@/types";
 import { FCalendar } from "@/components";
 import { formatEventTime } from "@/lib/utils";
 
@@ -81,7 +76,7 @@ export default function MeetingList() {
 		direction: "ascending",
 	});
 	// const [statusFilter] = useState<Array<SystemUserRole>>([]);
-	const [statusFilter, setStatusFilter] = useState<Selection>("all");
+	const [statusFilter] = useState<Selection>("all");
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading, data } = useQuery<{
@@ -424,7 +419,11 @@ export default function MeetingList() {
 							</Table>
 						</Tab>
 						<Tab key="calendar" title="Calendar">
-							<FCalendar type="MEETING" events={data?.calendarMeetings || []} />
+							<FCalendar
+								handlePress={() => {}}
+								type="MEETING"
+								events={data?.calendarMeetings || []}
+							/>
 						</Tab>
 					</Tabs>
 				</CardBody>

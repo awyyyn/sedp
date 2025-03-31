@@ -18,34 +18,16 @@ import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
-import { useSetAtom } from "jotai";
+import { toast } from "sonner";
 import { Card, CardBody } from "@heroui/card";
+
+import { DeleteModal } from "../__components";
 
 import {
 	DELETE_ANNOUNCEMENT_MUTATION,
 	READ_ANNOUNCEMENTS_QUERY,
-	READ_STUDENTS_QUERY,
-	systemUsersQuery,
 } from "@/queries";
-import {
-	Announcement,
-	PaginationResult,
-	Student,
-	SystemUser,
-	SystemUserRole,
-} from "@/types";
-import { systemUsersAtom } from "@/states";
-import { getRoleDescription } from "@/lib/utils";
-import { DeleteModal } from "../__components";
-import { toast } from "sonner";
-
-const roleOptions: SystemUserRole[] = [
-	"SUPER_ADMIN",
-	"ADMIN_MANAGE_DOCUMENTS",
-	"ADMIN_MANAGE_GATHERINGS",
-	"ADMIN_MANAGE_SCHOLAR",
-	"ADMIN_VIEWER",
-];
+import { Announcement, PaginationResult } from "@/types";
 
 export const columns = [
 	{ name: "TITLE", uid: "title", sortable: true },
@@ -72,7 +54,7 @@ export default function Announcements() {
 		column: "firstName",
 		direction: "ascending",
 	});
-	const [roleFilter, setRoleFilter] = useState<Selection>("all");
+	const [roleFilter] = useState<Selection>("all");
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading, data } = useQuery<{

@@ -3,9 +3,10 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { Dispatch, SetStateAction } from "react";
 
+import UserNavigation from "./user-navigation";
+
 import sedpLogo from "@/assets/sedp.png";
 import { useAuth } from "@/contexts";
-import UserNavigation from "./user-navigation";
 
 interface UserHeaderProps {
 	// isOpen?: boolean;
@@ -13,7 +14,7 @@ interface UserHeaderProps {
 }
 
 export default function UserHeader({ onOpenChange }: UserHeaderProps) {
-	const { isAuthenticated, logout } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	return (
 		<header className="fixed top-0 z-50	 py-2  left-0 w-screen bg-[#D5D6D7] bg-opacity-85  ">
