@@ -2,7 +2,6 @@ import { Form, Formik } from "formik";
 import { useState } from "react";
 import * as yup from "yup";
 import { useNavigate } from "react-router";
-import { useAtom } from "jotai";
 import { useMutation } from "@apollo/client";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
@@ -11,7 +10,6 @@ import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 
-import { systemUserAtom } from "@/states";
 import { useAuth } from "@/contexts";
 import { verifyTOTPMutation } from "@/queries";
 
@@ -25,9 +23,8 @@ export default function StudentLogin() {
 	const navigate = useNavigate();
 	const [mfaEnabled, setMfaEnabled] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
-	const [systemUser, setSystemUser] = useAtom(systemUserAtom);
 	const handleShowPassword = () => setShowPassword((showPass) => !showPass);
-	const { login } = useAuth();
+	const { login, setStudentUser, studentUser } = useAuth();
 
 	const [verifyTOTP, { loading: mutating }] = useMutation(verifyTOTPMutation, {
 		onCompleted(data) {
@@ -40,6 +37,8 @@ export default function StudentLogin() {
 					className: "bg-green-600 foreground-white",
 					icon: <Icon icon="lets-icons:check-fill" />,
 				});
+				localStorage.removeItem("isLoggedIn");
+				login(localStorage.getItem("accessToken")!, true);
 				navigate("/", {
 					replace: true,
 				});
@@ -63,7 +62,7 @@ export default function StudentLogin() {
 					if (mfaEnabled) {
 						verifyTOTP({
 							variables: {
-								secret: systemUser?.mfaSecret,
+								secret: studentUser?.mfaSecret,
 								token: values.otp,
 							},
 						});
@@ -88,6 +87,8 @@ export default function StudentLogin() {
 							if (data.data.user.mfaEnabled) {
 								setMfaEnabled(true);
 								localStorage.setItem("isLoggedIn", "false");
+
+								login(data.data.accessToken, false);
 							} else {
 								localStorage.removeItem("isLoggedIn");
 								toast.success("Successfully logged in", {
@@ -100,9 +101,10 @@ export default function StudentLogin() {
 								navigate("/", {
 									replace: true,
 								});
+
+								login(data.data.accessToken);
 							}
-							login(data.data.accessToken);
-							setSystemUser(data.data.user);
+							setStudentUser(data.data.user);
 						} catch (err) {
 							toast.error((err as Error).message, {
 								richColors: true,
@@ -217,6 +219,7 @@ export default function StudentLogin() {
 												setMfaEnabled(false);
 												resetForm();
 												localStorage.clear();
+												setStudentUser(null);
 											}}
 											fullWidth
 											type="submit"

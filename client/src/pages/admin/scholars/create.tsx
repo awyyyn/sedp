@@ -13,16 +13,16 @@ import { Button } from "@heroui/button";
 import { DatePicker } from "@heroui/date-picker";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { useMutation } from "@apollo/client";
+import { toast } from "sonner";
 
 import places from "../../../../places.json";
 import degrees from "../../../../degrees.json";
 
 import { addScholarSchema } from "@/definitions";
+import { CREATE_STUDENT_MUTATION } from "@/queries";
 import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
 import { generatePassword } from "@/lib/utils";
-import { CREATE_STUDENT_MUTATION } from "@/queries";
-import { toast } from "sonner";
 
 export default function AddScholar() {
 	const [streets, setStreet] = useState<string[]>([]);

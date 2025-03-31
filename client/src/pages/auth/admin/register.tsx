@@ -12,7 +12,7 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 import { toast } from "sonner";
 
 import places from "../../../../places.json";
-import Step3 from "../components/step3";
+import SetUpTwoFactor from "../../../components/set-up-two-factor";
 
 import { RowSteps } from "@/components/";
 
@@ -479,7 +479,7 @@ export default function Register() {
 										</div>
 									) : activeStep === 2 ? (
 										<div className=" space-y-2 pb-5">
-											<Step3
+											<SetUpTwoFactor
 												handleSaveSecret={(secret: string) => {
 													setFieldValue("mfaSecret", secret);
 												}}

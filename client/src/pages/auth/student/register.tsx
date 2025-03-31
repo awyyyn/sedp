@@ -14,7 +14,7 @@ import { Divider } from "@heroui/divider";
 import { Select, SelectItem } from "@heroui/select";
 
 import places from "../../../../places.json";
-import Step3 from "../components/step3";
+import SetUpTwoFactor from "../../../components/set-up-two-factor";
 
 import { RowSteps } from "@/components/";
 import { years } from "@/constants";
@@ -499,7 +499,7 @@ export default function StudentRegister() {
 										</div>
 									) : activeStep === 3 ? (
 										<div className=" space-y-2 pb-5">
-											<Step3
+											<SetUpTwoFactor
 												handleSaveSecret={(secret: string) => {
 													setFieldValue("mfaSecret", secret);
 												}}
