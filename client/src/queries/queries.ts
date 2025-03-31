@@ -7,7 +7,7 @@ import {
 	systemUsersFragment,
 } from "./fragments";
 
-export const generateTOTPQuery = gql`
+export const GENERATE_TOTP_QUERY = gql`
 	query {
 		totp: generateTOTPSecret {
 			secret
@@ -159,7 +159,7 @@ export const READ_MEETINGS_QUERY = gql`
 
 export const GET_CALENDAR_EVENTS_QUERY = gql`
 	query {
-		calendarEvents {
+		events: calendarEvents {
 			id
 			start
 			end

@@ -18,6 +18,7 @@ export const systemUsersFragment = gql`
 			street
 		}
 		role
+
 		status
 		verifiedAt
 		createdAt
@@ -44,6 +45,7 @@ export const studentsFragment = gql`
 		birthDate
 		yearLevel
 		schoolName
+		course
 		statusUpdatedAt
 		createdAt
 		updatedAt

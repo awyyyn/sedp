@@ -39,12 +39,13 @@ export const UPDATE_STUDENT_MUTATION = gql`
 	${studentsFragment}
 	mutation (
 		$id: String!
-		$studentId: String
 		$firstName: String
 		$lastName: String
 		$middleName: String
-		$city: String
-		$street: String
+		# $city: String
+		# $street: String
+		$password: String
+		$address: AddressInput
 		$birthDate: String
 		$phoneNumber: String
 		$status: StudentStatus
@@ -52,15 +53,18 @@ export const UPDATE_STUDENT_MUTATION = gql`
 		$mfaEnabled: Boolean
 		$yearLevel: Int
 		$schoolName: String
+		$gender: Gender
+		$course: String
 	) {
 		updateStudent(
 			id: $id
-			studentId: $studentId
 			firstName: $firstName
 			lastName: $lastName
 			middleName: $middleName
-			city: $city
-			street: $street
+			# city: $city
+			# street: $street
+			password: $password
+			address: $address
 			birthDate: $birthDate
 			phoneNumber: $phoneNumber
 			status: $status
@@ -68,6 +72,8 @@ export const UPDATE_STUDENT_MUTATION = gql`
 			mfaEnabled: $mfaEnabled
 			yearLevel: $yearLevel
 			schoolName: $schoolName
+			gender: $gender
+			course: $course
 		) {
 			...StudentFragment
 		}
