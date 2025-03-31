@@ -11,7 +11,7 @@ export interface Student {
 	address: SystemUserAddress;
 	password: string;
 	gender: Gender;
-	birthDate: Date;
+	birthDate: string;
 	mfaSecret: string | null;
 	mfaEnabled: boolean;
 	status: StudentStatus;

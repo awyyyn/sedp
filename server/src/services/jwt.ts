@@ -1,7 +1,7 @@
 import { SystemUserRole } from "../types/index.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-interface PayloadArgs {
+export interface PayloadArgs {
 	id: string;
 	email: string;
 	role: SystemUserRole | "STUDENT";

@@ -12,7 +12,7 @@ export interface Student {
 	middleName: string | null;
 	address: SystemUserAddress;
 	password: string;
-	birthDate: Date;
+	birthDate: string;
 	mfaSecret: string | null;
 	mfaEnabled: boolean;
 	status: StudentStatus;
