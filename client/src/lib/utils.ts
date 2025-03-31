@@ -4,6 +4,11 @@ import {
 	isSameDay,
 	isSameMonth,
 } from "date-fns";
+import { parseAbsoluteToLocal } from "@internationalized/date";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+import { SystemUserRole } from "../types/system-user.js";
 
 export function generatePassword(length = 12) {
 	const charset =
@@ -20,9 +25,6 @@ export function generatePassword(length = 12) {
 
 	return password;
 }
-
-import { SystemUserRole } from "../types/system-user.js";
-import { parseAbsoluteToLocal } from "@internationalized/date";
 
 export function getRoleDescription(role: SystemUserRole): string {
 	switch (role) {
@@ -76,3 +78,7 @@ export const formatEventTime = (startTime: string, endTime: string) => {
 
 	return `${format(formattedStartTime, "hh:mm a")} - ${format(formattedEndTime, "hh:mm a")}`;
 };
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
