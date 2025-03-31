@@ -19,7 +19,7 @@ interface AuthContextProps {
 	studentUser: Student | null;
 	setStudentUser: Dispatch<SetStateAction<Student | null>>;
 	loading: boolean;
-	login: (token: string) => void;
+	login: (token: string, isAuthenticated?: boolean) => void;
 	logout: () => void;
 	isAuthenticated: boolean;
 }
@@ -73,8 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				const data = await response.json();
 
 				setIsAuthenticated(true);
+				if (data.data.user.role === "STUDENT") {
+					setStudentUser(data.data.user);
+				}
 				setRole(data.data.user.role as ROLE);
-				setStudentUser(data.data.user);
 				localStorage.setItem("accessToken", data.data.accessToken);
 			} catch (err) {
 				localStorage.clear();
@@ -90,9 +92,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		})();
 	}, []);
 
-	const login = (token: string) => {
+	const login = (token: string, isAuthenticated = true) => {
 		localStorage.setItem("accessToken", token);
-		setIsAuthenticated(true);
+		setIsAuthenticated(isAuthenticated);
 		const decoded = jwtDecode<{ role: string; exp: number } & JwtPayload>(
 			token
 		);
