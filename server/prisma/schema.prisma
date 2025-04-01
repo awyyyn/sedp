@@ -73,7 +73,7 @@ model Student {
 
   statusUpdatedAt DateTime? 
 
-  documents documents[]
+  documents Document[]
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -115,22 +115,7 @@ enum documentTypeEnum {
   document
 }
 
-model documents {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  student Student @relation(fields: [studentId], references: [id])
-  studentId String  @db.ObjectId
-  documentType documentTypeEnum @default(photo)
-  documentName String
-  documentUrl String 
-
-  
-
-  // TimeStamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("documents")
-}
+ 
 
 model Events {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -189,3 +174,52 @@ model Transactions {
   createdAt DateTime @default(now())
 }
 
+
+
+// model Folder {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name      String   // Name of the folder
+//   studentId String   @db.ObjectId  @unique // Nullable to allow root folders
+//   student   Student   @relation(fields: [studentId], references: [id]) // Relation to Student
+
+
+//   month     Int
+//   parentId  String?   @db.ObjectId // Nullable to allow root folders
+
+
+//   // parent    Folder?   @relation("FolderParent", fields: [parentId], references: [id]) // Parent folder relation
+
+//   documents Document[] // List of documents in this folder
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("folders")
+// }
+
+model Document {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId 
+
+  documentName String
+  documentType documentTypeEnum @default(photo)
+  documentUrl  String
+  
+  // folderId     String?  @db.ObjectId // Nullable in case the document isn't assigned to any folder
+  // folder       Folder?   @relation(fields: [folderId], references: [id]) // Relation to Folder
+
+  monthlyDocument Boolean @default(true)
+  month Int
+  year Int
+  schoolYear String
+  semester Int
+
+  studentId String @db.ObjectId
+  student Student @relation(references: [id], fields: [studentId])
+  
+
+  // TimeStamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("documents")
+}
