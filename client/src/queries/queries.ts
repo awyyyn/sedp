@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 
 import {
+	documentFragment,
 	eventFragment,
 	meetingFragment,
 	studentsFragment,
@@ -181,6 +182,27 @@ export const GET_CALENDAR_MEETINGS_QUERY = gql`
 			location
 			backgroundColor
 			borderColor
+		}
+	}
+`;
+
+export const READ_DOCUMENTS_QUERY = gql`
+	${documentFragment}
+	query (
+		$year: Int
+		$month: Int
+		$schoolYear: String
+		$semester: Int
+		$type: DocumentType
+	) {
+		documents(
+			year: $year
+			month: $month
+			schoolYear: $schoolYear
+			semester: $semester
+			type: $type
+		) {
+			...DocumentFragment
 		}
 	}
 `;

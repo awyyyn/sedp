@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 
 import {
+	documentFragment,
 	eventFragment,
 	meetingFragment,
 	studentsFragment,
@@ -304,6 +305,24 @@ export const UPDATE_MEETING_MUTATION = gql`
 			description: $description
 		) {
 			...MeetingFragment
+		}
+	}
+`;
+
+export const CREATE_DOCUMENT_MUTATION = gql`
+	${documentFragment}
+	mutation ($input: DocumentInput!) {
+		document: createDocument(input: $input) {
+			...DocumentFragment
+		}
+	}
+`;
+
+export const DELETE_DOCUMENT_MUTATION = gql`
+	${documentFragment}
+	mutation ($id: ID!) {
+		document: deleteDocument(id: $id) {
+			...DocumentFragment
 		}
 	}
 `;

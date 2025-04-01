@@ -78,3 +78,19 @@ export const meetingFragment = gql`
 		createdAt
 	}
 `;
+
+export const documentFragment = gql`
+	fragment DocumentFragment on Document {
+		id
+		documentType
+		documentUrl
+		monthlyDocument
+		month
+		year
+		schoolYear
+		semester
+		createdAt
+		updatedAt
+		studentId
+	}
+`;
