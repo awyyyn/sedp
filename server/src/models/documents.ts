@@ -3,8 +3,19 @@ import { prisma } from "../services/prisma.js";
 import { DocumentInput } from "../types/index.js";
 
 export const createDocument = async (input: DocumentInput) => {
+	const { studentId, ...data } = input;
 	const document = await prisma.document.create({
-		data: input,
+		data: {
+			...data,
+			student: {
+				connect: {
+					id: studentId,
+				},
+			},
+		},
+		include: {
+			student: true,
+		},
 	});
 
 	return document;
@@ -15,6 +26,9 @@ export const deleteDocument = async (id: string, ownerId: string) => {
 		where: {
 			id,
 			studentId: ownerId,
+		},
+		include: {
+			student: true,
 		},
 	});
 

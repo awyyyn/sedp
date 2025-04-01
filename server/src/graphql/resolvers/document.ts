@@ -43,10 +43,11 @@ export const documentsResolver = async (
 
 export const createDocumentResolver = async (
 	_: never,
-	{ input }: { input: DocumentInput }
+	{ input }: { input: DocumentInput },
+	app: AppContext
 ) => {
 	try {
-		const document = await createDocument(input);
+		const document = await createDocument({ ...input, studentId: app.id });
 
 		if (!document) {
 			throw new GraphQLError("Document creation failed");
