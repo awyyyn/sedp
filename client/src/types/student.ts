@@ -23,8 +23,8 @@ export interface Student {
 	course: string;
 	statusUpdatedAt: string;
 
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export type StudentStatus =

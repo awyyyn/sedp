@@ -44,3 +44,11 @@ export interface CalendarEvent {
 	backgroundColor: string;
 	borderColor: string;
 }
+
+export interface FileTreeItem {
+	id: string;
+	name: string;
+	type: "file" | "folder";
+	disabled?: boolean;
+	children?: FileTreeItem[];
+}
