@@ -1,10 +1,16 @@
-import { Announcement, SystemUser as PSystemUser } from "@prisma/client";
+import {
+	Announcement,
+	Document,
+	SystemUser as PSystemUser,
+} from "@prisma/client";
 import { prisma } from "../services/prisma.js";
 import { SystemUser, SystemUserRole } from "./system-user.js";
 
 export * from "./system-user.js";
 export * from "./student.js";
 export * from "./token.js";
+
+export type DocumentInput = Omit<Document, "id" | "createdAt" | "updatedAt">;
 
 export type CreateSystemUserInput = Omit<
 	SystemUser,
