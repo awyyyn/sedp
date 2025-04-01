@@ -1,7 +1,6 @@
 import { Document, Prisma } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
-
-type DocumentInput = Omit<Document, "id" | "createdAt" | "updatedAt">;
+import { DocumentInput } from "../types/index.js";
 
 export const createDocument = async (input: DocumentInput) => {
 	const document = await prisma.document.create({
