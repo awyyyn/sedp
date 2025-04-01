@@ -160,7 +160,7 @@ export default function Security() {
 												onPress={() => handleSubmit()}
 												color="primary"
 												radius="sm">
-												Change Password
+												Save
 											</Button>
 										</>
 									)}

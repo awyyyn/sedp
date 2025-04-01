@@ -32,9 +32,9 @@ export default function UserNavigation({ showIcons }: UserNavigationProps) {
 				className="gap-2 flex justify-start md:justify-center border-none"
 				variant="ghost"
 				as={Link}
-				to="/"
+				to="/my-documents"
 				radius="none">
-				Submission
+				My Documents
 			</Button>
 			<Button
 				className="gap-2 flex justify-start md:justify-center border-none"
