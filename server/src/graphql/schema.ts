@@ -125,6 +125,17 @@ export const typeDefs = gql`
 		deleteMeeting(id: ID!): Meeting
 	}
 
+	input DocumentInput {
+		documentName: String!
+		documentType: DocumentType
+		documentUrl: String!
+		monthlyDocument: Boolean
+		month: Int!
+		year: Int!
+		schoolYear: String!
+		semester: Int!
+	}
+
 	type SendEmailResult {
 		message: String
 	}
@@ -302,5 +313,22 @@ export const typeDefs = gql`
 		location: String!
 		backgroundColor: String!
 		borderColor: String!
+	}
+
+	type Document {
+		id: ID!
+		studentId: String!
+		student: Student!
+		documentType: DocumentType!
+		documentUrl: String!
+
+		monthlyDocument: Boolean!
+		month: Int!
+		year: Int!
+		schoolYear: String
+		semester: Int
+
+		createdAt: String!
+		updatedAt: String!
 	}
 `;
