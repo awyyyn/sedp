@@ -26,6 +26,13 @@ export const typeDefs = gql`
 		meetings(filter: String, pagination: PaginationInput): MeetingsResult
 		calendarEvents: [CalendarEvent]
 		calendarMeetingEvents: [CalendarEvent]
+		documents(
+			year: Int
+			month: Int
+			schoolYear: String
+			semester: Int
+			type: DocumentType
+		): [Document]
 	}
 
 	type Mutation {
@@ -123,6 +130,8 @@ export const typeDefs = gql`
 		): Meeting
 		deleteEvent(id: ID!): Event
 		deleteMeeting(id: ID!): Meeting
+		createDocument(input: DocumentInput!): Document
+		deleteDocument(id: ID!): Document
 	}
 
 	input DocumentInput {
@@ -313,6 +322,11 @@ export const typeDefs = gql`
 		location: String!
 		backgroundColor: String!
 		borderColor: String!
+	}
+
+	enum DocumentType {
+		photo
+		document
 	}
 
 	type Document {

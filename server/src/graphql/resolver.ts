@@ -29,6 +29,9 @@ import {
 	deleteMeetingResolver,
 	calendarEventsResolver,
 	calendarMeetingsResolver,
+	documentsResolver,
+	createDocumentResolver,
+	deleteDocumentResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -46,6 +49,7 @@ export const resolvers = {
 		meeting: meetingResolver,
 		calendarEvents: calendarEventsResolver,
 		calendarMeetingEvents: calendarMeetingsResolver,
+		documents: documentsResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
@@ -65,5 +69,7 @@ export const resolvers = {
 		updateEvent: updateEventResolver,
 		deleteEvent: deleteEventResolver,
 		deleteMeeting: deleteMeetingResolver,
+		createDocument: createDocumentResolver,
+		deleteDocument: deleteDocumentResolver,
 	},
 };
