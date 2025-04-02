@@ -81,3 +81,9 @@ export const AddMeetingSchema = yup.object({
 	startTime: yup.string().required("Start time is required."),
 	endTime: yup.string().required("End time is required."),
 });
+
+export const AddMonthlyDocumentSchema = yup.object({
+	documentName: yup.string().required("Document name is required."),
+	documentType: yup.string().required("Type of Document is required."),
+	documentUrl: yup.string().required("Document is required."),
+});
