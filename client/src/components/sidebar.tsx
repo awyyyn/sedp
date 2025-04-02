@@ -5,6 +5,7 @@ import {
 	DropdownMenu,
 	DropdownItem,
 } from "@heroui/dropdown";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Link } from "@heroui/link";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -17,6 +18,7 @@ import { useAuth } from "@/contexts";
 export function AppSidebar() {
 	const { role, logout } = useAuth();
 	const { pathname } = useLocation();
+	const navigate = useNavigate();
 
 	return (
 		<aside>
@@ -43,50 +45,45 @@ export function AppSidebar() {
 					</SubMenu> */}
 						<MenuItem
 							icon={<Icon icon="duo-icons:dashboard" />}
-							component={<Link />}
-							className={`${pathname.includes("dashboard") ? "bg-[#A6F3B2]   " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/dashboard">
+							component={<Link to="/admin/dashboard" as={RouterLink} />}
+							className={`${pathname.includes("dashboard") ? "bg-[#A6F3B2]   " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}>
 							Dashboard
 						</MenuItem>
 						<MenuItem
-							component={<Link />}
+							component={<Link to="/admin/scholars" as={RouterLink} />}
 							className={`${pathname.includes("scholars") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/scholars"
 							icon={<Icon icon="academicons:semantic-scholar" />}>
 							Scholars
 						</MenuItem>
 						<MenuItem
-							component={<Link />}
+							component={
+								<Link as={RouterLink} to="/admin/monthly-submissions" />
+							}
 							className={`${pathname.includes("monthly-submissions") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/monthly-submissions"
 							icon={<Icon icon="et:documents" />}>
 							Monthly Submission
 						</MenuItem>
 						<MenuItem
-							component={<Link />}
+							component={<Link to="/admin/events" as={RouterLink} />}
 							className={`${pathname.includes("events") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/events"
 							icon={<Icon icon="mdi:events" />}>
 							Calendar of Events
 						</MenuItem>
 						<MenuItem
-							component={<Link />}
+							component={<Link to="/admin/meetings" as={RouterLink} />}
 							className={`${pathname.includes("meetings") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/meetings"
 							icon={<Icon icon="healthicons:group-discussion-meetingx3" />}>
 							Meetings
 						</MenuItem>
 						<MenuItem
-							component={<Link />}
+							component={<Link to="/admin/announcements" as={RouterLink} />}
 							className={`${pathname.includes("announcements") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							href="/admin/announcements"
 							icon={<Icon icon="mingcute:announcement-line" />}>
 							Announcements
 						</MenuItem>
 						{role === "SUPER_ADMIN" && (
 							<MenuItem
-								component={<Link />}
-								href="/admin/system-users"
+								component={<Link to="/admin/system-users" as={RouterLink} />}
 								className={`${pathname.includes("system-users") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
 								icon={<Icon icon="fa-solid:users-cog" />}>
 								System Users
@@ -114,7 +111,7 @@ export function AppSidebar() {
 							</DropdownTrigger>
 							<DropdownMenu aria-label="Static Actions">
 								<DropdownItem
-									href="/admin/admin-account"
+									onPress={() => navigate("/admin/account")}
 									key="account"
 									startContent={
 										<Icon icon="ix:user-profile-filled" fontSize={20} />
