@@ -6,6 +6,7 @@ import {
 	AddAnnouncementSchema,
 	AddEventSchema,
 	AddMeetingSchema,
+	AddMonthlyDocumentSchema,
 	addScholarSchema,
 } from "@/definitions";
 
@@ -15,6 +16,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export * from "./system-user";
 export * from "./student";
+export * from "./document";
 export * from "./announcement";
 export * from "./event";
 export * from "./meeting";
@@ -26,6 +28,9 @@ export type AddAnnouncementSchemaData = yup.InferType<
 >;
 export type AddEventSchemaData = yup.InferType<typeof AddEventSchema>;
 export type AddMeetingSchemaData = yup.InferType<typeof AddMeetingSchema>;
+export type AddMonthlySchemaData = yup.InferType<
+	typeof AddMonthlyDocumentSchema
+>;
 
 export interface PaginationResult<T> {
 	count: number;
