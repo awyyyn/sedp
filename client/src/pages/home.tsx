@@ -38,7 +38,7 @@ export default function Home() {
 	return (
 		<div className="relative min-h-screen flex items-center  min-w-full overflow-hidden">
 			<UserLayout />
-			<div className="h-full px-5 md:px-5 z-50    space-y-5 container mx-auto flex flex-col justify-center py-10">
+			<div className="h-full px-5 md:px-5 z-40    space-y-5 container mx-auto flex flex-col justify-center py-10">
 				<h1 className="text-[#1B3899] text-5xl md:text-7xl font-extrabold">
 					SEDP - SIMBAG SA
 					<br />

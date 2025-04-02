@@ -13,10 +13,10 @@ export default function DocumentsLayout() {
 						key={link}
 						as={Link}
 						to={link}
-						color={pathname === link ? "primary" : "default"}
+						color={pathname.includes(link) ? "primary" : "default"}
 						radius="sm"
 						className="border-none capitalize"
-						variant={pathname === link ? "solid" : "ghost"}>
+						variant={pathname.includes(link) ? "solid" : "ghost"}>
 						{link.split("/")[link.split("/").length - 1].split("-").join(" ")}
 					</Button>
 				))}

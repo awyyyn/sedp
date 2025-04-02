@@ -39,6 +39,11 @@ import AnnouncementFeed from "@/pages/timeline/announcements/feed";
 import MeetingFeed from "@/pages/timeline/meetings/feed";
 import EventFeed from "@/pages/timeline/events/feed";
 import TimelinePage from "@/pages/timeline/page";
+import DocumentsLayout from "@/pages/documents/layout";
+import Monthly from "@/pages/documents/monthly/monthly";
+import Semester from "@/pages/documents/semester/semester";
+import AddMonthlyDocument from "@/pages/documents/monthly/add-monthly-doc";
+import AddSemesterDocument from "@/pages/documents/semester/add-semester.doc";
 
 function App() {
 	const adminRoutes = {
@@ -244,6 +249,42 @@ function App() {
 							{
 								element: <Security />,
 								path: "security",
+							},
+						],
+					},
+					{
+						path: "my-documents",
+						element: <DocumentsLayout />,
+						children: [
+							{
+								index: true,
+								element: <h1>Select</h1>,
+							},
+							{
+								path: "monthly",
+								children: [
+									{
+										index: true,
+										element: <Monthly />,
+									},
+									{
+										path: "upload",
+										element: <AddMonthlyDocument />,
+									},
+								],
+							},
+							{
+								path: "semester",
+								children: [
+									{
+										index: true,
+										element: <Semester />,
+									},
+									{
+										path: "upload",
+										element: <AddSemesterDocument />,
+									},
+								],
 							},
 						],
 					},
