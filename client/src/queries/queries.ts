@@ -194,6 +194,7 @@ export const READ_DOCUMENTS_QUERY = gql`
 		$schoolYear: String
 		$semester: Int
 		$type: DocumentType
+		$monthlyDocument: Boolean
 	) {
 		documents(
 			year: $year
@@ -201,6 +202,7 @@ export const READ_DOCUMENTS_QUERY = gql`
 			schoolYear: $schoolYear
 			semester: $semester
 			type: $type
+			monthlyDocument: $monthlyDocument
 		) {
 			...DocumentFragment
 		}

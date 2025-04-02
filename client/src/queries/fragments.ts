@@ -83,7 +83,10 @@ export const documentFragment = gql`
 	fragment DocumentFragment on Document {
 		id
 		documentType
+		documentName
 		documentUrl
+		docType
+		otherType
 		monthlyDocument
 		month
 		year
