@@ -17,7 +17,7 @@ export default function UserHeader({ onOpenChange }: UserHeaderProps) {
 	const { isAuthenticated } = useAuth();
 
 	return (
-		<header className="fixed top-0 z-50	 py-2  left-0 w-screen bg-[#D5D6D7] bg-opacity-85  ">
+		<header className="fixed top-0 z-[45]	 py-2  left-0 w-screen bg-[#D5D6D7] bg-opacity-85  ">
 			<div className="px-5 md:px-0 container mx-auto flex justify-between">
 				<div className="flex gap-4 items-center">
 					<img className="rounded-full" alt="SEDP LOGO" src={sedpLogo} />
