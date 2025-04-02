@@ -13,7 +13,9 @@ export const documentsResolver = async (
 		schoolYear,
 		semester,
 		year,
+		monthlyDocument = true,
 	}: {
+		monthlyDocument?: boolean;
 		year?: number;
 		month?: number;
 		schoolYear?: string;
@@ -29,6 +31,7 @@ export const documentsResolver = async (
 		}
 
 		return await getDocuments({
+			monthlyDocument,
 			studentId,
 			month,
 			schoolYear,
@@ -46,8 +49,12 @@ export const createDocumentResolver = async (
 	{ input }: { input: DocumentInput },
 	app: AppContext
 ) => {
+	console.log(input);
 	try {
-		const document = await createDocument({ ...input, studentId: app.id });
+		const document = await createDocument({
+			...input,
+			studentId: app.id,
+		});
 
 		if (!document) {
 			throw new GraphQLError("Document creation failed");

@@ -41,15 +41,19 @@ export const getDocuments = async ({
 	month,
 	schoolYear,
 	semester,
+	monthlyDocument = true,
 }: {
 	studentId?: string;
 	year?: number;
+	monthlyDocument?: boolean;
 	schoolYear?: string;
 	semester?: number;
 	month?: number;
 	type?: Document["documentType"];
 } = {}) => {
-	let where: Prisma.DocumentWhereInput = {};
+	let where: Prisma.DocumentWhereInput = {
+		monthlyDocument,
+	};
 
 	if (studentId) {
 		where.studentId = studentId;
