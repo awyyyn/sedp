@@ -32,6 +32,7 @@ export const typeDefs = gql`
 			schoolYear: String
 			semester: Int
 			type: DocumentType
+			monthlyDocument: Boolean
 		): [Document]
 	}
 
@@ -137,12 +138,23 @@ export const typeDefs = gql`
 	input DocumentInput {
 		documentName: String!
 		documentType: DocumentType
+		docType: DocType!
+		otherType: String
 		documentUrl: String!
 		monthlyDocument: Boolean
 		month: Int!
 		year: Int!
 		schoolYear: String!
 		semester: Int!
+	}
+
+	enum DocType {
+		NARRATIVE_REPORT
+		RECEIPT
+		COR
+		COG
+		OSAS
+		OTHER
 	}
 
 	type SendEmailResult {
@@ -333,8 +345,11 @@ export const typeDefs = gql`
 		id: ID!
 		studentId: String!
 		student: Student!
+		documentName: String!
 		documentType: DocumentType!
 		documentUrl: String!
+		otherType: String
+		docType: DocType!
 
 		monthlyDocument: Boolean!
 		month: Int!

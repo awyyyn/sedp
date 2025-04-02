@@ -203,6 +203,9 @@ model Document {
   documentName String
   documentType documentTypeEnum @default(photo)
   documentUrl  String
+  docType DocType 
+  otherType String?
+  
   
   // folderId     String?  @db.ObjectId // Nullable in case the document isn't assigned to any folder
   // folder       Folder?   @relation(fields: [folderId], references: [id]) // Relation to Folder
@@ -223,3 +226,13 @@ model Document {
 
   @@map("documents")
 }
+
+
+enum DocType {
+		NARRATIVE_REPORT
+		RECEIPT
+		COR
+		COG
+		OSAS
+		OTHER
+	}
