@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, ReactNode, SetStateAction } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
@@ -19,6 +19,8 @@ interface ImageUploaderProps {
 	setUploadedUrls: Dispatch<SetStateAction<string[]>>;
 	forceType?: FileType;
 	invalid?: boolean;
+
+	addBtn?: ReactNode;
 }
 
 interface UploadingFile {
@@ -36,6 +38,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 	uploadedUrls = [],
 	handlePreview,
 	forceType,
+	addBtn,
 }) => {
 	const [dragActive, setDragActive] = React.useState(false);
 	const [uploadingFiles, setUploadingFiles] = React.useState<UploadingFile[]>(
@@ -198,16 +201,19 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 							/>
 							<div className="text-center">
 								<p className="text-default-700 text-lg font-semibold">
-									Drag and drop your images here
+									Drag and drop your image/file here
 								</p>
 								<p className="text-default-500 text-sm">or click to browse</p>
 							</div>
-							<Button
-								color="primary"
-								variant="flat"
-								onPress={() => inputRef.current?.click()}>
-								Select Files
-							</Button>
+							<div className="flex gap-2">
+								{addBtn && addBtn}
+								<Button
+									color="primary"
+									variant="flat"
+									onPress={() => inputRef.current?.click()}>
+									Select Files
+								</Button>
+							</div>
 						</>
 					) : (
 						<div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
@@ -240,7 +246,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 											color="danger"
 											variant="flat"
 											size="sm"
-											className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+											className="absolute z-[53] top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
 											onPress={() => removeImage(index)}>
 											<Icon icon="lucide:x" className="w-4 h-4" />
 										</Button>
