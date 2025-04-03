@@ -33,6 +33,7 @@ export const typeDefs = gql`
 			semester: Int
 			type: DocumentType
 			monthlyDocument: Boolean
+			scholarId: String
 		): [Document]
 	}
 
@@ -133,6 +134,7 @@ export const typeDefs = gql`
 		deleteMeeting(id: ID!): Meeting
 		createDocument(input: DocumentInput!): Document
 		deleteDocument(id: ID!): Document
+		updateDocument(id: ID!, input: DocumentInput!): Document
 	}
 
 	input DocumentInput {
@@ -349,6 +351,7 @@ export const typeDefs = gql`
 		documentType: DocumentType!
 		documentUrl: String!
 		otherType: String
+		amount: Float!
 		docType: DocType!
 
 		monthlyDocument: Boolean!

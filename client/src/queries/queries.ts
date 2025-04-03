@@ -195,8 +195,10 @@ export const READ_DOCUMENTS_QUERY = gql`
 		$semester: Int
 		$type: DocumentType
 		$monthlyDocument: Boolean
+		$scholarId: String
 	) {
 		documents(
+			scholarId: $scholarId
 			year: $year
 			month: $month
 			schoolYear: $schoolYear

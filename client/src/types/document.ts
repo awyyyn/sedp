@@ -10,7 +10,7 @@ export interface Document {
 
 	docType: DocType;
 	otherType: string | null;
-
+	amount: number;
 	documentUrl: string;
 	monthlyDocument: boolean;
 	month: number;

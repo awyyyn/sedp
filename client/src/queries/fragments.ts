@@ -85,6 +85,7 @@ export const documentFragment = gql`
 		documentType
 		documentName
 		documentUrl
+		amount
 		docType
 		otherType
 		monthlyDocument
