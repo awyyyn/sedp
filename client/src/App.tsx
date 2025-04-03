@@ -40,10 +40,13 @@ import MeetingFeed from "@/pages/timeline/meetings/feed";
 import EventFeed from "@/pages/timeline/events/feed";
 import TimelinePage from "@/pages/timeline/page";
 import DocumentsLayout from "@/pages/documents/layout";
-import Monthly from "@/pages/documents/monthly/monthly";
-import Semester from "@/pages/documents/semester/semester";
-import AddMonthlyDocument from "@/pages/documents/monthly/add-monthly-doc";
-import AddSemesterDocument from "@/pages/documents/semester/add-semester.doc";
+import Monthly from "@/pages/documents/monthly/list";
+import Semester from "@/pages/documents/semester/list";
+import AddMonthlyDocument from "@/pages/documents/monthly/add";
+import AddSemesterDocument from "@/pages/documents/semester/add";
+import StudentFiles from "@/pages/admin/monthly-submission/scholar/info";
+import Documents from "@/pages/documents/documents";
+import EditMonthlyDocument from "@/pages/documents/monthly/edit";
 
 function App() {
 	const adminRoutes = {
@@ -156,7 +159,17 @@ function App() {
 
 					{
 						path: "monthly-submissions",
-						element: <MonthlySubmission />,
+						children: [
+							{
+								index: true,
+								element: <MonthlySubmission />,
+							},
+							{
+								path: ":scholarId",
+								// children:
+								element: <StudentFiles />,
+							},
+						],
 					},
 				],
 			},
@@ -258,7 +271,7 @@ function App() {
 						children: [
 							{
 								index: true,
-								element: <h1>Select</h1>,
+								element: <Documents />,
 							},
 							{
 								path: "monthly",
@@ -270,6 +283,10 @@ function App() {
 									{
 										path: "upload",
 										element: <AddMonthlyDocument />,
+									},
+									{
+										path: ":id/edit",
+										element: <EditMonthlyDocument />,
 									},
 								],
 							},
