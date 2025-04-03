@@ -4,6 +4,7 @@ import {
 	createDocument,
 	deleteDocument,
 	getDocuments,
+	updateDocument,
 } from "../../models/documents.js";
 
 export const documentsResolver = async (
@@ -14,12 +15,14 @@ export const documentsResolver = async (
 		semester,
 		year,
 		monthlyDocument = true,
+		scholarId,
 	}: {
 		monthlyDocument?: boolean;
 		year?: number;
 		month?: number;
 		schoolYear?: string;
 		semester?: number;
+		scholarId?: string;
 	},
 	app: AppContext
 ) => {
@@ -28,6 +31,10 @@ export const documentsResolver = async (
 
 		if (app.role === "STUDENT") {
 			studentId = app.id;
+		}
+
+		if (scholarId && app.role !== "STUDENT") {
+			studentId = scholarId;
 		}
 
 		return await getDocuments({
@@ -78,6 +85,28 @@ export const deleteDocumentResolver = async (
 			throw new GraphQLError("Document deletion failed");
 		}
 		return document;
+	} catch (err) {
+		console.log(err, "qq");
+		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const updateDocumentResolver = async (
+	_: never,
+	{ id, input }: { id: string; input: Partial<DocumentInput> }
+) => {
+	try {
+		if (!id) {
+			throw new GraphQLError("Document ID is required");
+		}
+
+		const updatedDocument = await updateDocument(id, input);
+
+		if (!updatedDocument) {
+			throw new GraphQLError("Document update failed");
+		}
+
+		return updatedDocument;
 	} catch (err) {
 		console.log(err, "qq");
 		throw new GraphQLError("Internal Server Error!");

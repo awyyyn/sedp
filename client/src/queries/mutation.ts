@@ -326,3 +326,12 @@ export const DELETE_DOCUMENT_MUTATION = gql`
 		}
 	}
 `;
+
+export const UPDATE_DOCUMENT_MUTATION = gql`
+	${documentFragment}
+	mutation ($id: ID!, $input: DocumentInput!) {
+		updateDocument(id: $id, input: $input) {
+			...DocumentFragment
+		}
+	}
+`;

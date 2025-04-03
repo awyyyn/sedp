@@ -88,3 +88,17 @@ export const getDocuments = async ({
 		updatedAt: doc.updatedAt.toISOString(),
 	}));
 };
+
+export const updateDocument = async (
+	toUpdate: string,
+	data: Partial<DocumentInput>
+) => {
+	const updatedDocument = await prisma.document.update({
+		where: {
+			id: toUpdate,
+		},
+		data,
+	});
+
+	return updatedDocument;
+};

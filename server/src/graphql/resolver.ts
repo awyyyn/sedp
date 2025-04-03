@@ -32,6 +32,7 @@ import {
 	documentsResolver,
 	createDocumentResolver,
 	deleteDocumentResolver,
+	updateDocumentResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -71,5 +72,6 @@ export const resolvers = {
 		deleteMeeting: deleteMeetingResolver,
 		createDocument: createDocumentResolver,
 		deleteDocument: deleteDocumentResolver,
+		updateDocument: updateDocumentResolver,
 	},
 };
