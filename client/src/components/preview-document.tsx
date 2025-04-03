@@ -44,7 +44,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
 			onOpenChange={onOpenChange}
 			size="5xl"
 			scrollBehavior="inside"
-			backdrop="blur">
+			backdrop="blur"
+			classNames={{
+				closeButton: "shadow-md bg-white/50   shadow-black/30",
+			}}>
 			<ModalContent
 				style={{
 					zIndex: 199,

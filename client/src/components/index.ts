@@ -10,3 +10,6 @@ export * from "./delete-modal";
 export * from "./full-calendar";
 export * from "./announcement-card";
 export * from "./preview-document";
+export * from "./file-tree";
+export * from "./preview-document";
+export * from "./document-table";
