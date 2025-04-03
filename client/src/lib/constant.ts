@@ -7,3 +7,11 @@ export const getFileExtension = (url: string) => {
 export const imagesExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
 
 export const semester = ["1st Semester", "2nd Semester", "3rd Semester"];
+
+export const yearLevels = [
+	"1st Year",
+	"2nd Year",
+	"3rd Year",
+	"4th Year",
+	"5th Year",
+];

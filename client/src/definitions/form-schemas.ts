@@ -86,4 +86,9 @@ export const AddMonthlyDocumentSchema = yup.object({
 	documentName: yup.string().required("Document name is required."),
 	documentType: yup.string().required("Type of Document is required."),
 	documentUrl: yup.string().required("Document is required."),
+	amount: yup
+		.number()
+		.typeError("Please enter a valid number.")
+		.min(0, "Amount must be 0 or greater.")
+		.optional(),
 });

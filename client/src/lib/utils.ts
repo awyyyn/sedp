@@ -82,3 +82,10 @@ export const formatEventTime = (startTime: string, endTime: string) => {
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
+
+export const formatCurrency = (value: number) => {
+	return new Intl.NumberFormat("en-PH", {
+		style: "currency",
+		currency: "PHP",
+	}).format(value);
+};
