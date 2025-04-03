@@ -5,13 +5,10 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 
-import { FileTree } from "../__components/file-tree";
-import DocumentTable from "../__components/table";
-
 import { READ_DOCUMENTS_QUERY } from "@/queries";
 import { useAuth } from "@/contexts";
 import { Document, FileTreeItem } from "@/types";
-import { PreviewModal } from "@/components";
+import { PreviewModal, FileTree, DocumentTable } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
 export const generateFolders = (date: string): FileTreeItem[] => {
@@ -54,17 +51,20 @@ export const generateFolders = (date: string): FileTreeItem[] => {
 
 export default function Monthly() {
 	const { studentUser } = useAuth();
-	const [activeFileId, setActiveFileId] = useState<string>();
+	const [activeFileId, setActiveFileId] = useState<string>("");
 	const currentYear = new Date().getFullYear();
 	const currentMonth = new Date().getMonth() + 1;
 	const [data, setData] = useState<Document[]>([]);
-	const [fetchDocuments, { loading, error }] =
+	const [fetchDocuments, { loading, error, refetch }] =
 		useLazyQuery(READ_DOCUMENTS_QUERY);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleFileSelect = async (fileId: string) => {
 		setActiveFileId(fileId);
+		setIsLoading(true);
+
 		const { data } = await fetchDocuments({
 			variables: {
 				month: Number(fileId.split("-")[1]),
@@ -72,6 +72,7 @@ export default function Monthly() {
 			},
 		});
 
+		setIsLoading(false);
 		setData(data.documents || []);
 	};
 
@@ -102,7 +103,7 @@ export default function Monthly() {
 							)}
 						/>
 					</div>
-					<div className="md:ml-[s210px] max-h-[80px] relative w-full md:w-[calc(100%-210px)]   mt-5 md:mt-0  ">
+					<div className="md:ml-[s210px] relative w-full md:w-[calc(100%-210px)]   mt-5 md:mt-0  overflow-hidden ">
 						{!activeFileId ? (
 							<div className="flex items-center min-h-[calc(100dvh-50dvh)] justify-center w-full h-full">
 								<p className="text-2xl font-semibold text-gray-500">
@@ -115,14 +116,25 @@ export default function Monthly() {
 							</div>
 						) : (
 							<>
-								<div className="sticky p-2 flex justify-between md:p-4 top-0 left-0 w-full h-full bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
-									<h1 className="text-2xl p-2 font-semibold text-gray-500">
+								<div className="absolute p-2 flex max-h-[80px] justify-between md:p-4 top-0 left-0 w-full  bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
+									<h1 className="text-lg  md:text-2xl md:p-2 font-semibold text-gray-500">
 										Documents for{" "}
 										{formatDate(new Date(`${activeFileId}-01`), "MMMM yyyy")}
 									</h1>
-									<div className="flex flex-col md:flex-row gap-2">
+									<div className="flex flex-col items-end md:flex-row gap-2">
 										<Button
-											className=""
+											className={`${loading || isLoading ? "animate-spin" : ""}`}
+											isDisabled={loading || isLoading}
+											onPress={async () => {
+												setIsLoading(true);
+												await refetch({
+													variables: {
+														month: Number(activeFileId.split("-")[1]),
+														year: Number(activeFileId.split("-")[0]),
+													},
+												});
+												setIsLoading(false);
+											}}
 											isIconOnly
 											variant="light"
 											radius="full">
@@ -147,7 +159,12 @@ export default function Monthly() {
 										)}
 									</div>
 								</div>
-								<div>
+								<div className="overflow-y-auto max-h-[calc(100dvh-30dvh)] pb-20 pt-[85px]">
+									{/* <div className="min-h-[300px] bg-red-500 w-full"></div>
+									<div className="min-h-[300px] bg-blue-500 w-full"></div>
+									<div className="min-h-[300px] bg-blue-500 w-full"></div>
+									<div className="min-h-[300px] bg-blue-500 w-full"></div>
+									<div className="min-h-[300px] bg-blue-500 w-full"></div> */}
 									<DocumentTable
 										handleRowClick={(url) => {
 											onPreviewModalChange(true);
@@ -157,7 +174,7 @@ export default function Monthly() {
 											`${currentYear}-${currentMonth}` === activeFileId
 										}
 										data={data || []}
-										isLoading={loading}
+										isLoading={loading || isLoading}
 									/>
 								</div>
 							</>
