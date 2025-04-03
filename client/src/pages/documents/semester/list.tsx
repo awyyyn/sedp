@@ -3,7 +3,7 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useLazyQuery } from "@apollo/client";
 
-import { FileTree } from "../__components/file-tree";
+import { FileTree } from "../../../components/file-tree";
 
 import { useAuth } from "@/contexts";
 import { FileTreeItem } from "@/types";
