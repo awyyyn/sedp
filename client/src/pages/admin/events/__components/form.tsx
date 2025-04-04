@@ -250,7 +250,6 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
 													day: number;
 												};
 											} = e;
-											// console.log(parseAbsoluteToLocal, "qqqdate");
 
 											const startDate = dateValue
 												? new Date(

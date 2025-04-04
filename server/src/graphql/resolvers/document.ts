@@ -46,7 +46,7 @@ export const documentsResolver = async (
 			year,
 		});
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -68,7 +68,7 @@ export const createDocumentResolver = async (
 		}
 		return document;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -86,7 +86,7 @@ export const deleteDocumentResolver = async (
 		}
 		return document;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -108,7 +108,7 @@ export const updateDocumentResolver = async (
 
 		return updatedDocument;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };

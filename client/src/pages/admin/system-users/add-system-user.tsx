@@ -164,7 +164,6 @@ export default function AddSystemUser() {
 												month: number;
 												day: number;
 											} = e;
-											// console.log(parseAbsoluteToLocal, "qqqdate");
 
 											const jsDate = dateValue
 												? new Date(
@@ -174,10 +173,7 @@ export default function AddSystemUser() {
 													)
 												: null;
 
-											console.log(jsDate, "qqqdate");
 											setFieldValue("birthDate", jsDate);
-
-											// console.log(new Date())
 										}}
 										className="lg:col-span-3"
 										label="Birth Date"

@@ -43,7 +43,7 @@ export const createAllowanceResolver = async (
 
 		// return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -64,7 +64,7 @@ export const updateAllowanceStatusResolver = async (
 
 		// return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -85,7 +85,7 @@ export const allowancesResolver = async (
 
 		// return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -106,7 +106,7 @@ export const allowanceResolver = async (
 
 		// return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };

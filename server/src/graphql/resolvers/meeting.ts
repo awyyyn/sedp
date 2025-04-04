@@ -41,7 +41,7 @@ export const createMeetingResolver = async (
 
 		return newMeeting;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -82,7 +82,7 @@ export const updateMeetingResolver = async (
 
 		return updatedMeeting;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };

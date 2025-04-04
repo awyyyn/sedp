@@ -49,7 +49,6 @@ export default function UpdateStatusModal({
 
 	const handleDeletion = async () => {
 		try {
-			console.log(Array.from(value)[0] as StudentStatus, "qqq");
 			await updateScholarStatus({
 				variables: {
 					id: data.id,

@@ -187,8 +187,6 @@ export default function MeetingForm({ edit, defaultValues }: MeetingFormProps) {
 							isValid,
 							isSubmitting,
 						}) => {
-							console.log(errors, "qqq");
-
 							return (
 								<Form
 									className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
@@ -232,7 +230,6 @@ export default function MeetingForm({ edit, defaultValues }: MeetingFormProps) {
 												month: number;
 												day: number;
 											} = e;
-											// console.log(parseAbsoluteToLocal, "qqqdate");
 
 											const date = dateValue
 												? new Date(

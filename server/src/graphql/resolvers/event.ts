@@ -46,7 +46,7 @@ export const createEventResolver = async (
 
 		return newEvent;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -89,7 +89,7 @@ export const updateEventResolver = async (
 
 		return updatedEvent;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -138,7 +138,6 @@ export const deleteEventResolver = async (_: never, { id }: { id: string }) => {
 export const calendarEventsResolver = async () => {
 	try {
 		const events = await readEventAsCalendar();
-		console.log(events);
 
 		return events;
 	} catch (err) {

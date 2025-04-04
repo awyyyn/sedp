@@ -32,7 +32,7 @@ export const createAnnouncementResolver = async (
 
 		return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -44,7 +44,7 @@ export const announcementsResolver = async (
 	try {
 		return await readAnnouncements({ filter, pagination });
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -56,7 +56,7 @@ export const announcementResolver = async (
 	try {
 		return await readAnnouncement(id);
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -85,7 +85,7 @@ export const updateAnnouncementResolver = async (
 
 		return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };
@@ -110,7 +110,7 @@ export const deleteAnnouncementResolver = async (
 
 		return announcement;
 	} catch (err) {
-		console.log(err, "qq");
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };

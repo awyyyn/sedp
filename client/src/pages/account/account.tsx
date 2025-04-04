@@ -565,7 +565,6 @@ export default function StudentProfile() {
 														className="lg:col-span-6"
 														label="Course"
 														onSelectionChange={(value) => {
-															console.log(value, "qqq");
 															setFieldValue("course", value?.toString());
 														}}
 														selectedKey={values.course}

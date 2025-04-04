@@ -87,8 +87,6 @@ export default function AnnouncementForm({
 				values,
 				isSubmitting,
 			}) => {
-				console.log(errors, "qqq");
-
 				return (
 					<Form
 						className="grid grid-cols-12 gap-x-4 gap-y-2 lg:grid-cols-6"

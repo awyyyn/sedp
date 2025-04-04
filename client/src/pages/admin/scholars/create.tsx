@@ -89,8 +89,6 @@ export default function AddScholar() {
 							isValid,
 							isSubmitting,
 						}) => {
-							console.log(errors, "qqq");
-
 							return (
 								<Form
 									className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
@@ -173,7 +171,6 @@ export default function AddScholar() {
 												month: number;
 												day: number;
 											} = e;
-											// console.log(parseAbsoluteToLocal, "qqqdate");
 
 											const jsDate = dateValue
 												? new Date(
@@ -184,8 +181,6 @@ export default function AddScholar() {
 												: null;
 
 											setFieldValue("birthDate", jsDate);
-
-											// console.log(new Date())
 										}}
 										className="lg:col-span-3"
 										label="Birth Date"
