@@ -4,6 +4,7 @@ import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { CircularProgress } from "@heroui/progress";
 import { Icon } from "@iconify/react";
+
 import documentImg from "@/assets/document.png";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
@@ -37,7 +38,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 	setUploadedUrls,
 	uploadedUrls = [],
 	handlePreview,
-	forceType,
 	addBtn,
 }) => {
 	const [dragActive, setDragActive] = React.useState(false);
@@ -74,34 +74,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 			console.error("Upload error:", error);
 
 			throw error;
-		}
-	};
-
-	const getFileType = (url: string): FileType => {
-		if (forceType) return forceType;
-
-		const extension = url.split(".").pop()?.toLowerCase();
-
-		if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || "")) {
-			return "image";
-		} else if (extension === "pdf") {
-			return "pdf";
-		} else if (["doc", "docx"].includes(extension || "")) {
-			return "word";
-		}
-		return "unknown";
-	};
-
-	const getFileIcon = (type: FileType): string => {
-		switch (type) {
-			case "image":
-				return "lucide:image";
-			case "pdf":
-				return "lucide:file-type-pdf";
-			case "word":
-				return "lucide:file-type-word";
-			default:
-				return "lucide:file-question";
 		}
 	};
 

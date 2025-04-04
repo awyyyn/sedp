@@ -12,11 +12,9 @@ import {
 import { Spinner } from "@heroui/spinner";
 import { useCallback, useMemo, useState } from "react";
 import { Pagination } from "@heroui/pagination";
-import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import {
 	Dropdown,
@@ -25,11 +23,11 @@ import {
 	DropdownTrigger,
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
+import { useNavigate } from "react-router-dom";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
 import { PaginationResult, Student } from "@/types";
 import { yearLevels } from "@/lib/constant";
-import { useNavigate } from "react-router-dom";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },

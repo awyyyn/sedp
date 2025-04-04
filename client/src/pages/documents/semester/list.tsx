@@ -37,9 +37,7 @@ export default function Semester() {
 	const { studentUser } = useAuth();
 	const [activeFileId, setActiveFileId] = useState<string>();
 
-	const [fetchDocuments, { loading, error }] = useLazyQuery(
-		READ_ANNOUNCEMENTS_QUERY
-	);
+	const [, { loading }] = useLazyQuery(READ_ANNOUNCEMENTS_QUERY);
 	const handleFileSelect = (fileId: string) => {
 		setActiveFileId(fileId);
 	};

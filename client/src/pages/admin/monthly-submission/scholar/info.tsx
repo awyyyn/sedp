@@ -10,6 +10,7 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
+import { getMonth, getYear, subMonths } from "date-fns";
 
 import GenerateAllowance from "../../__components/generate-allowance";
 import ViewAllowanceModal from "../../__components/view-allowance-detail";
@@ -19,15 +20,6 @@ import { Allowance, Document, Student } from "@/types";
 import { READ_SCHOLAR_DOCUMENTS_QUERY } from "@/queries";
 import { getFileExtension, imagesExtensions, months } from "@/lib/constant";
 import { formatCurrency } from "@/lib/utils";
-import {
-	addMonths,
-	getMonth,
-	getYear,
-	isBefore,
-	isSameMonth,
-	setMonth,
-	subMonths,
-} from "date-fns";
 
 const getYears = (yearStarted: number) => {
 	const years = [];
