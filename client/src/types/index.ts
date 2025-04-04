@@ -19,6 +19,7 @@ export * from "./student";
 export * from "./document";
 export * from "./announcement";
 export * from "./event";
+export * from "./allowance";
 export * from "./meeting";
 
 export type AddScholarSchemaData = yup.InferType<typeof addScholarSchema>;
