@@ -23,6 +23,20 @@ export interface PaginationResult<T> {
 	hasMore: boolean;
 }
 
+export interface GetAllowanceArgs {
+	studentId?: string;
+	year?: number;
+	semester?: number;
+	month?: number;
+	claimed?: boolean;
+	yearLevel?: number;
+	pagination?: {
+		page: number;
+		take: number;
+	};
+	includeStudent?: boolean;
+}
+
 export interface AnnouncementWithRelation extends Announcement {
 	createdBy: PSystemUser;
 }
