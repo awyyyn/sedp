@@ -35,6 +35,17 @@ export const typeDefs = gql`
 			monthlyDocument: Boolean
 			scholarId: String
 		): [Document]
+		allowances(
+			claimed: Boolean
+			studentId: String
+			month: Int
+			pagination: PaginationInput
+			year: Int
+			semester: Int
+			yearLevel: Int
+			includeStudent: Boolean
+		): AllowanceResult
+		allowance(studentId: ID!, year: Int!, month: Int!): Allowance
 	}
 
 	type Mutation {
@@ -135,6 +146,18 @@ export const typeDefs = gql`
 		createDocument(input: DocumentInput!): Document
 		deleteDocument(id: ID!): Document
 		updateDocument(id: ID!, input: DocumentInput!): Document
+		createAllowance(
+			studentId: String!
+			month: Int!
+			year: Int!
+			semester: Int!
+			bookAllowance: Float
+			yearLevel: Int!
+			miscellaneousAllowance: Float
+			thesisAllowance: Float
+			monthlyAllowance: Float!
+		): Allowance
+		updateAllowanceStatus(id: String!, claimed: Boolean!): Allowance
 	}
 
 	input DocumentInput {
@@ -156,6 +179,7 @@ export const typeDefs = gql`
 		COR
 		COG
 		OSAS
+		MISCELLANEOUS
 		OTHER
 	}
 
@@ -194,6 +218,17 @@ export const typeDefs = gql`
 		page: Int!
 	}
 
+	type SystemUsersResult {
+		data: [SystemUser]
+		hasMore: Boolean
+		count: Int
+	}
+
+	type AllowanceResult {
+		data: [Allowance]
+		hasMore: Boolean
+		count: Int
+	}
 	type SystemUsersResult {
 		data: [SystemUser]
 		hasMore: Boolean
@@ -362,5 +397,28 @@ export const typeDefs = gql`
 
 		createdAt: String!
 		updatedAt: String!
+	}
+
+	type Allowance {
+		id: String
+		studentId: String
+		student: Student
+
+		month: Int
+		year: Int
+		semester: Int
+		yearLevel: Int
+
+		bookAllowance: Float
+		miscellaneousAllowance: Float
+		thesisAllowance: Float
+		monthlyAllowance: Float
+
+		claimedAt: String
+		totalAmount: Float
+		claimed: Boolean
+
+		createdAt: String
+		updatedAt: String
 	}
 `;
