@@ -15,3 +15,24 @@ export const yearLevels = [
 	"4th Year",
 	"5th Year",
 ];
+
+export const months = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
+
+export const monthlyDocOptions = [
+	"BOOK_ALLOWANCE",
+	"MISCELLANEOUS_ALLOWANCE",
+	"THESIS_ALLOWANCE",
+];

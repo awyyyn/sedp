@@ -89,3 +89,12 @@ export const formatCurrency = (value: number) => {
 		currency: "PHP",
 	}).format(value);
 };
+
+export const getDocsTotalAmount = (
+	data: { category: string; amount: number }[],
+	type: "BOOK_ALLOWANCE" | "MISCELLANEOUS_ALLOWANCE"
+) => {
+	return data
+		.filter((doc) => doc.category === type)
+		.reduce((acc, doc) => acc + doc.amount, 0);
+};
