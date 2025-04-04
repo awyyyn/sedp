@@ -33,6 +33,10 @@ import {
 	createDocumentResolver,
 	deleteDocumentResolver,
 	updateDocumentResolver,
+	createAllowanceResolver,
+	updateAllowanceStatusResolver,
+	allowancesResolver,
+	allowanceResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -51,6 +55,8 @@ export const resolvers = {
 		calendarEvents: calendarEventsResolver,
 		calendarMeetingEvents: calendarMeetingsResolver,
 		documents: documentsResolver,
+		allowances: allowancesResolver,
+		allowance: allowanceResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
@@ -73,5 +79,7 @@ export const resolvers = {
 		createDocument: createDocumentResolver,
 		deleteDocument: deleteDocumentResolver,
 		updateDocument: updateDocumentResolver,
+		createAllowance: createAllowanceResolver,
+		updateAllowanceStatus: updateAllowanceStatusResolver,
 	},
 };
