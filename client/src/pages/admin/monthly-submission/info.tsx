@@ -253,7 +253,7 @@ export default function Scholars() {
 									<DropdownItem
 										key={index + 1}
 										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
-										{yearLevel} {index}
+										{yearLevel}
 									</DropdownItem>
 								))}
 							</DropdownMenu>

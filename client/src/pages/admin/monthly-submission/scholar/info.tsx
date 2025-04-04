@@ -11,25 +11,23 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 
-import { DocumentTable, PreviewModal } from "@/components";
-import { Document, Student } from "@/types";
-import { READ_DOCUMENTS_QUERY } from "@/queries";
-import { getFileExtension, imagesExtensions } from "@/lib/constant";
+import GenerateAllowance from "../../__components/generate-allowance";
+import ViewAllowanceModal from "../../__components/view-allowance-detail";
 
-const months = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December",
-];
+import { DocumentTable, PreviewModal } from "@/components";
+import { Allowance, Document, Student } from "@/types";
+import { READ_SCHOLAR_DOCUMENTS_QUERY } from "@/queries";
+import { getFileExtension, imagesExtensions, months } from "@/lib/constant";
+import { formatCurrency } from "@/lib/utils";
+import {
+	addMonths,
+	getMonth,
+	getYear,
+	isBefore,
+	isSameMonth,
+	setMonth,
+	subMonths,
+} from "date-fns";
 
 const getYears = (yearStarted: number) => {
 	const years = [];
@@ -49,20 +47,25 @@ export default function StudentFiles() {
 		new Set([new Date().getFullYear()])
 	);
 	const [monthFilter, setMonthFilter] = useState<Selection>(
-		new Set([new Date().getMonth() + 1])
+		new Set([new Date().getMonth()])
 	);
+	const [generateModal, setGenerateModal] = useState(false);
+	const [viewAllowanceModal, setViewAllowanceModal] = useState(false);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
-	const { loading, error, data, refetch } = useQuery<{ documents: Document[] }>(
-		READ_DOCUMENTS_QUERY,
-		{
-			variables: {
-				scholarId: scholarId,
-				year: Number(Array.from(yearFilter)[0]),
-				month: Number(Array.from(monthFilter)[0]),
-			},
-		}
-	);
+	const { loading, error, data, refetch } = useQuery<{
+		documents: Document[];
+		allowance: Allowance;
+	}>(READ_SCHOLAR_DOCUMENTS_QUERY, {
+		variables: {
+			scholarId: scholarId,
+			studentId: scholarId,
+			month: Number(Array.from(monthFilter)[0]),
+			year: Number(Array.from(yearFilter)[0]),
+			allowanceYear2: Number(Array.from(yearFilter)[0]),
+			allowanceMonth2: Number(Array.from(monthFilter)[0]),
+		},
+	});
 
 	useEffect(() => {
 		if (!error) {
@@ -85,9 +88,33 @@ export default function StudentFiles() {
 
 	const years = getYears(yearStarted);
 
+	const selectedMonth = Number(Array.from(monthFilter)[0]);
+	const selectedYear = Number(Array.from(yearFilter)[0]);
+
+	const checkIfPreviousMonth = (
+		selectedMonth: number,
+		selectedYear: number
+	) => {
+		const currentDate = new Date("2026-01-01");
+		const currentMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed
+		const currentYear = currentDate.getFullYear();
+
+		const currentDateObj = new Date(currentYear, currentMonth, 1); // months are 0-based
+
+		// Subtract 1 month from the current date to get the previous month
+		const previousMonthDate = subMonths(currentDateObj, 1);
+
+		// Get the month and year of the previous month
+		const previousMonth = getMonth(previousMonthDate) + 1; // months are 0-based in JS, so we add 1
+		const previousYear = getYear(previousMonthDate);
+
+		// Check if the selected month and year match the previous month and year
+		return selectedMonth === previousMonth && selectedYear === previousYear;
+	};
+
 	return (
-		<div className="container mx-auto px-5 md:px-0 py-5">
-			<div className="flex justify-between items-center ">
+		<div className="container mx-auto  py-5">
+			<div className="flex-col md:flex-row flex  justify-between items-center ">
 				<div>
 					<h1 className="text-2xl">
 						{scholar.firstName} {scholar.lastName}&apos;s <span>files</span>
@@ -98,12 +125,29 @@ export default function StudentFiles() {
 						details.
 					</p>
 				</div>
-				<div className="flex gap-2 items-center">
+				<div className=" w-full md:w-auto py-4 md:py-0 flex gap-2 items-center">
+					{data?.allowance ? (
+						<Button onPress={() => setViewAllowanceModal(true)}>
+							View
+							<span className="hidden md:block">Allowance</span>
+						</Button>
+					) : (
+						checkIfPreviousMonth(selectedMonth, selectedYear) && (
+							<>
+								{monthFilter}
+								<Button onPress={() => setGenerateModal(true)}>
+									Generate
+									<span className="hidden md:block">Allowance</span>
+								</Button>
+							</>
+						)
+					)}
+
 					<Dropdown
 						classNames={{
 							content: "bg-[#A6F3B2]",
 						}}>
-						<DropdownTrigger className="hidden sm:flex bg-[#A6F3B2]">
+						<DropdownTrigger className=" flex bg-[#A6F3B2]">
 							<Button
 								endContent={
 									<Icon
@@ -139,7 +183,7 @@ export default function StudentFiles() {
 						classNames={{
 							content: "bg-[#A6F3B2]",
 						}}>
-						<DropdownTrigger className="hidden sm:flex bg-[#A6F3B2]">
+						<DropdownTrigger className="  bg-[#A6F3B2]">
 							<Button
 								endContent={
 									<Icon
@@ -198,11 +242,40 @@ export default function StudentFiles() {
 				)}
 			</div>
 			{(data?.documents || []).length > 0 && (
-				<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
-					{/*  */}
-					<h3>Total expenses:</h3>
-					<h2 className="text-2xl font-bold">0.0</h2>
-				</div>
+				<>
+					<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
+						{/*  */}
+						<h3>Total expenses:</h3>
+						<h2 className="text-2xl font-bold">
+							{formatCurrency(
+								data?.documents
+									? data.documents.reduce(
+											(acc, curr) => acc + (curr.amount || 0),
+											0
+										)
+									: 0
+							)}
+						</h2>
+					</div>
+					{generateModal && (
+						<GenerateAllowance
+							isOpen={generateModal}
+							onOpenChange={setGenerateModal}
+							scholar={scholar}
+							documents={data?.documents.filter((doc) => doc.amount) || []}
+							month={Number(Array.from(monthFilter)[0])}
+							year={Number(Array.from(yearFilter)[0])}
+						/>
+					)}
+				</>
+			)}
+			{data?.allowance && viewAllowanceModal && (
+				<ViewAllowanceModal
+					allowance={data.allowance}
+					isOpen={viewAllowanceModal}
+					onOpenChange={setViewAllowanceModal}
+					student={scholar}
+				/>
 			)}
 		</div>
 	);
