@@ -5,3 +5,4 @@ export * from "./announcement.js";
 export * from "./event.js";
 export * from "./meeting.js";
 export * from "./document.js";
+export * from "./allowance.js";
