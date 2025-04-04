@@ -64,6 +64,8 @@ model Student {
   phoneNumber String
   status StudentStatus @default(SCHOLAR)
 
+  allowance Allowance[]
+
   mfaSecret String?
   mfaEnabled Boolean @default(false) 
 
@@ -175,27 +177,7 @@ model Transactions {
 }
 
 
-
-// model Folder {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   name      String   // Name of the folder
-//   studentId String   @db.ObjectId  @unique // Nullable to allow root folders
-//   student   Student   @relation(fields: [studentId], references: [id]) // Relation to Student
-
-
-//   month     Int
-//   parentId  String?   @db.ObjectId // Nullable to allow root folders
-
-
-//   // parent    Folder?   @relation("FolderParent", fields: [parentId], references: [id]) // Parent folder relation
-
-//   documents Document[] // List of documents in this folder
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@map("folders")
-// }
+ 
 
 model Document {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId 
@@ -218,7 +200,7 @@ model Document {
 
   studentId String @db.ObjectId
   student Student @relation(references: [id], fields: [studentId])
-  
+  amount Float? @default(0.0) // Nullable to allow for documents without an amount
 
   // TimeStamps
   createdAt    DateTime  @default(now())
@@ -229,10 +211,35 @@ model Document {
 
 
 enum DocType {
-		NARRATIVE_REPORT
-		RECEIPT
-		COR
-		COG
-		OSAS
-		OTHER
-	}
+  NARRATIVE_REPORT
+  RECEIPT
+  COR
+  COG
+  OSAS
+MISCELLANEOUS
+  OTHER
+}
+
+model Allowance {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String @db.ObjectId
+  student Student @relation(references: [id], fields: [studentId])
+
+  yearLevel Int
+  year Int
+  month Int
+  semester Int
+  monthlyAllowance Float @default(0.0)
+  miscellaneousAllowance Float @default(0.0)
+  bookAllowance Float @default(0.0) 
+  thesisAllowance Float @default(0.0)
+
+  totalAmount Float @default(0.0)
+  claimedAt DateTime?
+  claimed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+
+  @@map("allowance")
+}
