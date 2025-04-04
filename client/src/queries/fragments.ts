@@ -98,3 +98,23 @@ export const documentFragment = gql`
 		studentId
 	}
 `;
+
+export const allowanceFragment = gql`
+	fragment AllowanceFragment on Allowance {
+		id
+		studentId
+		month
+		year
+		semester
+		yearLevel
+		bookAllowance
+		miscellaneousAllowance
+		thesisAllowance
+		monthlyAllowance
+		claimedAt
+		totalAmount
+		claimed
+		createdAt
+		updatedAt
+	}
+`;

@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 
 import {
+	allowanceFragment,
 	documentFragment,
 	eventFragment,
 	meetingFragment,
@@ -207,6 +208,73 @@ export const READ_DOCUMENTS_QUERY = gql`
 			monthlyDocument: $monthlyDocument
 		) {
 			...DocumentFragment
+		}
+	}
+`;
+
+export const READ_SCHOLAR_DOCUMENTS_QUERY = gql`
+	${documentFragment}
+	${allowanceFragment}
+	query Documents(
+		$year: Int
+		$scholarId: String!
+		$monthlyDocument: Boolean
+		$type: DocumentType
+		$semester: Int
+		$schoolYear: String
+		$month: Int
+		$studentId: ID!
+		$allowanceYear2: Int!
+		$allowanceMonth2: Int!
+	) {
+		documents(
+			year: $year
+			scholarId: $scholarId
+			monthlyDocument: $monthlyDocument
+			type: $type
+			semester: $semester
+			schoolYear: $schoolYear
+			month: $month
+		) {
+			...DocumentFragment
+		}
+		allowance(
+			studentId: $studentId
+			year: $allowanceYear2
+			month: $allowanceMonth2
+		) {
+			...AllowanceFragment
+		}
+	}
+`;
+
+export const READ_ALLOWANCES_QUERY = gql`
+	${allowanceFragment}
+	query (
+		$claimed: Boolean
+		$studentId: String
+		$month: Int
+		$pagination: PaginationInput
+		$year: Int
+		$semester: Int
+		$yearLevel: Int
+		$includeStudent: Boolean
+	) {
+		allowances(
+			claimed: $claimed
+			studentId: $studentId
+			month: $month
+			pagination: $pagination
+			year: $year
+			semester: $semester
+			yearLevel: $yearLevel
+			includeStudent: $includeStudent
+		) {
+			hasMore
+			count
+			data {
+				...AllowanceFragment
+			}
 		}
 	}
 `;

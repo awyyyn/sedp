@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 
 import {
+	allowanceFragment,
 	documentFragment,
 	eventFragment,
 	meetingFragment,
@@ -332,6 +333,35 @@ export const UPDATE_DOCUMENT_MUTATION = gql`
 	mutation ($id: ID!, $input: DocumentInput!) {
 		updateDocument(id: $id, input: $input) {
 			...DocumentFragment
+		}
+	}
+`;
+
+export const CREATE_ALLOWANCE_MUTATION = gql`
+	${allowanceFragment}
+	mutation (
+		$studentId: String!
+		$month: Int!
+		$year: Int!
+		$semester: Int!
+		$monthlyAllowance: Float!
+		$bookAllowance: Float
+		$miscellaneousAllowance: Float
+		$thesisAllowance: Float
+		$yearLevel: Int!
+	) {
+		createAllowance(
+			studentId: $studentId
+			month: $month
+			year: $year
+			semester: $semester
+			monthlyAllowance: $monthlyAllowance
+			bookAllowance: $bookAllowance
+			miscellaneousAllowance: $miscellaneousAllowance
+			thesisAllowance: $thesisAllowance
+			yearLevel: $yearLevel
+		) {
+			...AllowanceFragment
 		}
 	}
 `;
