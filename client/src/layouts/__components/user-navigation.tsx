@@ -4,10 +4,14 @@ import { Link } from "react-router-dom";
 
 interface UserNavigationProps {
 	showIcons?: boolean;
+	isAdmin?: boolean;
 }
 
-export default function UserNavigation({ showIcons }: UserNavigationProps) {
-	return (
+export default function UserNavigation({
+	showIcons,
+	isAdmin = false,
+}: UserNavigationProps) {
+	return isAdmin ? (
 		<>
 			<Button
 				variant="ghost"
@@ -40,9 +44,28 @@ export default function UserNavigation({ showIcons }: UserNavigationProps) {
 				className="gap-2 flex justify-start md:justify-center border-none"
 				variant="ghost"
 				as={Link}
+				to="/my-allowance"
+				radius="none">
+				My Allowance
+			</Button>
+			<Button
+				className="gap-2 flex justify-start md:justify-center border-none"
+				variant="ghost"
+				as={Link}
 				to="/account"
 				radius="none">
 				Account
+			</Button>
+		</>
+	) : (
+		<>
+			<Button
+				className="gap-2 flex justify-start md:justify-center border-none"
+				variant="ghost"
+				as={Link}
+				to="/admin/dashboard"
+				radius="none">
+				Dashboard
 			</Button>
 		</>
 	);
