@@ -55,40 +55,30 @@ export const updateSystemUser = async (
 	toUpdateId: string,
 	values: Partial<SystemUser>
 ) => {
-	const {
-		address,
-		status,
-		email,
-		firstName,
-		lastName,
-		mfaEnabled,
-		mfaSecret,
-		birthDate,
-		phoneNumber,
-		middleName,
-		role,
-	} = values;
+	let { id, ...toUpdateData } = values;
+	let hashedPassword: string | undefined = undefined;
+
+	if (values.password && values.password.trim()) {
+		const generateSalt = await genSalt(environment.SALT);
+		hashedPassword = await hash(values.password.trim(), generateSalt);
+	}
 
 	const updatedUser = await prisma.systemUser.update({
 		where: { id: toUpdateId },
 		data: {
-			email,
-			firstName,
-			lastName,
-			birthDate,
-			role,
-			address,
-			phoneNumber,
-			status,
-			mfaEnabled,
-			mfaSecret,
-			middleName,
+			...toUpdateData,
+			password: hashedPassword,
 		},
 	});
 
 	if (!updatedUser) return null;
 
-	return updatedUser;
+	return {
+		...updatedUser,
+		birthDate: updatedUser.birthDate.toISOString(),
+		createdAt: updatedUser.createdAt.toISOString(),
+		updatedAt: updatedUser.updatedAt.toISOString(),
+	};
 };
 
 export const readSystemUser = async (
@@ -120,7 +110,9 @@ export async function readAllSystemUsers({
 	filter,
 	pagination,
 	status,
-}: PaginationArgs = {}): Promise<PaginationResult<SystemUser>> {
+}: PaginationArgs<SystemUserStatus> = {}): Promise<
+	PaginationResult<SystemUser>
+> {
 	let where: Prisma.SystemUserWhereInput = {};
 
 	if (filter) {
@@ -136,7 +128,7 @@ export async function readAllSystemUsers({
 	if (status) {
 		where = {
 			...where,
-			status: SystemUserStatus[status as SystemUserStatus],
+			status,
 		};
 	}
 	// else

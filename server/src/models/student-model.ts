@@ -3,8 +3,10 @@ import { environment } from "../environments/environment.js";
 import { prisma } from "../services/prisma.js";
 import {
 	CreateScholarInput,
+	PaginationArgs,
 	PaginationResult,
 	Student,
+	StudentStatus,
 } from "../types/index.js";
 import { Prisma } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
@@ -111,15 +113,11 @@ export const readStudent = async (id: string): Promise<Student | null> => {
 	};
 };
 
-interface readAllArgs {
-	filter?: string;
-	pagination?: { take: number; page: number };
-}
-
 export async function readAllStudents({
 	filter,
 	pagination,
-}: readAllArgs = {}): Promise<PaginationResult<Student>> {
+	status,
+}: PaginationArgs<StudentStatus> = {}): Promise<PaginationResult<Student>> {
 	let where: Prisma.StudentWhereInput = {};
 
 	if (filter) {
@@ -130,6 +128,12 @@ export async function readAllStudents({
 				{ lastName: { contains: filter } },
 			],
 		};
+	}
+
+	console.log(status);
+
+	if (status) {
+		where.status = status;
 	}
 
 	const users = await prisma.student.findMany({

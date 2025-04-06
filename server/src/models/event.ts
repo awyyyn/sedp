@@ -2,7 +2,8 @@ import { prisma } from "../services/prisma.js";
 import { Events, Prisma } from "@prisma/client";
 import { PaginationArgs } from "../types/system-user.js";
 import { CalendarEvent, PaginationResult } from "../types/index.js";
-import { format } from "date-fns";
+import { addDays, format, lastDayOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 export const upsertEvent = async (
 	{
@@ -44,7 +45,7 @@ export const upsertEvent = async (
 export async function readAllEvents({
 	filter,
 	pagination,
-}: PaginationArgs = {}): Promise<PaginationResult<Events>> {
+}: PaginationArgs<never> = {}): Promise<PaginationResult<Events>> {
 	let where: Prisma.EventsWhereInput = {};
 
 	if (filter) {
@@ -130,4 +131,22 @@ export const readEventAsCalendar = async (): Promise<CalendarEvent[]> => {
 			borderColor: color,
 		} as CalendarEvent;
 	});
+};
+
+export const readMonthlyEvents = async (year: number, month: number) => {
+	const date = new Date(year, month);
+
+	const startDate = addDays(startOfMonth(date), 1);
+	const endDate = addDays(endOfMonth(new Date(year, month)), 1);
+
+	const events = await prisma.events.findMany({
+		where: {
+			startDate: {
+				gte: startDate.toISOString(),
+				lte: endDate.toISOString(),
+			},
+		},
+	});
+
+	return events;
 };
