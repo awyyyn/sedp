@@ -250,6 +250,7 @@ export const READ_SCHOLAR_DOCUMENTS_QUERY = gql`
 
 export const READ_ALLOWANCES_QUERY = gql`
 	${allowanceFragment}
+	${studentsFragment}
 	query (
 		$claimed: Boolean
 		$studentId: String
@@ -274,7 +275,26 @@ export const READ_ALLOWANCES_QUERY = gql`
 			count
 			data {
 				...AllowanceFragment
+				student {
+					...StudentFragment
+				}
 			}
+		}
+	}
+`;
+
+export const READ_MONTHLY_EVENTS = gql`
+	query {
+		events: monthlyEvents {
+			id
+			title
+			description
+			startTime
+			endTime
+			location
+			startDate
+			endDate
+			createdAt
 		}
 	}
 `;

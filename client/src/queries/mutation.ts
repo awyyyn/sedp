@@ -365,3 +365,12 @@ export const CREATE_ALLOWANCE_MUTATION = gql`
 		}
 	}
 `;
+
+export const UPDATE_ALLOWANCE_STATUS_MUTATION = gql`
+	${allowanceFragment}
+	mutation ($id: String!, $claimed: Boolean!) {
+		allowance: updateAllowanceStatus(id: $id, claimed: $claimed) {
+			...AllowanceFragment
+		}
+	}
+`;
