@@ -12,7 +12,8 @@ import { PreviewModal, FileTree, DocumentTable } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
 export const generateFolders = (date: string): FileTreeItem[] => {
-	const currentYear = new Date(date).getFullYear();
+	const selectedYear = new Date(date).getFullYear();
+	const currentYear = new Date().getFullYear();
 	const items: FileTreeItem[] = [];
 
 	// Create the month folders dynamically
@@ -31,7 +32,7 @@ export const generateFolders = (date: string): FileTreeItem[] => {
 		"December",
 	];
 
-	for (let year = currentYear; year < currentYear + 5; year++) {
+	for (let year = selectedYear; year < selectedYear + 5; year++) {
 		items.push({
 			id: year.toString(),
 			name: `${year}`,
@@ -166,6 +167,7 @@ export default function Monthly() {
 									<div className="min-h-[300px] bg-blue-500 w-full"></div>
 									<div className="min-h-[300px] bg-blue-500 w-full"></div> */}
 									<DocumentTable
+										showAmount
 										handleRowClick={(url) => {
 											onPreviewModalChange(true);
 											setToPreview(url);
