@@ -25,8 +25,10 @@ export function DocumentTable({
 	isLoading = false,
 	handleRowClick,
 	hasActions = false,
+	showAmount = false,
 }: {
 	data: Document[];
+	showAmount?: boolean;
 	isLoading?: boolean;
 	handleRowClick: (url: string) => void;
 	hasActions?: boolean;
@@ -71,7 +73,9 @@ export function DocumentTable({
 						<TableColumn>Name</TableColumn>
 						<TableColumn>File Type</TableColumn>
 						<TableColumn>Type</TableColumn>
-						<TableColumn>Amount</TableColumn>
+						<TableColumn className={`${!showAmount && "hidden"}`}>
+							Amount
+						</TableColumn>
 						<TableColumn className="text-center">Action</TableColumn>
 					</TableHeader>
 					<TableBody
@@ -99,7 +103,9 @@ export function DocumentTable({
 											: doc.docType
 										)?.toLowerCase()}
 									</TableCell>
-									<TableCell>{formatCurrency(doc.amount)}</TableCell>
+									<TableCell className={`${!showAmount && "hidden"}`}>
+										{formatCurrency(doc.amount)}
+									</TableCell>
 
 									<TableCell className="flex items-center gap-2 justify-center">
 										<Button
@@ -165,7 +171,9 @@ export function DocumentTable({
 					<TableColumn>Name</TableColumn>
 					<TableColumn>File Type</TableColumn>
 					<TableColumn>Type</TableColumn>
-					<TableColumn>Amount</TableColumn>
+					<TableColumn className={`${!showAmount && "hidden"}`}>
+						Amount
+					</TableColumn>
 				</TableHeader>
 				<TableBody
 					emptyContent="No documents found"
@@ -187,7 +195,9 @@ export function DocumentTable({
 										: doc.docType
 									)?.toLowerCase()}
 								</TableCell>
-								<TableCell>{formatCurrency(doc.amount)}</TableCell>
+								<TableCell className={`${!showAmount && "hidden"}`}>
+									{formatCurrency(doc.amount)}
+								</TableCell>
 							</TableRow>
 						);
 					})}

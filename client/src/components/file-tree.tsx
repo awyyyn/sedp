@@ -42,11 +42,12 @@ export const FileTree: React.FC<FileTreeProps> = ({
 							onFileSelect(item.id);
 						}
 					}}
-					className={`flex  w-full cursor-pointer items-center gap-2 rounded-md py-1 px-2 transition-colors ${
+					disabled={item.disabled}
+					className={`flex disabled:opacity-50 disabled:cursor-not-allowed disabled:line-through   w-full cursor-pointer items-center gap-2 rounded-md py-1 px-2 transition-colors ${
 						isActive
 							? "bg-primary-100 text-primary-500"
 							: "hover:bg-default-100"
-					}`}>
+					}  `}>
 					{renderIcon("folder")}
 					<span className="text-sm">{item.name}</span>
 				</button>
@@ -68,6 +69,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
 				<AccordionItem
 					key={item.id}
 					aria-label={item.name}
+					isDisabled={item.disabled}
 					startContent={renderIcon("folder")}
 					title={item.name}>
 					<FileTree

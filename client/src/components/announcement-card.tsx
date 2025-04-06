@@ -12,8 +12,8 @@ export function AnnouncementCard(announcement: Announcement) {
 			<CardHeader className="flex justify-between">
 				<div className="flex items-center gap-3">
 					<Avatar
-						src={`https://i.pravatar.cc/150`}
-						name={`${announcement.createdBy.firstName} ${announcement.createdBy.lastName}`}
+						// src={`https://i.pravatar.cc/150`}
+						name={`${announcement.createdBy.firstName[0]}${announcement.createdBy.lastName[0]}`}
 						size="sm"
 					/>
 					<div className="flex flex-col">

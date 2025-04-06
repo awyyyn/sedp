@@ -69,9 +69,12 @@ export default function DrawerTimeline({
 								</Button>
 							</Tooltip>
 							<div className="w-full flex justify-start gap-2">
-								<Button
+								{/* <Button
 									className="font-medium text-small text-default-500"
 									size="sm"
+									onPress={() => {
+										navigator.clipboard.writeText(content.link || "");
+									}}
 									startContent={
 										<svg
 											height="16"
@@ -109,7 +112,7 @@ export default function DrawerTimeline({
 									size="sm"
 									variant="flat">
 									Go to page
-								</Button>
+								</Button> */}
 							</div>
 							<div className="flex gap-1 items-center">
 								{/* <Tooltip content="Previous">

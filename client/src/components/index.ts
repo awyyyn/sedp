@@ -13,3 +13,6 @@ export * from "./preview-document";
 export * from "./file-tree";
 export * from "./preview-document";
 export * from "./document-table";
+export * from "./months-table";
+export * from "./view-allowance-detail";
+export * from "./role-based-btn";

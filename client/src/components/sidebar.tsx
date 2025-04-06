@@ -14,11 +14,98 @@ import { useLocation } from "react-router-dom";
 
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { useAuth } from "@/contexts";
+import { roles } from "@/lib/constant";
+import { useAtomValue } from "jotai";
+import { systemUserAtom } from "@/states";
+
+const defaultLinks = [
+	{
+		path: "/dashboard",
+		icon: "duo-icons:dashboard",
+	},
+	{
+		path: "/scholars",
+		icon: "academicons:semantic-scholar",
+	},
+	{
+		path: "/allowances",
+		icon: "solar:hand-money-outline",
+	},
+	{
+		path: "/monthly-submissions",
+		icon: "et:documents",
+	},
+	{
+		path: "/events",
+		icon: "mdi:events",
+	},
+	{
+		path: "/meetings",
+		icon: "healthicons:group-discussion-meetingx3",
+	},
+	{
+		path: "/announcements",
+		icon: "mingcute:announcement-line",
+	},
+];
+
+const adminManageGatheringRoutes = [
+	"/dashboard",
+	"/meetings",
+	"/events",
+	"/announcements",
+];
+const adminManageScholarRoutes = ["/dashboard", "/scholars"];
+const adminManageDocsRoutes = [
+	"/dashboard",
+	"/monthly-submissions",
+	"/allowances",
+];
 
 export function AppSidebar() {
 	const { role, logout } = useAuth();
 	const { pathname } = useLocation();
+	const systemUser = useAtomValue(systemUserAtom);
 	const navigate = useNavigate();
+
+	function renderLinks() {
+		let links = [];
+
+		switch (role) {
+			case "ADMIN_MANAGE_DOCUMENTS":
+				links = defaultLinks.filter((link) =>
+					adminManageDocsRoutes.includes(link.path)
+				);
+				break;
+			case "ADMIN_MANAGE_GATHERINGS":
+				links = defaultLinks.filter((link) =>
+					adminManageGatheringRoutes.includes(link.path)
+				);
+				break;
+			case "ADMIN_MANAGE_SCHOLAR":
+				links = defaultLinks.filter((link) =>
+					adminManageScholarRoutes.includes(link.path)
+				);
+				break;
+			default:
+				links = defaultLinks;
+				break;
+		}
+
+		return links.map((link) => (
+			<MenuItem
+				key={link.path}
+				component={<Link to={`/admin${link.path}`} as={RouterLink} />}
+				className={`${
+					pathname.includes(link.path)
+						? "bg-[#A6F3B2]  "
+						: "bg-[#A6F3B240] hover:bg-[#A6F3B2]"
+				}   mx-auto rounded-xl my-1 capitalize`}
+				icon={<Icon icon={link.icon} />}>
+				{link.path.split("/")[1].replace("-", " ")}
+			</MenuItem>
+		));
+	}
 
 	return (
 		<aside>
@@ -39,48 +126,8 @@ export function AppSidebar() {
 						</div>
 					</div>
 					<Menu className="mt-2  ">
-						{/* <SubMenu label="Charts">
-						<MenuItem> Pie charts </MenuItem>
-						<MenuItem> Line charts </MenuItem>
-					</SubMenu> */}
-						<MenuItem
-							icon={<Icon icon="duo-icons:dashboard" />}
-							component={<Link to="/admin/dashboard" as={RouterLink} />}
-							className={`${pathname.includes("dashboard") ? "bg-[#A6F3B2]   " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}>
-							Dashboard
-						</MenuItem>
-						<MenuItem
-							component={<Link to="/admin/scholars" as={RouterLink} />}
-							className={`${pathname.includes("scholars") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							icon={<Icon icon="academicons:semantic-scholar" />}>
-							Scholars
-						</MenuItem>
-						<MenuItem
-							component={
-								<Link as={RouterLink} to="/admin/monthly-submissions" />
-							}
-							className={`${pathname.includes("monthly-submissions") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							icon={<Icon icon="et:documents" />}>
-							Monthly Submission
-						</MenuItem>
-						<MenuItem
-							component={<Link to="/admin/events" as={RouterLink} />}
-							className={`${pathname.includes("events") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							icon={<Icon icon="mdi:events" />}>
-							Calendar of Events
-						</MenuItem>
-						<MenuItem
-							component={<Link to="/admin/meetings" as={RouterLink} />}
-							className={`${pathname.includes("meetings") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							icon={<Icon icon="healthicons:group-discussion-meetingx3" />}>
-							Meetings
-						</MenuItem>
-						<MenuItem
-							component={<Link to="/admin/announcements" as={RouterLink} />}
-							className={`${pathname.includes("announcements") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-							icon={<Icon icon="mingcute:announcement-line" />}>
-							Announcements
-						</MenuItem>
+						{renderLinks()}
+
 						{role === "SUPER_ADMIN" && (
 							<MenuItem
 								component={<Link to="/admin/system-users" as={RouterLink} />}
@@ -99,11 +146,18 @@ export function AppSidebar() {
 									variant="flat"
 									className="flex gap-0 py-7  justify-between"
 									radius="sm">
-									<div className="flex items-center gap-2">
-										<Avatar size="sm" />
-										<div className="">
-											<p>Admin name</p>
-											<p className="text-xs text-gray-500 text-start">Role</p>
+									<div className="flex   items-center gap-2">
+										<Avatar
+											fallback={`${systemUser?.firstName[0]}${systemUser?.lastName[0]}`}
+											size="sm"
+										/>
+										<div className="flex  items-start flex-col">
+											<p>
+												{systemUser?.firstName} {systemUser?.lastName}
+											</p>
+											<p className="text-xs text-gray-500 text-start">
+												{roles[role as keyof typeof roles]}
+											</p>
 										</div>
 									</div>
 									<Icon icon="mynaui:chevron-up-solid" fontSize={40} />
