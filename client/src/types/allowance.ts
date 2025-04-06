@@ -1,3 +1,5 @@
+import { Student } from "./student";
+
 export interface Allowance {
 	readonly id: string;
 	studentId: string;
@@ -17,3 +19,7 @@ export interface Allowance {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export type AllowanceWithStudent = Allowance & {
+	student: Student;
+};

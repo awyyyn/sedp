@@ -1,4 +1,4 @@
-import { Gender } from "./index.js";
+import { Gender, StudentStatus } from "./index.js";
 
 export interface SystemUser {
 	readonly id: string;
@@ -43,9 +43,9 @@ export interface Pagination {
 	take: number;
 }
 
-export interface PaginationArgs {
+export interface PaginationArgs<TStatus> {
 	filter?: string;
-	status?: string;
+	status?: TStatus;
 	pagination?: {
 		page: number;
 		take: number;
