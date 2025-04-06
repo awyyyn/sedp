@@ -13,6 +13,7 @@
         "@heroui/accordion": "^2.2.13",
         "@heroui/autocomplete": "^2.3.11",
         "@heroui/avatar": "^2.2.7",
+        "@heroui/badge": "^2.2.10",
         "@heroui/breadcrumbs": "^2.2.7",
         "@heroui/button": "2.2.9",
         "@heroui/card": "^2.2.14",
@@ -63,6 +64,7 @@
         "react-dom": "18.3.1",
         "react-pro-sidebar": "^1.1.0",
         "react-router-dom": "6.23.0",
+        "react-to-print": "^3.0.5",
         "sonner": "^1.7.3",
         "tailwind-merge": "^3.0.2",
         "tailwind-variants": "0.1.20",
@@ -253,6 +255,8 @@
     "@heroui/autocomplete": ["@heroui/autocomplete@2.3.11", "", { "dependencies": { "@heroui/aria-utils": "2.2.8", "@heroui/button": "2.2.10", "@heroui/form": "2.1.9", "@heroui/input": "2.4.10", "@heroui/listbox": "2.3.10", "@heroui/popover": "2.3.10", "@heroui/react-utils": "2.1.4", "@heroui/scroll-shadow": "2.3.6", "@heroui/shared-icons": "2.1.2", "@heroui/shared-utils": "2.1.3", "@heroui/spinner": "2.2.7", "@heroui/use-aria-button": "2.2.5", "@heroui/use-safe-layout-effect": "2.1.2", "@react-aria/combobox": "3.11.0", "@react-aria/focus": "3.19.0", "@react-aria/i18n": "3.12.4", "@react-aria/interactions": "3.22.5", "@react-aria/utils": "3.26.0", "@react-aria/visually-hidden": "3.8.18", "@react-stately/combobox": "3.10.1", "@react-types/combobox": "3.13.1", "@react-types/shared": "3.26.0" }, "peerDependencies": { "@heroui/system": ">=2.4.0", "@heroui/theme": ">=2.4.0", "framer-motion": ">=11.5.6 || >=12.0.0-alpha.1", "react": ">=18 || >=19.0.0-rc.0", "react-dom": ">=18 || >=19.0.0-rc.0" } }, "sha512-W49pzRVeNKKCkLnSm5Li9OqNEdzV7lZhvnShGgVdnoxJSpcJpqKuuefRtqiWstTTl5c/uIgsPUk9eIwZAy7ubQ=="],
 
     "@heroui/avatar": ["@heroui/avatar@2.2.7", "", { "dependencies": { "@heroui/react-utils": "2.1.4", "@heroui/shared-utils": "2.1.3", "@heroui/use-image": "2.1.3", "@react-aria/focus": "3.19.0", "@react-aria/interactions": "3.22.5", "@react-aria/utils": "3.26.0" }, "peerDependencies": { "@heroui/system": ">=2.4.0", "@heroui/theme": ">=2.4.0", "react": ">=18 || >=19.0.0-rc.0", "react-dom": ">=18 || >=19.0.0-rc.0" } }, "sha512-ygQhdpyotejCbGaqBSadEXMulrpWLEl7lgV/0zKr17PVNPcDMt6otcBIrfiirrnGQoBi7rAJg0QS2IlHA/3mVQ=="],
+
+    "@heroui/badge": ["@heroui/badge@2.2.10", "", { "dependencies": { "@heroui/react-utils": "2.1.8", "@heroui/shared-utils": "2.1.7" }, "peerDependencies": { "@heroui/system": ">=2.4.7", "@heroui/theme": ">=2.4.6", "react": ">=18 || >=19.0.0-rc.0", "react-dom": ">=18 || >=19.0.0-rc.0" } }, "sha512-ZY+7zvgHUW7Ye4Epdd4GnbmJgf59pGjxGML6Jm+R+GvjdqUSpneRW+QUNzwL8paSwXbGTP48nnQh9fMs+PKyRQ=="],
 
     "@heroui/breadcrumbs": ["@heroui/breadcrumbs@2.2.7", "", { "dependencies": { "@heroui/react-utils": "2.1.4", "@heroui/shared-icons": "2.1.2", "@heroui/shared-utils": "2.1.3", "@react-aria/breadcrumbs": "3.5.19", "@react-aria/focus": "3.19.0", "@react-aria/utils": "3.26.0", "@react-types/breadcrumbs": "3.7.9", "@react-types/shared": "3.26.0" }, "peerDependencies": { "@heroui/system": ">=2.4.0", "@heroui/theme": ">=2.4.0", "react": ">=18 || >=19.0.0-rc.0", "react-dom": ">=18 || >=19.0.0-rc.0" } }, "sha512-IavL3Nl5CO9HexF0foXsOnlYBlHdbMV6eeTxwJ74ww5TVEFJ7i6+4JGKYrra2oze+0sJVFSuU56PLdWhIgy9ng=="],
 
@@ -1377,6 +1381,8 @@
     "react-router-dom": ["react-router-dom@6.23.0", "", { "dependencies": { "@remix-run/router": "1.16.0", "react-router": "6.23.0" }, "peerDependencies": { "react": ">=16.8", "react-dom": ">=16.8" } }, "sha512-Q9YaSYvubwgbal2c9DJKfx6hTNoBp3iJDsl+Duva/DwxoJH+OTXkxGpql4iUK2sla/8z4RpjAm6EWx1qUDuopQ=="],
 
     "react-textarea-autosize": ["react-textarea-autosize@8.5.7", "", { "dependencies": { "@babel/runtime": "^7.20.13", "use-composed-ref": "^1.3.0", "use-latest": "^1.2.1" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-2MqJ3p0Jh69yt9ktFIaZmORHXw4c4bxSIhCeWiFwmJ9EYKgLmuNII3e9c9b2UO+ijl4StnpZdqpxNIhTdHvqtQ=="],
+
+    "react-to-print": ["react-to-print@3.0.5", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ~19" } }, "sha512-Z15MwMOzYCHWi26CZeFNwflAg7Nr8uWD6FTj+EkfIOjYyjr0MXGbI0c7rF4Fgrbj3XG9hFndb1ourxpPz2RAiA=="],
 
     "read-cache": ["read-cache@1.0.0", "", { "dependencies": { "pify": "^2.3.0" } }, "sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA=="],
 
