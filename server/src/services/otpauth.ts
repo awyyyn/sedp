@@ -3,7 +3,7 @@ import speakeasy from "speakeasy";
 export const generateTOTPSecret = async () => {
 	const secret = speakeasy.generateSecret({
 		issuer: "SEDP - MFA",
-		name: "Email Placeholder",
+		name: "SEDP - MFA",
 		length: 20,
 		otpauth_url: true,
 	});
