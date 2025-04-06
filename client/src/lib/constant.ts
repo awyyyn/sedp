@@ -1,3 +1,6 @@
+import { ROLE } from "@/contexts";
+import { SystemUserRole } from "@/types";
+
 export const getFileExtension = (url: string) => {
 	const ext = url.split(".").pop()?.toLowerCase();
 
@@ -36,3 +39,21 @@ export const monthlyDocOptions = [
 	"MISCELLANEOUS_ALLOWANCE",
 	"THESIS_ALLOWANCE",
 ];
+
+export const roles: {
+	SUPER_ADMIN: string;
+	ADMIN_MANAGE_GATHERINGS: string;
+	ADMIN_MANAGE_SCHOLAR: string;
+	ADMIN_MANAGE_DOCUMENTS: string;
+	ADMIN_VIEWER: string;
+} = {
+	SUPER_ADMIN: "Super Admin",
+	ADMIN_MANAGE_GATHERINGS: "Manage Gatherings",
+	ADMIN_MANAGE_SCHOLAR: "Manage Scholar",
+	ADMIN_MANAGE_DOCUMENTS: "Manage Documents",
+	ADMIN_VIEWER: "Viewer",
+};
+
+export const Gatherings: ROLE[] = ["SUPER_ADMIN", "ADMIN_MANAGE_GATHERINGS"];
+export const Documents: ROLE[] = ["SUPER_ADMIN", "ADMIN_MANAGE_DOCUMENTS"];
+export const Scholars: ROLE[] = ["SUPER_ADMIN", "ADMIN_MANAGE_SCHOLAR"];

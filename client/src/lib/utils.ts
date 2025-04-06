@@ -1,8 +1,11 @@
 import {
 	format,
 	formatDate as formatDateFns,
+	getMonth,
+	getYear,
 	isSameDay,
 	isSameMonth,
+	subMonths,
 } from "date-fns";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { ClassValue, clsx } from "clsx";
@@ -43,10 +46,10 @@ export function getRoleDescription(role: SystemUserRole): string {
 	}
 }
 
-export const formatDate = (date: string | number) => {
+export const formatDate = (date: string | number, format?: string) => {
 	return formatDateFns(
 		new Date(isNaN(Number(date)) ? date : Number(date)),
-		"MMMM dd, yyyy"
+		format || "MMMM dd, yyyy"
 	);
 };
 
@@ -97,4 +100,20 @@ export const getDocsTotalAmount = (
 	return data
 		.filter((doc) => doc.category === type)
 		.reduce((acc, doc) => acc + doc.amount, 0);
+};
+
+export const checkIfPreviousMonth = (
+	selectedMonth: number,
+	selectedYear: number
+) => {
+	const currentDate = new Date();
+	const currentMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed
+	const currentYear = currentDate.getFullYear();
+
+	if (selectedYear + 1 === currentYear) {
+		return selectedMonth === 12 && currentMonth === 1;
+	}
+
+	// Check if the selected month and year match the previous month and year
+	return selectedMonth === currentMonth - 1;
 };

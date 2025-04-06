@@ -92,3 +92,8 @@ export const AddMonthlyDocumentSchema = yup.object({
 		.min(0, "Amount must be 0 or greater.")
 		.optional(),
 });
+
+export const AddSemesterDocumentSchema = yup.object({
+	documentType: yup.string().required("Type of Document is required."),
+	documentUrl: yup.string().required("Document is required."),
+});
