@@ -1,9 +1,9 @@
 import { useLazyQuery, useQuery } from "@apollo/client";
+import { useState } from "react";
 
 import { GET_CALENDAR_EVENTS_QUERY, READ_EVENT_QUERY } from "@/queries";
 import { CalendarEvent, Event } from "@/types";
 import { FCalendar } from "@/components";
-import { useState } from "react";
 import DrawerTimeline from "@/components/drawer-timeline";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
 
@@ -43,7 +43,7 @@ export default function EventFeed() {
 							event?.event.endDate
 						),
 						id: event?.event.id,
-						link: "",
+						link: `${window.location.origin}/events/${event?.event.id}`,
 						location: event?.event.location || "",
 						time: formatEventTime(event?.event.startTime, event?.event.endTime),
 						title: event?.event.title || "",
