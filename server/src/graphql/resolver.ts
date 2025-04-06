@@ -37,6 +37,7 @@ import {
 	updateAllowanceStatusResolver,
 	allowancesResolver,
 	allowanceResolver,
+	monthlyEventsResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -57,6 +58,7 @@ export const resolvers = {
 		documents: documentsResolver,
 		allowances: allowancesResolver,
 		allowance: allowanceResolver,
+		monthlyEvents: monthlyEventsResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,

@@ -46,6 +46,7 @@ export const typeDefs = gql`
 			includeStudent: Boolean
 		): AllowanceResult
 		allowance(studentId: ID!, year: Int!, month: Int!): Allowance
+		monthlyEvents: [Event]
 	}
 
 	type Mutation {
@@ -209,6 +210,7 @@ export const typeDefs = gql`
 		birthDate: String
 		mfaEnabled: Boolean
 		address: AddressInput
+		gender: Gender
 		role: SystemUserRole
 		status: SystemUserStatus
 	}
