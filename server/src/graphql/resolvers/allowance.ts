@@ -74,14 +74,16 @@ export const allowancesResolver = async (
 	data: GetAllowanceArgs,
 	app: AppContext
 ) => {
+	let { studentId, ...filters } = data;
+
 	try {
 		if (
 			!(app.role === "SUPER_ADMIN" || app.role === "ADMIN_MANAGE_DOCUMENTS")
 		) {
-			throw new GraphQLError("UnAuthorized!");
+			app.id;
 		}
 
-		return await readAllowances(data);
+		return await readAllowances({ ...filters, studentId });
 
 		// return announcement;
 	} catch (err) {

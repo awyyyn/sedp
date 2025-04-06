@@ -1,3 +1,4 @@
+import { SystemUserStatus } from "@prisma/client";
 import {
 	sendCredentials,
 	sendRegistrationLink,
@@ -20,7 +21,7 @@ import { GraphQLError } from "graphql";
 
 export const systemUsersResolver = async (
 	_: never,
-	{ filter, pagination, status }: PaginationArgs
+	{ filter, pagination, status }: PaginationArgs<SystemUserStatus>
 ) => {
 	try {
 		const data = await readAllSystemUsers({
@@ -67,7 +68,8 @@ export const updateSystemUserResolver = async (
 		}
 
 		return updatedUser;
-	} catch {
+	} catch (err) {
+		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
 	}
 };

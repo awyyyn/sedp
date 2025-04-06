@@ -10,6 +10,7 @@ import {
 	AppContext,
 	CreateScholarInput,
 	PaginationArgs,
+	StudentStatus,
 	StudentUpdateArgs,
 } from "../../types/index.js";
 import { GraphQLError } from "graphql";
@@ -39,12 +40,13 @@ export const updateStudentResolver = async (
 
 export const studentsResolver = async (
 	_: never,
-	{ filter, pagination }: PaginationArgs
+	{ filter, pagination, status }: PaginationArgs<StudentStatus>
 ) => {
 	try {
 		const data = await readAllStudents({
 			filter: filter ?? undefined,
 			pagination: pagination ? pagination : undefined,
+			status,
 		});
 
 		return data;

@@ -4,6 +4,7 @@ import {
 	readAllEvents,
 	readEvent,
 	readEventAsCalendar,
+	readMonthlyEvents,
 	upsertEvent,
 } from "../../models/event.js";
 import { AppContext, PaginationArgs } from "../../types/index.js";
@@ -96,7 +97,7 @@ export const updateEventResolver = async (
 
 export const eventsResolver = async (
 	_: never,
-	{ filter, pagination }: PaginationArgs
+	{ filter, pagination }: PaginationArgs<never>
 ) => {
 	try {
 		return await readAllEvents({
@@ -138,6 +139,20 @@ export const deleteEventResolver = async (_: never, { id }: { id: string }) => {
 export const calendarEventsResolver = async () => {
 	try {
 		const events = await readEventAsCalendar();
+
+		return events;
+	} catch (err) {
+		console.log(err);
+		throw new GraphQLError("Internal Server Error!");
+	}
+};
+
+export const monthlyEventsResolver = async () => {
+	try {
+		const events = await readMonthlyEvents(
+			new Date().getFullYear(),
+			new Date().getMonth()
+		);
 
 		return events;
 	} catch (err) {

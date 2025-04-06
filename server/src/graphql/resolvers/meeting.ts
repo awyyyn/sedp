@@ -89,7 +89,7 @@ export const updateMeetingResolver = async (
 
 export const meetingsResolver = async (
 	_: never,
-	{ filter, pagination }: PaginationArgs
+	{ filter, pagination }: PaginationArgs<never>
 ) => {
 	try {
 		return await readAllMeetings({
