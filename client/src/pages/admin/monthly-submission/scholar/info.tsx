@@ -10,16 +10,21 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { getMonth, getYear, subMonths } from "date-fns";
 
 import GenerateAllowance from "../../__components/generate-allowance";
-import ViewAllowanceModal from "../../__components/view-allowance-detail";
 
+import { ViewAllowanceModal } from "@/components";
 import { DocumentTable, PreviewModal } from "@/components";
 import { Allowance, Document, Student } from "@/types";
 import { READ_SCHOLAR_DOCUMENTS_QUERY } from "@/queries";
-import { getFileExtension, imagesExtensions, months } from "@/lib/constant";
-import { formatCurrency } from "@/lib/utils";
+import {
+	Documents,
+	getFileExtension,
+	imagesExtensions,
+	months,
+} from "@/lib/constant";
+import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
+import { useAuth } from "@/contexts";
 
 const getYears = (yearStarted: number) => {
 	const years = [];
@@ -41,6 +46,7 @@ export default function StudentFiles() {
 	const [monthFilter, setMonthFilter] = useState<Selection>(
 		new Set([new Date().getMonth()])
 	);
+	const { role } = useAuth();
 	const [generateModal, setGenerateModal] = useState(false);
 	const [viewAllowanceModal, setViewAllowanceModal] = useState(false);
 	const [previewModal, onPreviewModalChange] = useState(false);
@@ -83,27 +89,6 @@ export default function StudentFiles() {
 	const selectedMonth = Number(Array.from(monthFilter)[0]);
 	const selectedYear = Number(Array.from(yearFilter)[0]);
 
-	const checkIfPreviousMonth = (
-		selectedMonth: number,
-		selectedYear: number
-	) => {
-		const currentDate = new Date("2026-01-01");
-		const currentMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed
-		const currentYear = currentDate.getFullYear();
-
-		const currentDateObj = new Date(currentYear, currentMonth, 1); // months are 0-based
-
-		// Subtract 1 month from the current date to get the previous month
-		const previousMonthDate = subMonths(currentDateObj, 1);
-
-		// Get the month and year of the previous month
-		const previousMonth = getMonth(previousMonthDate) + 1; // months are 0-based in JS, so we add 1
-		const previousYear = getYear(previousMonthDate);
-
-		// Check if the selected month and year match the previous month and year
-		return selectedMonth === previousMonth && selectedYear === previousYear;
-	};
-
 	return (
 		<div className="container mx-auto  py-5">
 			<div className="flex-col md:flex-row flex  justify-between items-center ">
@@ -126,8 +111,10 @@ export default function StudentFiles() {
 					) : (
 						checkIfPreviousMonth(selectedMonth, selectedYear) && (
 							<>
-								{monthFilter}
-								<Button onPress={() => setGenerateModal(true)}>
+								<Button
+									className="bg-[#A6F3B2]"
+									isDisabled={!Documents.includes(role!)}
+									onPress={() => setGenerateModal(true)}>
 									Generate
 									<span className="hidden md:block">Allowance</span>
 								</Button>
@@ -213,6 +200,7 @@ export default function StudentFiles() {
 			</div>
 			<div className="px-0.5">
 				<DocumentTable
+					showAmount
 					data={data?.documents || []}
 					isLoading={loading}
 					handleRowClick={(url) => {

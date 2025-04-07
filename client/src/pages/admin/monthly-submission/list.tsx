@@ -45,8 +45,6 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 const rowsPerPageItems = [
-	{ key: "2", label: "2" },
-	{ key: "4", label: "4" },
 	{ key: "25", label: "25" },
 	{ key: "50", label: "50" },
 	{
@@ -56,7 +54,7 @@ const rowsPerPageItems = [
 ];
 
 export default function Scholars() {
-	const [rowsPerPage, setRowsPerPage] = useState<string>("2");
+	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
 	const navigate = useNavigate();
@@ -75,7 +73,11 @@ export default function Scholars() {
 
 	const { loading, data } = useQuery<{
 		students: PaginationResult<Student>;
-	}>(READ_STUDENTS_QUERY);
+	}>(READ_STUDENTS_QUERY, {
+		variables: {
+			status: "SCHOLAR",
+		},
+	});
 
 	const headerColumns = useMemo(() => {
 		if (visibleColumns === "all") return columns;
@@ -268,9 +270,11 @@ export default function Scholars() {
 				<CardBody className="pt-8 ">
 					<div className="px-5 flex justify-between">
 						<div className="leading-loose">
-							<h1 className="text-xl leading-none font-medium">Scholar</h1>
+							<h1 className="text-xl leading-none font-medium">
+								Scholarship Submissions
+							</h1>
 							<p className="text-sm leading-loose text-gray-400">
-								List of scholars
+								Overview of scholars and their submitted documents.
 							</p>
 						</div>
 					</div>
