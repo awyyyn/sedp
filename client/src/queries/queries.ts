@@ -248,6 +248,31 @@ export const READ_SCHOLAR_DOCUMENTS_QUERY = gql`
 	}
 `;
 
+export const READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY = gql`
+	${documentFragment}
+	query Documents(
+		$year: Int
+		$scholarId: String!
+		$monthlyDocument: Boolean
+		$type: DocumentType
+		$semester: Int
+		$schoolYear: String
+		$month: Int
+	) {
+		documents(
+			year: $year
+			scholarId: $scholarId
+			monthlyDocument: $monthlyDocument
+			type: $type
+			semester: $semester
+			schoolYear: $schoolYear
+			month: $month
+		) {
+			...DocumentFragment
+		}
+	}
+`;
+
 export const READ_ALLOWANCES_QUERY = gql`
 	${allowanceFragment}
 	${studentsFragment}
