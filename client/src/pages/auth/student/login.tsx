@@ -184,15 +184,27 @@ export default function StudentLogin() {
 										</div>
 									</>
 								) : (
-									<InputOtp
-										length={6}
-										size="lg"
-										value={values.otp}
-										name="otp"
-										onChange={handleChange}
-										className="mx-auto "
-										readOnly={isSubmitting || mutating}
-									/>
+									<>
+										<div>
+											<h1 className="text-md font-medium">
+												Enter Your Two-Factor Authentication Code
+											</h1>
+											<p className="text-sm text-gray-500">
+												Open your authenticator app (Google Authenticator or
+												similar), and enter the code generated for your account.
+												This code changes every 30 seconds for added security
+											</p>
+										</div>
+										<InputOtp
+											length={6}
+											size="lg"
+											value={values.otp}
+											name="otp"
+											onChange={handleChange}
+											className="mx-auto "
+											readOnly={isSubmitting || mutating}
+										/>
+									</>
 								)}
 								<div className="space-y-1">
 									<Button

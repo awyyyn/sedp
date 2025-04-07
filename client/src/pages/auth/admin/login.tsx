@@ -40,6 +40,9 @@ export default function Login() {
 					className: "bg-green-600 foreground-white",
 					icon: <Icon icon="lets-icons:check-fill" />,
 				});
+
+				localStorage.removeItem("isLoggedIn");
+				login(localStorage.getItem("accessToken")!, true);
 				navigate("/admin/dashboard", {
 					replace: true,
 				});
@@ -88,6 +91,7 @@ export default function Login() {
 							if (data.data.user.mfaEnabled) {
 								setMfaEnabled(true);
 								localStorage.setItem("isLoggedIn", "false");
+								login(data.data.accessToken, false);
 							} else {
 								localStorage.removeItem("isLoggedIn");
 								toast.success("Successfully logged in", {
@@ -97,11 +101,9 @@ export default function Login() {
 									duration: 5000,
 									icon: <Icon icon="clarity:error-solid" />,
 								});
-								navigate("/admin/dashboard", {
-									replace: true,
-								});
+
+								login(data.data.accessToken);
 							}
-							login(data.data.accessToken);
 							setSystemUser(data.data.user);
 						} catch (err) {
 							toast.error((err as Error).message, {
@@ -182,15 +184,27 @@ export default function Login() {
 										</div>
 									</>
 								) : (
-									<InputOtp
-										length={6}
-										size="lg"
-										value={values.otp}
-										name="otp"
-										onChange={handleChange}
-										className="mx-auto "
-										readOnly={isSubmitting || mutating}
-									/>
+									<>
+										<div>
+											<h1 className="text-md font-medium">
+												Enter Your Two-Factor Authentication Code
+											</h1>
+											<p className="text-sm text-gray-500">
+												Open your authenticator app (Google Authenticator or
+												similar), and enter the code generated for your account.
+												This code changes every 30 seconds for added security
+											</p>
+										</div>
+										<InputOtp
+											length={6}
+											size="lg"
+											value={values.otp}
+											name="otp"
+											onChange={handleChange}
+											className="mx-auto "
+											readOnly={isSubmitting || mutating}
+										/>
+									</>
 								)}
 								<div className="space-y-1">
 									<Button
