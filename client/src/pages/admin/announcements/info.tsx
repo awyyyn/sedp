@@ -9,10 +9,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { READ_ANNOUNCEMENT_QUERY } from "@/queries";
 import { Announcement } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { useAuth } from "@/contexts";
 
 export default function AnnouncementInfo() {
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const { role } = useAuth();
 
 	const { data } = useQuery<{ announcement: Announcement }>(
 		READ_ANNOUNCEMENT_QUERY,
@@ -29,7 +31,7 @@ export default function AnnouncementInfo() {
 
 	return (
 		<div className="max-w-screen-lg mx-auto p-6">
-			<div className="flex flex-col   mb-6">
+			<div className="flex flex-col gap-2 mb-6">
 				<Button
 					variant="flat"
 					size="sm"
@@ -62,6 +64,10 @@ export default function AnnouncementInfo() {
 					<Button
 						variant="flat"
 						color="success"
+						isDisabled={
+							!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(role!)
+						}
+						className="disabled:cursor-not-allowed"
 						startContent={<Icon icon="lucide:edit" />}
 						onPress={() =>
 							navigate(`/admin/announcements/${announcement.id}/edit`)

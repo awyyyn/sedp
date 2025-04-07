@@ -16,7 +16,7 @@ import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
+import { Link } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { toast } from "sonner";
 import { Card, CardBody } from "@heroui/card";
@@ -28,6 +28,7 @@ import {
 	READ_ANNOUNCEMENTS_QUERY,
 } from "@/queries";
 import { Announcement, PaginationResult } from "@/types";
+import { useAuth } from "@/contexts";
 
 export const columns = [
 	{ name: "TITLE", uid: "title", sortable: true },
@@ -47,6 +48,7 @@ const rowsPerPageItems = [
 export default function Announcements() {
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
+	const { role } = useAuth();
 	const [filterValue, setFilterValue] = useState("");
 	const [openDeleteModal, setOpenDeleteModal] = useState(false);
 	const [toDeleteItem, setToDeleteItem] = useState<Announcement | null>(null);
@@ -85,21 +87,43 @@ export default function Announcements() {
 					return (
 						<div className="relative flex    justify-center items-center gap-2">
 							<Tooltip content="Details">
-								<Link
-									href={`/admin/announcements/${announcement.id}`}
+								<Button
+									as={Link}
+									isIconOnly
+									size="sm"
+									variant="light"
+									to={`/admin/announcements/${announcement.id}`}
 									className="text-lg text-default-400 cursor-pointer active:opacity-50">
 									<Icon icon="solar:info-square-bold" color="gray" />
-								</Link>
+								</Button>
 							</Tooltip>
 							<Tooltip content="Edit announcement">
-								<Link
-									href={`/admin/announcements/${announcement.id}/edit`}
+								<Button
+									as={Link}
+									isIconOnly
+									isDisabled={
+										!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(
+											role!
+										)
+									}
+									size="sm"
+									variant="light"
+									to={`/admin/announcements/${announcement.id}/edit`}
 									className="text-lg text-default-400  cursor-pointer active:opacity-50">
 									<Icon icon="fluent:slide-text-edit-28-filled" color="green" />
-								</Link>
+								</Button>
 							</Tooltip>
 							<Tooltip color="danger" content="Delete announcement">
-								<span className="text-lg text-danger cursor-pointer active:opacity-50">
+								<Button
+									isIconOnly
+									isDisabled={
+										!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(
+											role!
+										)
+									}
+									size="sm"
+									variant="light"
+									className="text-lg text-danger cursor-pointer active:opacity-50">
 									<Icon
 										onClick={() => {
 											setToDeleteItem(announcement);
@@ -108,7 +132,7 @@ export default function Announcements() {
 										icon="solar:trash-bin-minimalistic-bold"
 										color="red"
 									/>
-								</span>
+								</Button>
 							</Tooltip>
 						</div>
 					);
@@ -205,7 +229,10 @@ export default function Announcements() {
 							color="success"
 							className="text-white/90"
 							as={Link}
-							href="/admin/announcements/add">
+							to="/admin/announcements/add"
+							isDisabled={
+								!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(role!)
+							}>
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Announcement
 						</Button>
