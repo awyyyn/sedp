@@ -36,6 +36,10 @@ const defaultLinks = [
 		icon: "et:documents",
 	},
 	{
+		path: "/semester-submissions",
+		icon: "wpf:books",
+	},
+	{
 		path: "/events",
 		icon: "mdi:events",
 	},
@@ -59,6 +63,7 @@ const adminManageScholarRoutes = ["/dashboard", "/scholars"];
 const adminManageDocsRoutes = [
 	"/dashboard",
 	"/monthly-submissions",
+	"/semester-submissions",
 	"/allowances",
 ];
 

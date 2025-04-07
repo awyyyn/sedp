@@ -14,7 +14,7 @@ import UserNavigation from "./user-navigation";
 import sedpLogo from "@/assets/sedp.png";
 import { useAuth } from "@/contexts";
 export default function UserHeader() {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, role } = useAuth();
 	const [isOpen, onOpenChange] = useState(false);
 
 	return (
@@ -38,7 +38,7 @@ export default function UserHeader() {
 						) : (
 							<>
 								<div className="hidden md:flex gap-2">
-									<UserNavigation />
+									<UserNavigation isAdmin={role !== "STUDENT"} />
 								</div>
 								<Button
 									className="flex md:hidden"

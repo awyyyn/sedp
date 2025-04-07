@@ -11,7 +11,7 @@ export default function UserNavigation({
 	showIcons,
 	isAdmin = false,
 }: UserNavigationProps) {
-	return isAdmin ? (
+	return !isAdmin ? (
 		<>
 			<Button
 				variant="ghost"
