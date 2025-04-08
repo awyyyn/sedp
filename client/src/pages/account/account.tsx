@@ -503,7 +503,7 @@ export default function StudentProfile() {
 								<Divider />
 								<CardBody className="p-6 space-y-4">
 									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-										<div className="space-y-2">
+										<div className="space-y-2 sm:col-span-2">
 											<p className="text-sm font-medium text-muted-foreground">
 												School Name
 											</p>
@@ -533,8 +533,52 @@ export default function StudentProfile() {
 															v.target.value.toString()
 														);
 													}}>
-													{years.map((year) => (
+													{years.map((year, index) => (
 														<SelectItem
+															isDisabled={
+																index + 1 < Number(studentUser?.yearLevel)
+															}
+															key={year.value.toString()}
+															textValue={year.label}>
+															{year.label}{" "}
+															{year.optional &&
+																"(If Applicable to your program)"}
+														</SelectItem>
+													))}
+												</Select>
+											) : (
+												<p className="font-medium">
+													{years.find(
+														(year) => year.value === Number(values.yearLevel)
+													)?.label ?? values.yearLevel}
+												</p>
+											)}
+										</div>
+										<div className="space-y-2">
+											<p className="text-sm font-medium text-muted-foreground">
+												Semester
+											</p>
+											{isEditing ? (
+												<Select
+													className=""
+													label="Select Year Level"
+													name="yearLevel"
+													size="sm"
+													errorMessage={touched.yearLevel && errors.yearLevel}
+													onBlur={handleBlur}
+													isInvalid={!!touched.yearLevel && !!errors.yearLevel}
+													selectedKeys={[values.yearLevel]}
+													onChange={(v) => {
+														setFieldValue(
+															"yearLevel",
+															v.target.value.toString()
+														);
+													}}>
+													{years.map((year, index) => (
+														<SelectItem
+															isDisabled={
+																index + 1 < Number(studentUser?.yearLevel)
+															}
 															key={year.value.toString()}
 															textValue={year.label}>
 															{year.label}{" "}

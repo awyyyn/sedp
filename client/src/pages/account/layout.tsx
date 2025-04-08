@@ -2,26 +2,34 @@ import { Button } from "@heroui/button";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 
+import { useAuth } from "@/contexts";
+
 export default function AccountLayout() {
 	const { pathname } = useLocation();
+	const { logout } = useAuth();
 
 	const links = ["/account", "/account/security"];
 
 	return (
 		<div className="max-h-screen pt-24 overflow-hidden">
-			<div className="flex gap-2 px-5 md:px-0 container mx-auto  max-w-3xl ">
-				{links.map((link) => (
-					<Button
-						key={link}
-						as={Link}
-						to={link}
-						color={pathname === link ? "primary" : "default"}
-						radius="sm"
-						className="border-none capitalize"
-						variant={pathname === link ? "solid" : "ghost"}>
-						{link.split("/")[link.split("/").length - 1]}
-					</Button>
-				))}
+			<div className="flex items-center justify-between px-5 md:px-0 container mx-auto  max-w-3xl">
+				<div className="flex gap-x-2  ">
+					{links.map((link) => (
+						<Button
+							key={link}
+							as={Link}
+							to={link}
+							color={pathname === link ? "primary" : "default"}
+							radius="sm"
+							className="border-none capitalize"
+							variant={pathname === link ? "solid" : "ghost"}>
+							{link.split("/")[link.split("/").length - 1]}
+						</Button>
+					))}
+				</div>
+				<Button className="" color="danger" onPress={logout}>
+					Log out
+				</Button>
 			</div>
 			<ScrollShadow
 				size={100}

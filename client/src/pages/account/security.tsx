@@ -10,10 +10,10 @@ import { toast } from "sonner";
 import { useMutation } from "@apollo/client";
 
 import SetUpTwoFactor from "../../components/set-up-two-factor";
+import { DeleteModal } from "../admin/__components";
 
 import { useAuth } from "@/contexts";
 import { UPDATE_STUDENT_MUTATION } from "@/queries";
-import { DeleteModal } from "../admin/__components";
 
 const PasswordSchema = yup.object({
 	password: yup
