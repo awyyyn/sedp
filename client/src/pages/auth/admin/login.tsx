@@ -2,7 +2,7 @@ import { Form, Formik } from "formik";
 import { useState } from "react";
 import * as yup from "yup";
 import { useNavigate } from "react-router";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useMutation } from "@apollo/client";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 
-import { systemUserAtom } from "@/states";
+import { adminNotificationAtom, systemUserAtom } from "@/states";
 import { useAuth } from "@/contexts";
 import { verifyTOTPMutation } from "@/queries";
 
@@ -25,6 +25,7 @@ export default function Login() {
 	const navigate = useNavigate();
 	const [mfaEnabled, setMfaEnabled] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const setNotifications = useSetAtom(adminNotificationAtom);
 	const [systemUser, setSystemUser] = useAtom(systemUserAtom);
 	const handleShowPassword = () => setShowPassword((showPass) => !showPass);
 	const { login } = useAuth();
@@ -104,7 +105,11 @@ export default function Login() {
 
 								login(data.data.accessToken);
 							}
-							setSystemUser(data.data.user);
+
+							const { notifications, ...userData } = data.data.user;
+
+							setSystemUser(userData);
+							setNotifications(notifications || []);
 						} catch (err) {
 							toast.error((err as Error).message, {
 								richColors: true,

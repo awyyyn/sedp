@@ -12,6 +12,8 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/contexts";
 import { verifyTOTPMutation } from "@/queries";
+import { useSetAtom } from "jotai";
+import { scholarNotificationAtom } from "@/states";
 
 const validationSchema = yup.object({
 	email: yup.string().email("Invalid email").required("Email is required"),
@@ -23,6 +25,7 @@ export default function StudentLogin() {
 	const navigate = useNavigate();
 	const [mfaEnabled, setMfaEnabled] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const setNotifications = useSetAtom(scholarNotificationAtom);
 	const handleShowPassword = () => setShowPassword((showPass) => !showPass);
 	const { login, setStudentUser, studentUser } = useAuth();
 
@@ -104,7 +107,10 @@ export default function StudentLogin() {
 
 								login(data.data.accessToken);
 							}
-							setStudentUser(data.data.user);
+							const { notifications, ...userData } = data.data.user;
+
+							setStudentUser(userData);
+							setNotifications(notifications || []);
 						} catch (err) {
 							toast.error((err as Error).message, {
 								richColors: true,
