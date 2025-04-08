@@ -48,14 +48,6 @@ export default function UserNavigation({
 				radius="none">
 				My Allowance
 			</Button>
-			<Button
-				className="gap-2 flex justify-start md:justify-center border-none"
-				variant="ghost"
-				as={Link}
-				to="/account"
-				radius="none">
-				Account
-			</Button>
 		</>
 	) : (
 		<>

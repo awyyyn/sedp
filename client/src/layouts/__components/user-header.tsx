@@ -13,8 +13,17 @@ import UserNavigation from "./user-navigation";
 
 import sedpLogo from "@/assets/sedp.png";
 import { useAuth } from "@/contexts";
+import {
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+} from "@heroui/dropdown";
+import { Avatar } from "@heroui/avatar";
+import { Badge } from "@heroui/badge";
+import ScholarNotificationDropdown from "./scholar-notifications";
 export default function UserHeader() {
-	const { isAuthenticated, role } = useAuth();
+	const { isAuthenticated, role, studentUser, logout } = useAuth();
 	const [isOpen, onOpenChange] = useState(false);
 
 	return (
@@ -25,7 +34,7 @@ export default function UserHeader() {
 						<img className="rounded-full" alt="SEDP LOGO" src={sedpLogo} />
 						<h2 className="text-lg  md:text-2xl flex">
 							SEDP
-							<span className="hidden md:block">
+							<span className="hidden lg:block">
 								&nbsp;- Simbag sa Pag-asenso, Inc.
 							</span>
 						</h2>
@@ -40,6 +49,57 @@ export default function UserHeader() {
 								<div className="hidden md:flex gap-2">
 									<UserNavigation isAdmin={role !== "STUDENT"} />
 								</div>
+								{/* 
+									<Icon icon="line-md:bell-loop" width="24" height="24" /> */}
+								{role === "STUDENT" && (
+									<>
+										<ScholarNotificationDropdown />
+										<Dropdown backdrop="opaque">
+											<DropdownTrigger>
+												<Button
+													size="sm"
+													isIconOnly
+													variant="light"
+													radius="full">
+													<Avatar
+														fallback={
+															studentUser
+																? `${studentUser.firstName[0]}${studentUser.lastName[0]}`
+																: null
+														}
+													/>
+												</Button>
+											</DropdownTrigger>
+											<DropdownMenu aria-label="Static Actions">
+												<DropdownItem
+													startContent={
+														<Icon
+															icon="line-md:account"
+															width="22"
+															height="22"
+														/>
+													}
+													key="account">
+													Account
+												</DropdownItem>
+												<DropdownItem
+													startContent={
+														<Icon
+															icon="line-md:log-out"
+															width="22"
+															height="22"
+														/>
+													}
+													onPress={logout}
+													variant="solid"
+													color="danger"
+													key="log_out">
+													Log out
+												</DropdownItem>
+											</DropdownMenu>
+										</Dropdown>
+									</>
+								)}
 								<Button
 									className="flex md:hidden"
 									isIconOnly
