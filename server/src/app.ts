@@ -13,18 +13,44 @@ import { GraphQLError } from "graphql";
 import { verifyToken } from "./services/jwt.js";
 import { AppContext } from "./types/index.js";
 import { prisma } from "./services/prisma.js";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
+
+import { useServer } from "graphql-ws/lib/use/ws";
 
 // Initialize an app and an httpServer
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
 
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+// WebSocket server
+const wsServer = new WebSocketServer({
+	server: httpServer,
+	path: "/graphql",
+});
+
+// Server Cleanup
+const serverCleanup = useServer({ schema }, wsServer as any);
+
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-const server = new ApolloServer<AppContext>({
-	typeDefs,
-	resolvers,
-	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+// Set up ApolloServer.
+const server = new ApolloServer({
+	schema,
+	plugins: [
+		ApolloServerPluginDrainHttpServer({ httpServer }),
+		{
+			async serverWillStart() {
+				return {
+					async drainServer() {
+						await serverCleanup.dispose();
+					},
+				};
+			},
+		},
+	],
 });
 
 // Health check endpoint
@@ -90,8 +116,12 @@ app.use("/api", routes);
 	);
 
 	// Modified server startup
-	await new Promise<void>((resolve) =>
-		httpServer.listen({ port: environment.PORT }, resolve)
-	);
-	console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
+	// await new Promise<void>((resolve) =>
+	// 	httpServer.listen({ port: environment.PORT }, resolve)
+	// );
+	// console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
 })();
+
+httpServer.listen({ port: Number(environment.PORT) }, () => {
+	console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
+});
