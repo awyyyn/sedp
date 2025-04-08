@@ -16,7 +16,7 @@ import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
+import { Link } from "react-router-dom";
 import { Button } from "@heroui/button";
 import {
 	Dropdown,
@@ -29,7 +29,9 @@ import { Card, CardBody } from "@heroui/card";
 import UpdateStatusModal from "./__components/update-status";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
+import { Scholars as AllowedRoles } from "@/lib/constant";
 import { PaginationResult, Student, StudentStatus } from "@/types";
+import { useAuth } from "@/contexts";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -71,6 +73,7 @@ const rowsPerPageItems = [
 export default function Scholars() {
 	const [rowsPerPage, setRowsPerPage] = useState<string>("2");
 	const [page, setPage] = useState(1);
+	const { role } = useAuth();
 	const [filterValue, setFilterValue] = useState("");
 
 	const [openModal, setOpenModal] = useState(false);
@@ -137,7 +140,7 @@ export default function Scholars() {
 				return (
 					<div className="relative flex  justify-center items-center gap-2">
 						<Tooltip content="Details">
-							<Link href={`/admin/scholars/${user.id}`}>
+							<Link to={`/admin/scholars/${user.id}`}>
 								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
 									<Icon icon="solar:info-square-bold" color="gray" />
 								</span>
@@ -149,6 +152,7 @@ export default function Scholars() {
 									size="sm"
 									isIconOnly
 									variant="light"
+									isDisabled={!AllowedRoles.includes(role!)}
 									onPress={() => {
 										setToUpdateScholar(user);
 										setOpenModal(true);
@@ -337,7 +341,8 @@ export default function Scholars() {
 							color="success"
 							className="text-white/90"
 							as={Link}
-							href="/admin/scholars/add">
+							isDisabled={!AllowedRoles.includes(role!)}
+							to="/admin/scholars/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Scholar
 						</Button>

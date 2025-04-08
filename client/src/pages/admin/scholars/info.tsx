@@ -12,9 +12,12 @@ import { Student } from "@/types";
 import { READ_STUDENT_QUERY } from "@/queries";
 import { formatDate } from "@/lib/utils";
 import { years } from "@/constants";
+import { Scholars } from "@/lib/constant";
+import { useAuth } from "@/contexts";
 
 export default function ScholarInfo() {
 	const { id } = useParams();
+	const { role } = useAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const { loading, error, data } = useQuery<{ student: Student }>(
 		READ_STUDENT_QUERY,
@@ -53,6 +56,7 @@ export default function ScholarInfo() {
 					</div>
 					{!data.student.statusUpdatedAt && (
 						<Button
+							isDisabled={!Scholars.includes(role!)}
 							className="text-white"
 							color="success"
 							onPress={() => setIsOpen(true)}>
@@ -100,7 +104,7 @@ export default function ScholarInfo() {
 								Birth Date
 							</p>
 							<p className="font-medium">
-								{formatDate(Number(data.student.birthDate))}
+								{formatDate(data.student.birthDate)}
 							</p>
 						</div>
 						<div className="space-y-2">
