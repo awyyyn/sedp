@@ -25,7 +25,7 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDate } from "date-fns";
 
@@ -35,6 +35,8 @@ import { DELETE_MEETING_MUTATION, READ_MEETINGS_QUERY } from "@/queries";
 import { CalendarEvent, Meeting, PaginationResult } from "@/types";
 import { FCalendar } from "@/components";
 import { formatEventTime } from "@/lib/utils";
+import { Gatherings } from "@/lib/constant";
+import { useAuth } from "@/contexts";
 
 export const columns = [
 	{ name: "TITLE", uid: "title", sortable: true },
@@ -56,10 +58,12 @@ const rowsPerPageItems = [
 ];
 
 export default function MeetingList() {
+	const { role } = useAuth();
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
 	const [openModal, setOpenModal] = useState(false);
+	const navigate = useNavigate();
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
 		Meeting,
 		"id" | "title"
@@ -134,6 +138,7 @@ export default function MeetingList() {
 								isIconOnly
 								variant="light"
 								as={Link}
+								isDisabled={!Gatherings.includes(role!)}
 								to={`/admin/meetings/${meeting.id}/edit`}
 								className="text-lg text-default-400  cursor-pointer active:opacity-50">
 								<Icon icon="fluent:status-12-filled" color="green" />
@@ -144,6 +149,7 @@ export default function MeetingList() {
 								size="sm"
 								isIconOnly
 								variant="light"
+								isDisabled={!Gatherings.includes(role!)}
 								onPress={() => {
 									setToDeleteItem(meeting);
 									setOpenModal(true);
@@ -308,6 +314,7 @@ export default function MeetingList() {
 							color="success"
 							className="text-white/90"
 							as={Link}
+							isDisabled={!Gatherings.includes(role!)}
 							to="/admin/meetings/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Meeting
@@ -420,7 +427,9 @@ export default function MeetingList() {
 						</Tab>
 						<Tab key="calendar" title="Calendar">
 							<FCalendar
-								handlePress={() => {}}
+								handlePress={(id) => {
+									navigate(`/admin/meetings/${id}`);
+								}}
 								type="MEETING"
 								events={data?.calendarMeetings || []}
 							/>

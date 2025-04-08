@@ -9,9 +9,12 @@ import { Event } from "@/types";
 import { READ_EVENT_QUERY } from "@/queries";
 import { format } from "date-fns";
 import { formatEventDate } from "@/lib/utils";
+import { Gatherings } from "@/lib/constant";
+import { useAuth } from "@/contexts";
 
 const EventInfo = () => {
 	const { id } = useParams();
+	const { role } = useAuth();
 	const { loading, error, data } = useQuery<{ event: Event }>(
 		READ_EVENT_QUERY,
 		{
@@ -50,6 +53,7 @@ const EventInfo = () => {
 					</div>
 					<Button
 						as={Link}
+						isDisabled={!Gatherings.includes(role!)}
 						to={`/admin/events/${data.event.id}/edit`}
 						className="text-white"
 						color="success">

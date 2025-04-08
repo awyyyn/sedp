@@ -8,9 +8,12 @@ import { format, formatDate } from "date-fns";
 
 import { Meeting } from "@/types";
 import { READ_MEETING_QUERY } from "@/queries";
+import { Gatherings } from "@/lib/constant";
+import { useAuth } from "@/contexts";
 
 const MeetingInfo = () => {
 	const { id } = useParams();
+	const { role } = useAuth();
 	const { loading, error, data } = useQuery<{ meeting: Meeting }>(
 		READ_MEETING_QUERY,
 		{
@@ -49,6 +52,7 @@ const MeetingInfo = () => {
 					</div>
 					<Button
 						as={Link}
+						isDisabled={!Gatherings.includes(role!)}
 						to={`/admin/meetings/${data.meeting.id}/edit`}
 						className="text-white"
 						color="success">

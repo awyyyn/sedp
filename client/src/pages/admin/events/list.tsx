@@ -25,7 +25,7 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { DeleteModal } from "../__components";
@@ -36,6 +36,8 @@ import { FCalendar } from "@/components";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
 import { useSetAtom } from "jotai";
 import { eventsAtom } from "@/states";
+import { useAuth } from "@/contexts";
+import { Gatherings } from "@/lib/constant";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -71,11 +73,13 @@ const rowsPerPageItems = [
 ];
 
 export default function EventList() {
+	const { role } = useAuth();
 	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const [filterValue, setFilterValue] = useState("");
 	const [openModal, setOpenModal] = useState(false);
 	const setEvents = useSetAtom(eventsAtom);
+	const navigate = useNavigate();
 	const [toDeleteItem, setToDeleteItem] = useState<Pick<
 		Event,
 		"id" | "title"
@@ -154,6 +158,7 @@ export default function EventList() {
 								size="sm"
 								isIconOnly
 								variant="light"
+								isDisabled={!Gatherings.includes(role!)}
 								as={Link}
 								to={`/admin/events/${event.id}/edit`}
 								className="text-lg text-default-400  cursor-pointer active:opacity-50">
@@ -165,6 +170,7 @@ export default function EventList() {
 								size="sm"
 								isIconOnly
 								variant="light"
+								isDisabled={!Gatherings.includes(role!)}
 								onPress={() => {
 									setToDeleteItem(event);
 									setOpenModal(true);
@@ -329,6 +335,7 @@ export default function EventList() {
 							color="success"
 							className="text-white/90"
 							as={Link}
+							isDisabled={!Gatherings.includes(role!)}
 							to="/admin/events/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Event
@@ -441,7 +448,9 @@ export default function EventList() {
 						</Tab>
 						<Tab key="calendar" title="Calendar">
 							<FCalendar
-								handlePress={() => {}}
+								handlePress={(id) => {
+									navigate(`/admin/events/${id}`);
+								}}
 								type="EVENT"
 								events={data?.calendarEvents || []}
 							/>
