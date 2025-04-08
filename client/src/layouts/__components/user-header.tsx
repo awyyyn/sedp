@@ -1,6 +1,6 @@
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
 	Drawer,
 	DrawerBody,
@@ -8,11 +8,6 @@ import {
 	DrawerHeader,
 } from "@heroui/drawer";
 import { useState } from "react";
-
-import UserNavigation from "./user-navigation";
-
-import sedpLogo from "@/assets/sedp.png";
-import { useAuth } from "@/contexts";
 import {
 	Dropdown,
 	DropdownItem,
@@ -20,11 +15,17 @@ import {
 	DropdownTrigger,
 } from "@heroui/dropdown";
 import { Avatar } from "@heroui/avatar";
-import { Badge } from "@heroui/badge";
+
+import UserNavigation from "./user-navigation";
 import ScholarNotificationDropdown from "./scholar-notifications";
+
+import sedpLogo from "@/assets/sedp.png";
+import { useAuth } from "@/contexts";
+
 export default function UserHeader() {
 	const { isAuthenticated, role, studentUser, logout } = useAuth();
 	const [isOpen, onOpenChange] = useState(false);
+	const navigate = useNavigate();
 
 	return (
 		<>
@@ -79,6 +80,7 @@ export default function UserHeader() {
 															height="22"
 														/>
 													}
+													onPress={() => navigate("/account")}
 													key="account">
 													Account
 												</DropdownItem>

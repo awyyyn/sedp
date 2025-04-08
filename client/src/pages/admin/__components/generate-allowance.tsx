@@ -93,7 +93,14 @@ export default function GenerateAllowance({
 						monthlyAllowance: Number(formik.values.monthlyAllowance || 0),
 						bookAllowance:
 							Number(formik.values.bookAllowance || 0) +
-							getDocsTotalAmount(formik.values.docs || [], "BOOK_ALLOWANCE"),
+								getDocsTotalAmount(formik.values.docs || [], "BOOK_ALLOWANCE") >
+							2000
+								? 2000
+								: Number(formik.values.bookAllowance || 0) +
+									getDocsTotalAmount(
+										formik.values.docs || [],
+										"BOOK_ALLOWANCE"
+									),
 						miscellaneousAllowance:
 							Number(formik.values.miscellaneousAllowance || 0) +
 							getDocsTotalAmount(
@@ -159,7 +166,14 @@ export default function GenerateAllowance({
 											getDocsTotalAmount(
 												formik.values.docs || [],
 												"BOOK_ALLOWANCE"
-											) + Number(formik.values.bookAllowance || 0)
+											) +
+												Number(formik.values.bookAllowance || 0) >
+												2000
+												? 2000
+												: getDocsTotalAmount(
+														formik.values.docs || [],
+														"BOOK_ALLOWANCE"
+													) + Number(formik.values.bookAllowance || 0)
 										)}
 										label="Book Allowance"
 										className="col-span-2 md:col-span-1"

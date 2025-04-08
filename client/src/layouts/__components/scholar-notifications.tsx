@@ -13,11 +13,31 @@ import { useNavigate } from "react-router-dom";
 
 import { scholarNotificationAtom } from "@/states";
 import { notificationIconMap } from "@/constants";
+import { useMutation, useSubscription } from "@apollo/client";
+import {
+	READ_STUDENT_NOTIFICATIONS_SUBSCRIPTION,
+	UPDATE_STUDENT_NOTIFICATION_MUTATION,
+} from "@/queries";
+import { useAuth } from "@/contexts";
+import { formatDistanceToNow } from "date-fns";
 
 export default function ScholarNotificationDropdown() {
 	const [notifications, setNotifications] = useAtom(scholarNotificationAtom);
 	const navigate = useNavigate();
-	// const [] = useMutation()
+	const { studentUser } = useAuth();
+	const [readNotification, { loading }] = useMutation(
+		UPDATE_STUDENT_NOTIFICATION_MUTATION
+	);
+
+	useSubscription(READ_STUDENT_NOTIFICATIONS_SUBSCRIPTION, {
+		variables: {
+			scholarId: studentUser?.id!,
+		},
+		onData: ({ data }) => {
+			if (!data.data.notification) return;
+			setNotifications((prev) => [data.data.notification, ...prev]);
+		},
+	});
 
 	const unreadNotifications =
 		notifications.filter((notification) => !notification.read).length || 0;
@@ -27,6 +47,7 @@ export default function ScholarNotificationDropdown() {
 			shouldBlockScroll
 			placement="bottom"
 			backdrop="opaque"
+			isDismissable={!loading}
 			radius="sm">
 			<Badge
 				color="danger"
@@ -44,12 +65,16 @@ export default function ScholarNotificationDropdown() {
 			<DropdownMenu
 				aria-label="Static Actions"
 				className="md:min-w-[300px] min-w-[275px] md:max-w-[300px] max-w-[275px]">
-				<DropdownSection title="Notifications">
+				<DropdownSection
+					title="Notifications"
+					classNames={{
+						base: "max-h-[400px] overflow-y-auto",
+					}}>
 					{notifications.length > 0 ? (
 						notifications.map((notification) => (
 							<DropdownItem
 								key="new"
-								className="bg-black/5 p-2  "
+								className={`${!notification.read && "bg-black/5"} p-2  my-1 `}
 								startContent={
 									<div className="p-1">
 										<Icon
@@ -59,14 +84,43 @@ export default function ScholarNotificationDropdown() {
 										/>
 									</div>
 								}
-								onPress={() => {
+								onPress={async () => {
+									if (notification.read) {
+										return navigate(notification.link || "#");
+									}
+									const { data } = await readNotification({
+										variables: {
+											notificationId: notification.id,
+										},
+									});
+
+									if (!data.notification) return;
+
+									// UPDATE NOTIFICATION READ STATUS
+									setNotifications((prev) =>
+										prev.map((n) =>
+											n.id === notification.id ? { ...n, read: true } : n
+										)
+									);
 									navigate(notification.link || "#");
 								}}
 								classNames={{
 									title: "whitespace-normal break-words max-w-full ",
 									wrapper: "text-wrap truncate",
 								}}
-								description={notification.message}>
+								description={
+									<div className="">
+										<p>{notification.message}</p>
+										<span>
+											{formatDistanceToNow(
+												isNaN(Number(notification.createdAt))
+													? new Date(notification.createdAt)
+													: Number(notification.createdAt)
+											)}
+											ago
+										</span>
+									</div>
+								}>
 								{notification.title}
 							</DropdownItem>
 						))

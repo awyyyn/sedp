@@ -10,6 +10,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Badge } from "@heroui/badge";
 import { useAtom, useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 import { adminNotificationAtom, systemUserAtom } from "@/states";
 import { adminNotificationIconMap } from "@/constants";
@@ -29,15 +30,16 @@ export default function NotificationDropdown() {
 	return (
 		<Dropdown
 			shouldBlockScroll
-			showArrow
-			placement="bottom-end"
-			backdrop="blur"
+			placement="bottom"
+			backdrop="opaque"
+			// isDismissable={!loading}
 			radius="sm">
 			<Badge
 				color="danger"
 				content={unreadNotifications || null}
 				size="sm"
 				shape="circle"
+				showOutline={false}
 				placement="bottom-right">
 				<DropdownTrigger>
 					<Button isIconOnly variant="light" className="rounded-full">
@@ -53,7 +55,7 @@ export default function NotificationDropdown() {
 						notifications.map((notification) => (
 							<DropdownItem
 								key="new"
-								className="bg-black/5 p-2  "
+								className={`${!notification.read && "bg-black/5"} p-2  my-1 `}
 								startContent={
 									<div className="p-1">
 										<Icon
@@ -63,14 +65,38 @@ export default function NotificationDropdown() {
 										/>
 									</div>
 								}
-								onPress={() => {
+								onPress={async () => {
+									if (notification.read) {
+										return navigate(notification.link || "#");
+									}
+									// const { data } = await readNotification({
+									// 	variables: {
+									// 		notificationId: notification.id,
+									// 	},
+									// });
+
+									// if (!data.notification) return;
+
+									// // UPDATE NOTIFICATION READ STATUS
+									// setNotifications((prev) =>
+									// 	prev.map((n) =>
+									// 		n.id === notification.id ? { ...n, read: true } : n
+									// 	)
+									// );
 									navigate(notification.link || "#");
 								}}
 								classNames={{
 									title: "whitespace-normal break-words max-w-full ",
 									wrapper: "text-wrap truncate",
 								}}
-								description={notification.message}>
+								description={
+									<div className="">
+										<p>{notification.message}</p>
+										<span>
+											{formatDistanceToNow(notification.createdAt)} ago
+										</span>
+									</div>
+								}>
 								{notification.title}
 							</DropdownItem>
 						))
