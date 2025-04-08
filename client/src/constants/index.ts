@@ -1,3 +1,5 @@
+import { AdminNotificationType, ScholarNotificationType } from "@/types";
+
 export const years = [
 	{ label: "1st Year", value: 1 },
 	{ label: "2nd Year", value: 2 },
@@ -32,3 +34,28 @@ export const externalWebsite = [
 		icon: "fluent-color:building-people-16",
 	},
 ];
+
+/* 
+type ScholarNotificationType =
+	| "MEETING"
+	| "EVENT"
+	| "ANNOUNCEMENT"
+	| "ALLOWANCE"
+	| "SYSTEM_UPDATE"
+	| "OTHER";
+*/
+
+export const notificationIconMap: Record<ScholarNotificationType, string> = {
+	MEETING: "heroicons:calendar-20-solid",
+	EVENT: "fluent-color:calendar-event-20",
+	ANNOUNCEMENT: "heroicons:megaphone-20-solid",
+	ALLOWANCE: "heroicons:banknotes-20-solid",
+	SYSTEM_UPDATE: "heroicons:shield-check-20-solid",
+	OTHER: "heroicons:information-circle-20-solid",
+};
+
+export const adminNotificationIconMap: Record<AdminNotificationType, string> = {
+	MONTHLY_DOCUMENT: "heroicons:document-text-20-solid",
+	SEMESTER_DOCUMENT: "heroicons:document-text-20-solid",
+	OTHER: "heroicons:information-circle-20-solid",
+};
