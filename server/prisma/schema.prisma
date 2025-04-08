@@ -26,7 +26,7 @@ model SystemUser {
   verifiedAt DateTime?
 
   transactions Transactions[]
-  announcements Announcement[]
+  announcements Announcement[] 
 
   // TimeStamps
   createdAt DateTime @default(now())
@@ -63,8 +63,10 @@ model Student {
   birthDate DateTime
   phoneNumber String
   status StudentStatus @default(SCHOLAR)
+  semester Int @default(1)
 
   allowance Allowance[]
+  notifications ScholarNotification[]
 
   mfaSecret String?
   mfaEnabled Boolean @default(false) 
@@ -242,4 +244,53 @@ model Allowance {
   updatedAt DateTime @updatedAt 
 
   @@map("allowance")
+}
+
+
+model ScholarNotification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  read Boolean @default(false)
+  message String
+  title String
+  receiverId String @db.ObjectId
+  receiver Student @relation(references: [id], fields: [receiverId])
+
+  type ScholarNotificationType
+  link String?
+
+  createdAt DateTime @default(now())
+
+  @@map("scholar_notifications")
+}
+
+enum ScholarNotificationType {
+  MEETING
+  EVENT
+  ANNOUNCEMENT
+  ALLOWANCE 
+  SYSTEM_UPDATE
+  OTHER
+}
+
+enum AdminNotificationType {
+  SEMESTER_DOCUMENT
+  MONTHLY_DOCUMENT
+  OTHER
+}
+
+model AdminNotification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  read Boolean @default(false)
+  message String
+  title String
+  role SystemUserRole
+  type AdminNotificationType
+
+  readerIds String[] @db.ObjectId
+
+  link String?
+
+  createdAt DateTime @default(now())
+
+  @@map("admin_notifications")
 }

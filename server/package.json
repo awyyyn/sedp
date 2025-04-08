@@ -14,17 +14,21 @@
 	"license": "ISC",
 	"dependencies": {
 		"@apollo/server": "^4.11.3",
+		"@graphql-tools/schema": "^10.0.23",
 		"@prisma/client": "^6.1.0",
 		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
 		"date-fns": "^4.1.0",
 		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
+		"graphql-subscriptions": "^3.0.0",
 		"graphql-tag": "^2.12.6",
+		"graphql-ws": "^5.14.3",
 		"jsonwebtoken": "^9.0.2",
 		"nodemailer": "^6.10.0",
 		"qrcode": "^1.5.4",
-		"speakeasy": "^2.0.0"
+		"speakeasy": "^2.0.0",
+		"ws": "^8.18.1"
 	},
 	"devDependencies": {
 		"@types/bcrypt": "^5.0.2",
@@ -35,6 +39,7 @@
 		"@types/nodemailer": "^6.4.17",
 		"@types/qrcode": "^1.5.5",
 		"@types/speakeasy": "^2.0.10",
+		"@types/ws": "^8.18.1",
 		"env-cmd": "^10.1.0",
 		"pkgroll": "^2.6.1",
 		"prisma": "^6.1.0",
