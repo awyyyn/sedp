@@ -14,15 +14,10 @@ export const adminNotificationSubscription = {
 	subscribe: withFilter(
 		() => pubsub.asyncIterableIterator(["ADMIN_NOTIFICATION_SENT"]),
 		(payload: any, variables: any) => {
-			console.log(`PAYLOAD:`, payload);
-			console.log(`VARIABLES:`, variables);
-
-			// return (
-			// 	payload.notificationSent.role === variables.role ||
-			// 	variables.role === "SUPER_ADMIN"
-			// );
-
-			return true;
+			return (
+				variables.role === "SUPER_ADMIN" ||
+				payload.adminNotificationSent.role === variables.role
+			);
 		}
 	),
 };

@@ -15,6 +15,7 @@ import {
 } from "../../models/notification.js";
 import { GraphQLError } from "graphql";
 import { AppContext } from "../../types/index.js";
+import { pubsub } from "../../services/pubsub.js";
 
 export const createAdminNotificationResolver = async (
 	_: never,
@@ -23,7 +24,10 @@ export const createAdminNotificationResolver = async (
 	try {
 		const notification = await createAdminNotification(data);
 
-		// TODO: ADD PUBSUB FOR NOTIFICATION
+		pubsub.publish("ADMIN_NOTIFICATION_SENT", {
+			adminNotificationSent: notification,
+		});
+
 		return notification;
 	} catch (err) {
 		console.log(err);
