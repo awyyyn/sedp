@@ -60,8 +60,6 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 const rowsPerPageItems = [
-	{ key: "2", label: "2" },
-	{ key: "4", label: "4" },
 	{ key: "25", label: "25" },
 	{ key: "50", label: "50" },
 	{
@@ -71,7 +69,7 @@ const rowsPerPageItems = [
 ];
 
 export default function Scholars() {
-	const [rowsPerPage, setRowsPerPage] = useState<string>("2");
+	const [rowsPerPage, setRowsPerPage] = useState<string>("25");
 	const [page, setPage] = useState(1);
 	const { role } = useAuth();
 	const [filterValue, setFilterValue] = useState("");

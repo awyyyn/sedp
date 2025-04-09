@@ -15,6 +15,7 @@ export const addScholarSchema = yup.object({
 	// yearLevel: yup.number().min(1).max(5).required("Year level is required."),
 	yearLevel: yup.string().required("Year Level is required!."),
 	course: yup.string().required("Course is required."),
+	semester: yup.string().required("Semester is required."),
 	phoneNumber: yup
 		.string()
 		.matches(

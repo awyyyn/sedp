@@ -13,20 +13,23 @@ import { Button } from "@heroui/button";
 import { DatePicker } from "@heroui/date-picker";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import places from "../../../../places.json";
 import degrees from "../../../../degrees.json";
 
 import { addScholarSchema } from "@/definitions";
-import { CREATE_STUDENT_MUTATION } from "@/queries";
+import { CREATE_STUDENT_MUTATION, READ_STUDENTS_QUERY } from "@/queries";
 import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
 import { generatePassword } from "@/lib/utils";
+import { semester } from "@/lib/constant";
 
 export default function AddScholar() {
 	const [streets, setStreet] = useState<string[]>([]);
 	const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
+	const navigate = useNavigate();
 
 	const citiesMunicipalities = useMemo(
 		() => places.map((place) => place.name),
@@ -34,7 +37,7 @@ export default function AddScholar() {
 	);
 
 	return (
-		<Card className="rounded-md shadow-md mb-10 ">
+		<Card className="rounded-md shadow-md mb-10  z-[10]">
 			<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
 				<h1 className="text-2xl">Create new Scholar</h1>
 				<p>
@@ -58,10 +61,14 @@ export default function AddScholar() {
 											city,
 											street,
 										},
+										semester: Number(data.semester),
 									},
+									refetchQueries: [READ_STUDENTS_QUERY],
 								});
 
 								helpers.resetForm();
+
+								navigate("/admin/scholars");
 
 								toast.success("Scholar account created successfully", {
 									description:
@@ -100,7 +107,7 @@ export default function AddScholar() {
 										errorMessage={errors.firstName}
 										onBlur={handleBlur}
 										onChange={handleChange}
-										className="lg:col-span-6"
+										className="lg:col-span-2"
 										name="firstName"
 										label="First Name"
 									/>
@@ -111,7 +118,7 @@ export default function AddScholar() {
 										onBlur={handleBlur}
 										onChange={handleChange}
 										name="middleName"
-										className="lg:col-span-6"
+										className="lg:col-span-2"
 										label="Middle Name"
 									/>
 									<Input
@@ -274,7 +281,7 @@ export default function AddScholar() {
 										onBlur={handleBlur}
 										onChange={handleChange}
 										name="schoolName"
-										className="lg:col-span-3"
+										className="lg:col-span-6"
 										label="School Name"
 									/>
 
@@ -297,6 +304,27 @@ export default function AddScholar() {
 												textValue={year.label}>
 												{year.label}{" "}
 												{year.optional && "(If Applicable to your program)"}
+											</SelectItem>
+										))}
+									</Select>
+									<Select
+										className="lg:col-span-3"
+										label="Semester"
+										name="semester"
+										isInvalid={touched.semester && !!errors.semester}
+										errorMessage={errors.semester}
+										disallowEmptySelection
+										selectionMode="single"
+										value={values.semester}
+										onBlur={handleBlur}
+										onChange={handleChange}>
+										{[1, 2, 3].map((value) => (
+											<SelectItem
+												className="w-full"
+												value={value.toString()}
+												key={value.toString()}
+												textValue={semester[value - 1]}>
+												{semester[value - 1]}
 											</SelectItem>
 										))}
 									</Select>
