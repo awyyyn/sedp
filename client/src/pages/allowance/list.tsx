@@ -125,7 +125,10 @@ export default function MyAllowanceList() {
 									</div>
 								</div>
 								<div className="overflow-y-auto   max-h-[calc(100dvh-50dvh)] md:min-h-[calc(100dvh-25dvh)] pb-20 pt-[60px] md:pt-[85px]">
-									<MonthsTable data={data?.allowances.data || []} />
+									<MonthsTable
+										isLoading={loading}
+										data={data?.allowances.data || []}
+									/>
 								</div>
 							</>
 						)}

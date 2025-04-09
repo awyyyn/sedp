@@ -5,14 +5,9 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Icon } from "@iconify/react";
 import { Divider } from "@heroui/divider";
-import {
-	Autocomplete,
-	AutocompleteItem,
-	AutocompleteSection,
-} from "@heroui/autocomplete";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Formik } from "formik";
 import { formatDate } from "date-fns";
-import { Select, SelectItem } from "@heroui/select";
 import { toast } from "sonner";
 import { useMutation } from "@apollo/client";
 import { DatePicker } from "@heroui/date-picker";
@@ -24,13 +19,14 @@ import {
 } from "@internationalized/date";
 import { Radio, RadioGroup } from "@heroui/radio";
 import { useDateFormatter } from "@react-aria/i18n";
+import { Alert } from "@heroui/alert";
 
 import places from "../../../places.json";
-import degrees from "../../../degrees.json";
 
 import { UPDATE_STUDENT_MUTATION } from "@/queries";
 import { years } from "@/constants";
 import { useAuth } from "@/contexts";
+import { semester } from "@/lib/constant";
 
 const formSchema = yup.object({
 	firstName: yup.string().required(),
@@ -490,6 +486,14 @@ export default function StudentProfile() {
 
 							{/* Academic Information */}
 							<Card>
+								{isEditing && (
+									<Alert
+										radius="none"
+										color="warning"
+										title="Edit Not Allowed"
+										description="Academic information cannot be edited by scholar; only admins can edit."
+									/>
+								)}
 								<CardHeader className="px-6 pt-4">
 									<h1 className="flex items-center gap-2">
 										<Icon
@@ -507,172 +511,38 @@ export default function StudentProfile() {
 											<p className="text-sm font-medium text-muted-foreground">
 												School Name
 											</p>
-											{isEditing ? (
-												<Input value={values.schoolName} size="lg" />
-											) : (
-												<p className="font-medium">{values.schoolName}</p>
-											)}
+											<p className="font-medium">{values.schoolName}</p>
 										</div>
 										<div className="space-y-2">
 											<p className="text-sm font-medium text-muted-foreground">
 												Year Level
 											</p>
-											{isEditing ? (
-												<Select
-													className=""
-													label="Select Year Level"
-													name="yearLevel"
-													size="sm"
-													errorMessage={touched.yearLevel && errors.yearLevel}
-													onBlur={handleBlur}
-													isInvalid={!!touched.yearLevel && !!errors.yearLevel}
-													selectedKeys={[values.yearLevel]}
-													onChange={(v) => {
-														setFieldValue(
-															"yearLevel",
-															v.target.value.toString()
-														);
-													}}>
-													{years.map((year, index) => (
-														<SelectItem
-															isDisabled={
-																index + 1 < Number(studentUser?.yearLevel)
-															}
-															key={year.value.toString()}
-															textValue={year.label}>
-															{year.label}{" "}
-															{year.optional &&
-																"(If Applicable to your program)"}
-														</SelectItem>
-													))}
-												</Select>
-											) : (
-												<p className="font-medium">
-													{years.find(
-														(year) => year.value === Number(values.yearLevel)
-													)?.label ?? values.yearLevel}
-												</p>
-											)}
+
+											<p className="font-medium">
+												{years.find(
+													(year) => year.value === Number(values.yearLevel)
+												)?.label ?? values.yearLevel}
+											</p>
 										</div>
 										<div className="space-y-2">
 											<p className="text-sm font-medium text-muted-foreground">
 												Semester
 											</p>
-											{isEditing ? (
-												<Select
-													className=""
-													label="Select Year Level"
-													name="yearLevel"
-													size="sm"
-													errorMessage={touched.yearLevel && errors.yearLevel}
-													onBlur={handleBlur}
-													isInvalid={!!touched.yearLevel && !!errors.yearLevel}
-													selectedKeys={[values.yearLevel]}
-													onChange={(v) => {
-														setFieldValue(
-															"yearLevel",
-															v.target.value.toString()
-														);
-													}}>
-													{years.map((year, index) => (
-														<SelectItem
-															isDisabled={
-																index + 1 < Number(studentUser?.yearLevel)
-															}
-															key={year.value.toString()}
-															textValue={year.label}>
-															{year.label}{" "}
-															{year.optional &&
-																"(If Applicable to your program)"}
-														</SelectItem>
-													))}
-												</Select>
-											) : (
-												<p className="font-medium">
-													{years.find(
-														(year) => year.value === Number(values.yearLevel)
-													)?.label ?? values.yearLevel}
-												</p>
-											)}
+
+											<p className="font-medium">
+												{semester[studentUser?.semester! - 1]}
+											</p>
 										</div>
 										<div className="space-y-2 sm:col-span-2">
 											<p className="text-sm font-medium text-muted-foreground">
 												Course/Program
 											</p>
-											{isEditing ? (
-												<Suspense
-													fallback={
-														<Input fullWidth readOnly label="Course" />
-													}>
-													<Autocomplete
-														name="course"
-														className="lg:col-span-6"
-														label="Course"
-														onSelectionChange={(value) => {
-															setFieldValue("course", value?.toString());
-														}}
-														selectedKey={values.course}
-														onBlur={handleBlur}
-														errorMessage={errors.course}
-														fullWidth
-														isInvalid={touched.course && !!errors.course}
-														value={values.course}>
-														{degrees.map((degree, indx) => (
-															<AutocompleteSection
-																showDivider
-																title={degree.category}
-																key={indx}>
-																{degree.programs.map((program) => (
-																	<AutocompleteItem
-																		key={program}
-																		value={program}
-																		className="capitalize">
-																		{program}
-																	</AutocompleteItem>
-																))}
-															</AutocompleteSection>
-														))}
-													</Autocomplete>
-												</Suspense>
-											) : (
-												<p className="font-medium">{values.course}</p>
-											)}
+
+											<p className="font-medium">{values.course}</p>
 										</div>
 									</div>
 								</CardBody>
 							</Card>
-
-							{/* Security */}
-							{/* <Card>
-								<CardHeader className="px-6 pt-4">
-									<h1 className="flex items-center gap-2">
-										<Icon
-											icon="solar:shield-check-broken"
-											width="24"
-											height="24"
-										/>
-										Security
-									</h1>
-								</CardHeader>
-								<Divider />
-								<CardBody className="p-6">
-									<div className="space-y-4 ">
-										<div className="flex items-center justify-between">
-											<div className="space-y-0.5">
-												<p className="font-medium">Two-Factor Authentication</p>
-												<p className="text-sm text-muted-foreground">
-													{student.mfaEnabled
-														? "Two-factor authentication is enabled"
-														: "Add an extra layer of security to your account"}
-												</p>
-											</div>
-											<Button>
-												{student.mfaEnabled ? "Disable" : "Enable"}
-											</Button>
-										</div>
-									</div>
-								</CardBody>
-							</Card> */}
 
 							{isEditing && (
 								<div className="flex justify-end gap-2">

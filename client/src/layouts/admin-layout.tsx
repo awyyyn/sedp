@@ -11,7 +11,7 @@ export default function AdminLayout() {
 		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
 			<AppSidebar />
 			<main className="w-full relative px-3 sm:px-0  overflow-hidden  ">
-				<div className="absolute h-16  bg-[#A6F3B235]  top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
+				<div className="absolute h-16  bg-[#A6F3B235] z-[20]  top-0 left-0 right-0 z-10 backdrop-blur-lg  ">
 					<div className="gap-2 items-center justify-between md:justify-end h-full flex mx-auto container px-3 sm:px-5  ">
 						<Button
 							isIconOnly
