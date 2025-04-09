@@ -116,7 +116,7 @@ export default function ScholarNotificationDropdown() {
 												isNaN(Number(notification.createdAt))
 													? new Date(notification.createdAt)
 													: Number(notification.createdAt)
-											)}
+											)}{" "}
 											ago
 										</span>
 									</div>

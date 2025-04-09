@@ -11,20 +11,37 @@ import { Badge } from "@heroui/badge";
 import { useAtom, useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import { useMutation, useSubscription } from "@apollo/client";
 
 import { adminNotificationAtom, systemUserAtom } from "@/states";
 import { adminNotificationIconMap } from "@/constants";
+import {
+	READ_ADMIN_NOTIFICATION_MUTATION,
+	READ_ADMIN_NOTIFICATIONS_SUBSCRIPTION,
+} from "@/queries";
 
 export default function NotificationDropdown() {
-	const [notifications] = useAtom(adminNotificationAtom);
+	const [notifications, setNotifications] = useAtom(adminNotificationAtom);
 	const systemUser = useAtomValue(systemUserAtom);
 
 	const navigate = useNavigate();
-	// const [] = useMutation()
+	const [readNotification, { loading }] = useMutation(
+		READ_ADMIN_NOTIFICATION_MUTATION
+	);
+
+	useSubscription(READ_ADMIN_NOTIFICATIONS_SUBSCRIPTION, {
+		variables: {
+			role: systemUser?.role!,
+		},
+		onData: ({ data }) => {
+			if (!data.data.notification) return;
+			setNotifications((prev) => [data.data.notification, ...prev]);
+		},
+	});
 
 	const unreadNotifications =
-		notifications.filter((notification) =>
-			notification.readerIds.includes(systemUser?.id!)
+		notifications.filter(
+			(notification) => !notification.readerIds.includes(systemUser?.id!)
 		).length || 0;
 
 	return (
@@ -66,23 +83,25 @@ export default function NotificationDropdown() {
 									</div>
 								}
 								onPress={async () => {
-									if (notification.read) {
+									if (notification.readerIds.includes(systemUser?.id!)) {
 										return navigate(notification.link || "#");
 									}
-									// const { data } = await readNotification({
-									// 	variables: {
-									// 		notificationId: notification.id,
-									// 	},
-									// });
+									const { data } = await readNotification({
+										variables: {
+											notificationId: notification.id,
+										},
+									});
 
-									// if (!data.notification) return;
+									if (!data.notification) return;
 
-									// // UPDATE NOTIFICATION READ STATUS
-									// setNotifications((prev) =>
-									// 	prev.map((n) =>
-									// 		n.id === notification.id ? { ...n, read: true } : n
-									// 	)
-									// );
+									// UPDATE NOTIFICATION READ STATUS
+									setNotifications((prev) =>
+										prev.map((n) =>
+											n.id === notification.id
+												? { ...n, readerIds: [...n.readerIds, systemUser?.id!] }
+												: n
+										)
+									);
 									navigate(notification.link || "#");
 								}}
 								classNames={{
@@ -93,7 +112,13 @@ export default function NotificationDropdown() {
 									<div className="">
 										<p>{notification.message}</p>
 										<span>
-											{formatDistanceToNow(notification.createdAt)} ago
+											{" "}
+											{formatDistanceToNow(
+												isNaN(Number(notification.createdAt))
+													? new Date(notification.createdAt)
+													: Number(notification.createdAt)
+											)}{" "}
+											ago
 										</span>
 									</div>
 								}>

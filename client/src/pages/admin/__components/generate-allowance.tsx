@@ -118,8 +118,7 @@ export default function GenerateAllowance({
 					position: "top-center",
 					richColors: true,
 				});
-			} catch (error) {
-				console.error(error);
+			} catch {
 				toast.error("Failed to generate allowance", {
 					description: "Please try again later.",
 					position: "top-center",
@@ -341,6 +340,7 @@ export default function GenerateAllowance({
 							<Button
 								color="danger"
 								variant="light"
+								isDisabled={formik.isSubmitting}
 								onPress={() => {
 									if (toReview) {
 										formik.setSubmitting(false);
@@ -352,6 +352,7 @@ export default function GenerateAllowance({
 								{toReview ? "Back" : "Close"}
 							</Button>
 							<Button
+								isLoading={formik.isSubmitting}
 								color="primary"
 								onPress={() => {
 									formik.handleSubmit();
