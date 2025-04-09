@@ -16,6 +16,7 @@ export interface Student {
 	mfaEnabled: boolean;
 	status: StudentStatus;
 	phoneNumber: string;
+	semester: number;
 
 	statusUpdatedAt: Date | null;
 

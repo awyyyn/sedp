@@ -19,6 +19,7 @@ export * from "./system-user";
 export * from "./student";
 export * from "./document";
 export * from "./announcement";
+export * from "./notifications";
 export * from "./event";
 export * from "./allowance";
 export * from "./meeting";
