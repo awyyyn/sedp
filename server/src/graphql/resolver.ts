@@ -38,9 +38,21 @@ import {
 	allowancesResolver,
 	allowanceResolver,
 	monthlyEventsResolver,
+	readStudentNotificationResolver,
+	readAdminNotificationResolver,
+	updateReadStudentNotificationResolver,
+	updateReadAllNotificationsResolver,
+	updateReadAllAdminNotificationResolver,
+	updateReadAdminNotificationResolver,
+	adminNotificationSubscription,
+	scholarNotificationSubscription,
 } from "./resolvers/index.js";
 
 export const resolvers = {
+	Subscription: {
+		scholarNotificationSent: scholarNotificationSubscription,
+		adminNotificationSent: adminNotificationSubscription,
+	},
 	Query: {
 		generateTOTPSecret: twoFactorAuthResolver,
 		systemUsers: systemUsersResolver,
@@ -59,6 +71,8 @@ export const resolvers = {
 		allowances: allowancesResolver,
 		allowance: allowanceResolver,
 		monthlyEvents: monthlyEventsResolver,
+		notifications: readStudentNotificationResolver,
+		adminNotifications: readAdminNotificationResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
@@ -83,5 +97,11 @@ export const resolvers = {
 		updateDocument: updateDocumentResolver,
 		createAllowance: createAllowanceResolver,
 		updateAllowanceStatus: updateAllowanceStatusResolver,
+
+		updateStudentNotification: updateReadStudentNotificationResolver,
+		// updateAllStudentNotification: updateReadAllNotificationsResolver,
+
+		updateAllAdminNotification: updateReadAllAdminNotificationResolver,
+		updateAdminNotification: updateReadAdminNotificationResolver,
 	},
 };

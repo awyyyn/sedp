@@ -1,6 +1,10 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
+	type Subscription {
+		scholarNotificationSent(scholarId: ID!): ScholarNotification
+		adminNotificationSent(role: SystemUserRole): AdminNotification
+	}
 	type Query {
 		generateTOTPSecret: GeneratedOTPResult
 		systemUsers(
@@ -47,6 +51,8 @@ export const typeDefs = gql`
 		): AllowanceResult
 		allowance(studentId: ID!, year: Int!, month: Int!): Allowance
 		monthlyEvents: [Event]
+		notifications: [ScholarNotification]
+		adminNotifications: [AdminNotification]
 	}
 
 	type Mutation {
@@ -74,6 +80,7 @@ export const typeDefs = gql`
 			mfaEnabled: Boolean
 			password: String
 			yearLevel: Int
+			semester: Int
 			schoolName: String
 			course: String
 		): Student
@@ -97,6 +104,7 @@ export const typeDefs = gql`
 			email: String!
 			course: String!
 			yearLevel: Int!
+			semester: Int!
 			schoolName: String!
 			gender: Gender!
 			password: String!
@@ -159,6 +167,12 @@ export const typeDefs = gql`
 			monthlyAllowance: Float!
 		): Allowance
 		updateAllowanceStatus(id: String!, claimed: Boolean!): Allowance
+
+		updateStudentNotification(notificationId: ID): Boolean
+		# updateAllStudentNotification: [ScholarNotification]
+
+		updateAllAdminNotification: [AdminNotification]
+		updateAdminNotification(notificationId: ID!): AdminNotification
 	}
 
 	input DocumentInput {
@@ -293,6 +307,7 @@ export const typeDefs = gql`
 		birthDate: String
 		mfaEnabled: Boolean
 		yearLevel: Int
+		semester: Int
 		schoolName: String
 		statusUpdatedAt: String
 		course: String
@@ -422,5 +437,46 @@ export const typeDefs = gql`
 
 		createdAt: String
 		updatedAt: String
+	}
+
+	enum AdminNotificationType {
+		SEMESTER_DOCUMENT
+		MONTHLY_DOCUMENT
+		OTHER
+	}
+
+	type AdminNotification {
+		id: ID!
+		read: Boolean!
+		message: String!
+		title: String!
+		role: SystemUserRole!
+		type: AdminNotificationType!
+		readerIds: [String]
+		link: String
+
+		createdAt: String!
+	}
+
+	enum ScholarNotificationType {
+		MEETING
+		EVENT
+		ANNOUNCEMENT
+		ALLOWANCE
+		SYSTEM_UPDATE
+		OTHER
+	}
+
+	type ScholarNotification {
+		id: ID!
+		read: Boolean!
+		message: String!
+		title: String!
+		receiverId: String!
+		# receiver: Student!
+		type: ScholarNotificationType!
+		link: String
+
+		createdAt: String!
 	}
 `;
