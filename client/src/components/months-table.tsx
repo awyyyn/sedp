@@ -50,7 +50,7 @@ export function MonthsTable({
 								onClick={() => {}}
 								className="cursor-pointer"
 								key={allowance.id}>
-								<TableCell>{months[allowance.month]}</TableCell>
+								<TableCell>{months[allowance.month - 1]}</TableCell>
 								<TableCell>{formatCurrency(allowance.totalAmount)}</TableCell>
 								<TableCell>
 									<Chip

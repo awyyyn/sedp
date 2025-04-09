@@ -29,7 +29,7 @@ import Meetings from "@/pages/admin/meetings/list";
 import AddMeeting from "@/pages/admin/meetings/add";
 import MeetingInfo from "@/pages/admin/meetings/info";
 import EditMeeting from "@/pages/admin/meetings/edit";
-import MonthlySubmission from "@/pages/admin/monthly-submission/info";
+import MonthlySubmission from "@/pages/admin/monthly-submission/list";
 import UserLayout from "@/layouts/user-layout";
 import StudentProfile from "@/pages/account/account";
 import Security from "@/pages/account/security";
@@ -47,19 +47,27 @@ import AddSemesterDocument from "@/pages/documents/semester/add";
 import StudentFiles from "@/pages/admin/monthly-submission/scholar/info";
 import Documents from "@/pages/documents/documents";
 import EditMonthlyDocument from "@/pages/documents/monthly/edit";
+import AllowanceList from "@/pages/admin/allowance/list";
+import MyAllowanceList from "@/pages/allowance/list";
+import AdminAccount from "@/pages/admin/account/account";
+import AdminNotifications from "@/pages/admin/notifications";
+import AdminAccountLayout from "@/pages/admin/account/layout";
+import AdminSecurity from "@/pages/admin/account/security";
+import SemesterSubmissions from "./pages/admin/semester-docs/list";
+import StudentSemesterFiles from "./pages/admin/semester-docs/scholar/info";
 
 function App() {
-	const adminRoutes = {
-		element: <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]} />,
+	const manageScholarRoutes = {
+		element: (
+			<ProtectedRoute
+				allowedRoles={["SUPER_ADMIN", "ADMIN_MANAGE_SCHOLAR", "ADMIN_VIEWER"]}
+			/>
+		),
 		path: "admin",
 		children: [
 			{
 				element: <AdminLayout />,
 				children: [
-					{
-						path: "dashboard",
-						element: <Dashboard />,
-					},
 					{
 						path: "scholars",
 						children: [
@@ -77,6 +85,26 @@ function App() {
 							},
 						],
 					},
+				],
+			},
+		],
+	};
+
+	const manageGatheringsRoutes = {
+		element: (
+			<ProtectedRoute
+				allowedRoles={[
+					"SUPER_ADMIN",
+					"ADMIN_MANAGE_GATHERINGS",
+					"ADMIN_VIEWER",
+				]}
+			/>
+		),
+		path: "admin",
+		children: [
+			{
+				element: <AdminLayout />,
+				children: [
 					{
 						path: "events",
 						children: [
@@ -156,7 +184,22 @@ function App() {
 							},
 						],
 					},
+				],
+			},
+		],
+	};
 
+	const manageDocumentsRoutes = {
+		element: (
+			<ProtectedRoute
+				allowedRoles={["SUPER_ADMIN", "ADMIN_MANAGE_DOCUMENTS", "ADMIN_VIEWER"]}
+			/>
+		),
+		path: "admin",
+		children: [
+			{
+				element: <AdminLayout />,
+				children: [
 					{
 						path: "monthly-submissions",
 						children: [
@@ -171,10 +214,78 @@ function App() {
 							},
 						],
 					},
+					{
+						path: "semester-submissions",
+						children: [
+							{
+								index: true,
+								element: <SemesterSubmissions />,
+							},
+							{
+								path: ":scholarId",
+								// children:
+								element: <StudentSemesterFiles />,
+							},
+						],
+					},
+					{
+						path: "allowances",
+						children: [
+							{
+								index: true,
+								element: <AllowanceList />,
+							},
+						],
+					},
 				],
 			},
 		],
 	};
+
+	const adminRoutes = {
+		element: (
+			<ProtectedRoute
+				allowedRoles={[
+					"SUPER_ADMIN",
+					"ADMIN_MANAGE_DOCUMENTS",
+					"ADMIN_VIEWER",
+					"ADMIN_MANAGE_GATHERINGS",
+					"ADMIN_MANAGE_SCHOLAR",
+				]}
+			/>
+		),
+		path: "admin",
+		children: [
+			{
+				element: <AdminLayout />,
+				children: [
+					{
+						path: "dashboard",
+						element: <Dashboard />,
+					},
+					{
+						element: <AdminAccountLayout />,
+						path: "account",
+						children: [
+							{
+								index: true,
+								element: <AdminAccount />,
+							},
+							{
+								path: "security",
+								element: <AdminSecurity />,
+							},
+						],
+					},
+					{
+						element: <AdminNotifications />,
+						path: "notifications",
+					},
+				],
+			},
+		],
+	};
+
 	const superAdminRoutes = {
 		element: <ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />,
 		path: "admin",
@@ -305,6 +416,15 @@ function App() {
 							},
 						],
 					},
+					{
+						path: "my-allowance",
+						children: [
+							{
+								index: true,
+								element: <MyAllowanceList />,
+							},
+						],
+					},
 				],
 			},
 		],
@@ -339,6 +459,9 @@ function App() {
 	};
 
 	return useRoutes([
+		manageScholarRoutes,
+		manageGatheringsRoutes,
+		manageDocumentsRoutes,
 		adminRoutes,
 		superAdminRoutes,
 		authRoutes,

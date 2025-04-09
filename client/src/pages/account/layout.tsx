@@ -2,11 +2,8 @@ import { Button } from "@heroui/button";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 
-import { useAuth } from "@/contexts";
-
 export default function AccountLayout() {
 	const { pathname } = useLocation();
-	const { logout } = useAuth();
 
 	const links = ["/account", "/account/security"];
 
@@ -27,9 +24,6 @@ export default function AccountLayout() {
 						</Button>
 					))}
 				</div>
-				<Button className="" color="danger" onPress={logout}>
-					Log out
-				</Button>
 			</div>
 			<ScrollShadow
 				size={100}

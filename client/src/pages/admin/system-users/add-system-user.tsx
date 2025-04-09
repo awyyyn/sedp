@@ -15,7 +15,8 @@ import places from "../../../../places.json";
 import { generatePassword } from "@/lib/utils";
 import { addAdminSchema } from "@/definitions";
 import { AddAdminSchemaData } from "@/types";
-import { CREATE_SYSTEM_USER_MUTATION } from "@/queries";
+import { CREATE_SYSTEM_USER_MUTATION, systemUsersQuery } from "@/queries";
+import { useNavigate } from "react-router-dom";
 
 export default function AddSystemUser() {
 	const [streets, setStreet] = useState<string[]>([]);
@@ -24,6 +25,7 @@ export default function AddSystemUser() {
 		() => places.map((place) => place.name),
 		[]
 	);
+	const navigate = useNavigate();
 
 	return (
 		<Card className="rounded-md shadow-md mb-10 ">
@@ -52,9 +54,10 @@ export default function AddSystemUser() {
 											street,
 										},
 									},
+									refetchQueries: [systemUsersQuery],
 								});
 
-								helpers.resetForm();
+								navigate("/admin/system-users");
 
 								toast.success("Admin account created successfully", {
 									description:

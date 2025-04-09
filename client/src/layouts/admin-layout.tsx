@@ -1,11 +1,16 @@
 import { Outlet } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useAtom } from "jotai";
+
+import NotificationDropdown from "./__components/admin-notifications";
 
 import { AppSidebar } from "@/components";
-import NotificationDropdown from "./__components/notification";
+import { adminNotificationAtom } from "@/states";
 
 export default function AdminLayout() {
+	const [notifications, setNotifications] = useAtom(adminNotificationAtom);
+
 	return (
 		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
 			<AppSidebar />

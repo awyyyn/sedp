@@ -9,10 +9,16 @@ import {
 } from "react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { toast } from "sonner";
+import { useSetAtom } from "jotai";
 
-import { Student } from "@/types";
+import { Student, SystemUserRole } from "@/types";
+import {
+	adminNotificationAtom,
+	scholarNotificationAtom,
+	systemUserAtom,
+} from "@/states";
 
-export type ROLE = "SUPER_ADMIN" | "ADMIN" | "STUDENT";
+export type ROLE = "STUDENT" | SystemUserRole;
 
 interface AuthContextProps {
 	role: ROLE | null;
@@ -38,6 +44,9 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [role, setRole] = useState<ROLE | null>(null);
+	const setSystemUser = useSetAtom(systemUserAtom);
+	const setAdminNotifications = useSetAtom(adminNotificationAtom);
+	const setScholarNotifications = useSetAtom(scholarNotificationAtom);
 	const [studentUser, setStudentUser] =
 		useState<AuthContextProps["studentUser"]>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,13 +82,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				const data = await response.json();
 
 				setIsAuthenticated(true);
+				const { notifications, ...userData } = data.data.user;
+
 				if (data.data.user.role === "STUDENT") {
+					setScholarNotifications(notifications || []);
 					setStudentUser(data.data.user);
+				} else {
+					setSystemUser(userData);
+					setScholarNotifications(notifications || []);
 				}
 				setRole(data.data.user.role as ROLE);
 				localStorage.setItem("accessToken", data.data.accessToken);
 			} catch (err) {
-				localStorage.clear();
 				toast.error((err as Error).message, {
 					position: "top-center",
 					richColors: true,
@@ -94,7 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const login = (token: string, isAuthenticated = true) => {
 		localStorage.setItem("accessToken", token);
-		setIsAuthenticated(isAuthenticated);
+
 		const decoded = jwtDecode<{ role: string; exp: number } & JwtPayload>(
 			token
 		);
@@ -102,6 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		if (decoded.exp * 1000 > Date.now()) {
 			setRole(decoded.role as ROLE);
 			// createHttpLink(token);
+			setIsAuthenticated(isAuthenticated);
 		} else {
 			localStorage.removeItem("accessToken");
 			setRole(null);
