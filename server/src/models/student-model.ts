@@ -27,6 +27,7 @@ export const createStudent = async (
 		course,
 		schoolName,
 		phoneNumber,
+		semester,
 		yearLevel,
 	} = values;
 
@@ -41,6 +42,7 @@ export const createStudent = async (
 			email,
 			firstName,
 			course,
+			semester,
 			lastName,
 			phoneNumber,
 			schoolName,

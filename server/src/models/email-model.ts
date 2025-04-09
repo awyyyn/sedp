@@ -123,7 +123,7 @@ export const sendCredentials = async ({
 											</td>
 											<td style="padding: 8px 0; color: #333;">${role}</td>
 										</tr>
-									)`
+									`
 								}
 							</table>
 						</div>

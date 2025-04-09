@@ -8,7 +8,7 @@ export const createAllowance = async (
 		"createdAt" | "updatedAt" | "id" | "claimed" | "claimedAt"
 	>
 ) => {
-	return await prisma.allowance.create({
+	const allowance = await prisma.allowance.create({
 		data: {
 			year: data.year,
 			month: data.month,
@@ -26,6 +26,12 @@ export const createAllowance = async (
 			},
 		},
 	});
+
+	return {
+		...allowance,
+		createdAt: allowance.createdAt.toISOString(),
+		updatedAt: allowance.updatedAt.toISOString(),
+	};
 };
 
 export const updateAllowanceStatus = async (id: string, claimed: boolean) => {
@@ -35,7 +41,7 @@ export const updateAllowanceStatus = async (id: string, claimed: boolean) => {
 		claimedAt = new Date();
 	}
 
-	return await prisma.allowance.update({
+	const allowance = await prisma.allowance.update({
 		where: {
 			id,
 		},
@@ -44,6 +50,12 @@ export const updateAllowanceStatus = async (id: string, claimed: boolean) => {
 			claimedAt,
 		},
 	});
+
+	return {
+		...allowance,
+		createdAt: allowance.createdAt.toISOString(),
+		updatedAt: allowance.updatedAt.toISOString(),
+	};
 };
 
 export const readAllowance = async (
@@ -51,13 +63,21 @@ export const readAllowance = async (
 	year: number,
 	month: number
 ) => {
-	return await prisma.allowance.findFirst({
+	const allowance = await prisma.allowance.findFirst({
 		where: {
 			studentId,
 			year,
 			month,
 		},
 	});
+
+	if (!allowance) return null;
+
+	return {
+		...allowance,
+		createdAt: allowance.createdAt.toISOString(),
+		updatedAt: allowance.updatedAt.toISOString(),
+	};
 };
 
 export const readAllowances = async ({
