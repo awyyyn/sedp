@@ -15,6 +15,10 @@ import {
 } from "..//services/index.js";
 import { SystemUserRole } from "@prisma/client";
 import { environment } from "../environments/environment.js";
+import {
+	readAdminNotification,
+	readStudentNotification,
+} from "../models/notification.js";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -74,12 +78,13 @@ export const adminLoginController = async (req: Request, res: Response) => {
 		const accessToken = generateAccessToken(payload);
 		const refreshToken = generateRefreshToken(payload);
 		const { password: removePassword, ...userData } = user;
+		const notifications = (await readAdminNotification(user.role)) || [];
 
 		res.status(200).json({
 			data: {
 				accessToken,
 				refreshToken,
-				user: userData,
+				user: { ...userData, notifications },
 			},
 			error: null,
 		});
@@ -340,12 +345,15 @@ export const userProfileController = async (req: Request, res: Response) => {
 	try {
 		let user;
 		let userRole: PayloadArgs["role"] = "STUDENT";
+		let notifications;
 		if (role === "STUDENT") {
 			user = await readStudent(id);
+			notifications = await readStudentNotification(id);
 			userRole = "STUDENT";
 		} else {
 			user = await readSystemUser(id);
 			userRole = user?.role as SystemUserRole;
+			notifications = await readAdminNotification(role);
 		}
 
 		if (!user) throw new Error("INTERNAL_SERVER_ERROR");
@@ -369,6 +377,7 @@ export const userProfileController = async (req: Request, res: Response) => {
 				user: {
 					...user,
 					role: userRole,
+					notifications: notifications,
 				},
 			},
 			error: null,

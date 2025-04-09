@@ -12,6 +12,7 @@ import {
 	prisma,
 } from "../services/index.js";
 import { environment } from "../environments/environment.js";
+import { readStudentNotification } from "../models/notification.js";
 
 export const studentLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -65,12 +66,13 @@ export const studentLoginController = async (req: Request, res: Response) => {
 			role: "STUDENT",
 		});
 		const { password: removePassword, ...userData } = student;
+		const notifications = await readStudentNotification(student.id);
 
 		res.status(200).json({
 			data: {
 				accessToken,
 				refreshToken,
-				user: userData,
+				user: { ...userData, notifications: notifications || [] },
 			},
 			error: null,
 		});
@@ -105,6 +107,7 @@ export const studentRegisterController = async (
 		course,
 		gender,
 		mfaEnabled,
+		semester,
 		statusUpdatedAt,
 	} = req.body;
 
@@ -120,6 +123,7 @@ export const studentRegisterController = async (
 				street: street,
 			},
 			birthDate,
+			semester,
 			middleName,
 			phoneNumber,
 			schoolName,
