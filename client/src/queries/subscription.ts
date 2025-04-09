@@ -14,3 +14,19 @@ export const READ_STUDENT_NOTIFICATIONS_SUBSCRIPTION = gql`
 		}
 	}
 `;
+
+export const READ_ADMIN_NOTIFICATIONS_SUBSCRIPTION = gql`
+	subscription AdminNotificationSent($role: SystemUserRole) {
+		notification: adminNotificationSent(role: $role) {
+			id
+			read
+			message
+			title
+			role
+			type
+			readerIds
+			link
+			createdAt
+		}
+	}
+`;

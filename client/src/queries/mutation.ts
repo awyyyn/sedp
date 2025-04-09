@@ -382,3 +382,47 @@ export const UPDATE_STUDENT_NOTIFICATION_MUTATION = gql`
 		notification: updateStudentNotification(notificationId: $notificationId)
 	}
 `;
+
+export const CREATE_ADMIN_NOTIFICATION_MUTATION = gql`
+	mutation (
+		$type: AdminNotificationType!
+		$link: String!
+		$message: String!
+		$title: String!
+		$role: SystemUserRole!
+	) {
+		notification: createAdminNotification(
+			type: $type
+			link: $link
+			message: $message
+			title: $title
+			role: $role
+		) {
+			id
+			read
+			message
+			title
+			role
+			type
+			readerIds
+			link
+			createdAt
+		}
+	}
+`;
+
+export const READ_ADMIN_NOTIFICATION_MUTATION = gql`
+	mutation ($notificationId: ID!) {
+		notification: updateAdminNotification(notificationId: $notificationId) {
+			id
+			read
+			message
+			title
+			role
+			type
+			readerIds
+			link
+			createdAt
+		}
+	}
+`;
