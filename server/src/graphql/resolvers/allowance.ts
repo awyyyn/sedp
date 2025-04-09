@@ -6,6 +6,8 @@ import {
 	readAllowances,
 	updateAllowanceStatus,
 } from "../../models/allowance.js";
+import { pubsub } from "../../services/pubsub.js";
+import { createStudentNotification } from "../../models/notification.js";
 
 export const createAllowanceResolver = async (
 	_: never,
@@ -36,10 +38,24 @@ export const createAllowanceResolver = async (
 			data.monthlyAllowance +
 			data.thesisAllowance;
 
-		return await createAllowance({
+		const allowance = await createAllowance({
 			...data,
 			totalAmount,
 		});
+
+		const scholarNotification = await createStudentNotification({
+			link: `/my-allowance?month=${allowance.month}&year=${allowance.year}`,
+			message: `Allowance for ${allowance.month}/${allowance.year} has been successfully allocated and is now ready for collection.`,
+			receiverId: allowance.studentId,
+			type: "ALLOWANCE",
+			title: "Allowance Allocation Completed",
+		});
+
+		pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
+			scholarNotificationSent: scholarNotification,
+		});
+
+		return allowance;
 
 		// return announcement;
 	} catch (err) {

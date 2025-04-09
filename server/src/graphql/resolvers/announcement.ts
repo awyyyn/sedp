@@ -39,7 +39,7 @@ export const createAnnouncementResolver = async (
 
 export const announcementsResolver = async (
 	_: never,
-	{ filter, pagination }: PaginationArgs
+	{ filter, pagination }: PaginationArgs<never>
 ) => {
 	try {
 		return await readAnnouncements({ filter, pagination });

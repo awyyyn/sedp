@@ -6,3 +6,5 @@ export * from "./event.js";
 export * from "./meeting.js";
 export * from "./document.js";
 export * from "./allowance.js";
+export * from "./notifications.js";
+export * from "./notification-subscription.js";
