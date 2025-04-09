@@ -1,4 +1,4 @@
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Selection } from "@react-types/shared";
 import {
 	Dropdown,
@@ -8,7 +8,7 @@ import {
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@apollo/client";
 
 import { DocumentTable, PreviewModal } from "@/components";
@@ -27,40 +27,54 @@ const getYears = (yearStarted: number) => {
 
 export default function StudentSemesterFiles() {
 	const { scholarId } = useParams();
-	const { state }: { state: { scholar: Student } } = useLocation();
-	const scholar = state.scholar;
-	const createdAt = !isNaN(Number(scholar.createdAt))
-		? Number(scholar.createdAt)
-		: scholar.createdAt;
-	const year = new Date(createdAt).getFullYear();
-	const [yearFilter, setYearFilter] = useState<Selection>(new Set([year]));
-	const [semesterFilter, setSemesterFilter] = useState<Selection>(new Set([1]));
-	const [previewModal, onPreviewModalChange] = useState(false);
-	const [toPreview, setToPreview] = useState<string | null>(null);
-	const { loading, error, data, refetch } = useQuery<{
+	const [searchParams] = useSearchParams();
+	// const { state }: { state: { scholar: Student } } = useLocation();
+	// const scholar = state.scholar;
+
+	// const createdAt = !isNaN(Number(scholar.createdAt))
+	// 	? Number(scholar.createdAt)
+	// 	: scholar.createdAt;
+	// const year = new Date(createdAt).getFullYear();
+	const [yearFilter, setYearFilter] = useState<Selection>(
+		new Set([searchParams.get("year") || "none"])
+	);
+	const [semesterFilter, setSemesterFilter] = useState<Selection>(
+		new Set([searchParams.get("semester") || 1])
+	);
+	const { loading, data } = useQuery<{
 		documents: Document[];
+		scholar: Student;
 	}>(READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY, {
 		variables: {
 			scholarId: scholarId,
 			semester: Number(Array.from(semesterFilter)[0]),
-			schoolYear: `${Number(Array.from(yearFilter)[0])}-${Number(Array.from(yearFilter)[0]) + 1}`,
+			schoolYear: !isNaN(Number(Array.from(yearFilter)[0]))
+				? `${Number(Array.from(yearFilter)[0])}-${Number(Array.from(yearFilter)[0]) + 1}`
+				: null,
 			monthlyDocument: false,
 		},
 	});
+	const [previewModal, onPreviewModalChange] = useState(false);
+	const [toPreview, setToPreview] = useState<string | null>(null);
 
-	useEffect(() => {
-		if (!error) {
-			refetch({
-				scholarId: scholarId,
-				year: Number(Array.from(yearFilter)[0]),
-				semester: Number(Array.from(semesterFilter)[0]),
-				monthlyDocument: false,
-			});
-		}
-	}, [yearFilter, semesterFilter]);
+	// useEffect(() => {
+	// 	if (!error) {
+	// 		refetch({
+	// 			scholarId: scholarId,
+	// 			schoolYear: !isNaN(Number(Array.from(yearFilter)[0]))
+	// 				? `${Number(Array.from(yearFilter)[0])}-${Number(Array.from(yearFilter)[0]) + 1}`
+	// 				: null,
+	// 			semester: Number(Array.from(semesterFilter)[0]),
+	// 			monthlyDocument: false,
+	// 		});
+	// 	}
+	// }, [yearFilter, semesterFilter]);
 
-	if (!scholarId && !scholar)
-		return <Navigate to={`/admin/semester-submissions`} />;
+	if (!data?.scholar) {
+		return null;
+	}
+
+	const scholar = data?.scholar;
 
 	const yearStarted = new Date(
 		!isNaN(Number(scholar.createdAt))
@@ -121,7 +135,9 @@ export default function StudentSemesterFiles() {
 								}
 								size="md"
 								variant="flat">
-								S.Y. {yearFilter} - {Number(Array.from(yearFilter)[0]) + 1}
+								{isNaN(Number(Array.from(yearFilter)[0]))
+									? "Select School Year"
+									: `S.Y. ${Number(Array.from(yearFilter)[0])} - ${Number(Array.from(yearFilter)[0]) + 1}`}
 							</Button>
 						</DropdownTrigger>
 						<DropdownMenu
@@ -181,7 +197,14 @@ export default function StudentSemesterFiles() {
 					</Dropdown>
 				</div>
 			</div>
-			<div className="px-0.5">
+			<div className="relative px-0.5">
+				{isNaN(Number(Array.from(yearFilter)[0])) && (
+					<div className="absolute min-h-[300px] top-0 left-0 backdrop-blur-sm flex justify-center items-center  z-10 h-full w-full">
+						<h1 className="text-2xl font-semibold text-gray-800">
+							Select a School Year to Fetch Documents
+						</h1>
+					</div>
+				)}
 				<DocumentTable
 					data={data?.documents || []}
 					isLoading={loading}

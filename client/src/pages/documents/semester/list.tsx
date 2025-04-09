@@ -1,31 +1,52 @@
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 
 import { FileTree } from "../../../components/file-tree";
 
 import { useAuth } from "@/contexts";
-import { Document, FileTreeItem } from "@/types";
-import { READ_DOCUMENTS_QUERY } from "@/queries";
+import { Document, FileTreeItem, SystemUserRole } from "@/types";
+import {
+	CREATE_ADMIN_NOTIFICATION_MUTATION,
+	READ_DOCUMENTS_QUERY,
+} from "@/queries";
 import { DocumentTable, PreviewModal } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
+import { toast } from "sonner";
 
 const semester = ["1st Semester", "2nd Semester", "3rd Semester"];
 
-export const generateFolders = (date: string): FileTreeItem[] => {
+export const generateFolders = (
+	date: string,
+	yearLevelJoined: number
+): FileTreeItem[] => {
+	// const subDate = sub(new Date(date), { years: yearLevel });
 	const yearStarted = new Date(date).getFullYear();
 	const items: FileTreeItem[] = [];
 
-	let yearIndex = 1;
+	let yearIndex = yearLevelJoined;
+	let plusYear = 0;
 
-	for (let year = yearStarted; year < yearStarted + 5; year++) {
+	if (yearLevelJoined === 1) {
+		plusYear = 5;
+	} else if (yearLevelJoined === 2) {
+		plusYear = 4;
+	} else if (yearLevelJoined === 3) {
+		plusYear = 3;
+	} else if (yearLevelJoined === 4) {
+		plusYear = 2;
+	} else if (yearLevelJoined === 5) {
+		plusYear = 1;
+	}
+
+	for (let year = yearStarted; year < yearStarted + plusYear; year++) {
 		items.push({
 			id: year.toString(),
 			name: `${year}-${year + 1}`,
 			type: "folder",
-			disabled: new Date().getFullYear() <= year,
+			// disabled: year < yearLevelJoined,
 			// disabled: year > yearStarted || year > new Date().getFullYear() + 1,
 			children: semester.map((sem, index) => ({
 				id: `${yearIndex}-${year}-${index + 1}`,
@@ -41,22 +62,44 @@ export const generateFolders = (date: string): FileTreeItem[] => {
 	return items;
 };
 
+function showUploadButton(
+	activeFileId: string,
+	yearLevel: number,
+	semester: number,
+	yearLevelJoined?: number
+) {
+	const selectedYearLevel = Number(activeFileId.split("-")[0]);
+	const selectedSem = Number(activeFileId.split("-")[2]);
+
+	if (
+		selectedYearLevel !== yearLevel &&
+		selectedYearLevel === yearLevel + 1 &&
+		selectedSem === 1 &&
+		semester > 1
+	) {
+		return selectedSem === 1;
+	}
+
+	return selectedYearLevel === yearLevel && selectedSem > semester;
+}
+
 export default function Semester() {
 	const { studentUser } = useAuth();
 	const [activeFileId, setActiveFileId] = useState<string>();
 	const [data, setData] = useState<Document[]>([]);
 	const [fetchDocuments, { loading }] = useLazyQuery(READ_DOCUMENTS_QUERY);
-
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
+	const [sendNotification, { loading: sendingNotif }] = useMutation(
+		CREATE_ADMIN_NOTIFICATION_MUTATION
+	);
+	const [sentNotification, setSentNotification] = useState(false);
 
 	const handleFileSelect = async (fileId: string) => {
 		setActiveFileId(fileId);
 
 		const { data } = await fetchDocuments({
 			variables: {
-				// month: Number(fileId.split("-")[1]),
-				// year: Number(fileId.split("-")[0]),
 				monthlyDocument: false,
 				semester: Number(fileId.split("-")[2]),
 				schoolYear: `${fileId.split("-")[1]}-${Number(fileId.split("-")[1]) + 1}`,
@@ -64,6 +107,35 @@ export default function Semester() {
 		});
 
 		setData(data.documents || []);
+	};
+
+	const handleSendNotification = async () => {
+		try {
+			await sendNotification({
+				variables: {
+					type: "SEMESTER_DOCUMENT",
+					link: `/admin/semester-submissions/${studentUser?.id!}?year=${activeFileId!.split("-")[1]}&semester=${Number(activeFileId!.split("-")[2])}`,
+					message: "A scholar has submitted documents for review.",
+					title: "Document Review Request",
+					role: "ADMIN_MANAGE_DOCUMENTS" as SystemUserRole,
+				},
+			});
+
+			setSentNotification(true);
+			toast.success("Notification sent successfully.", {
+				duration: 5000,
+				richColors: true,
+				description: "Admin has been notified.",
+			});
+		} catch (error) {
+			console.error("Error sending notification:", error);
+
+			toast.error("Failed to send notification.", {
+				duration: 5000,
+				richColors: true,
+				description: "Please try again later.",
+			});
+		}
 	};
 
 	return (
@@ -87,8 +159,10 @@ export default function Semester() {
 							activeFileId={activeFileId}
 							onFileSelect={handleFileSelect}
 							items={generateFolders(
-								studentUser?.createdAt || new Date().toISOString()
+								studentUser?.createdAt || new Date().toISOString(),
+								studentUser?.yearLevelJoined!
 							)}
+							isDisabled={sendingNotif}
 						/>
 					</div>
 					<div className="md:ml-[210px] w-full md:w-[calc(100%-210px)]    mt-5 md:mt-0  ">
@@ -107,9 +181,9 @@ export default function Semester() {
 								<div className="sticky p-2 flex justify-between md:p-4 top-0 left-0 w-full h-full bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
 									<h1 className="text-2xl p-2 font-semibold text-gray-500">
 										Documents for{" "}
-										{semester[Number(activeFileId.split("-")[1]) - 1]} of S.Y.{" "}
-										{Number(activeFileId.split("-")[0])}-
-										{Number(activeFileId.split("-")[0]) + 1}
+										{semester[Number(activeFileId.split("-")[2]) - 1]} of S.Y.{" "}
+										{Number(activeFileId.split("-")[1])}-
+										{Number(activeFileId.split("-")[1]) + 1}
 									</h1>
 									<div className="flex flex-col md:flex-row gap-2">
 										<Button
@@ -124,18 +198,35 @@ export default function Semester() {
 												height="24"
 											/>
 										</Button>
-										{Number(activeFileId.split("-")[0]) ===
-											Number(studentUser?.yearLevel || 0) && (
-											<Button
-												as={Link}
-												to="upload"
-												color="primary"
-												state={{
-													semester: activeFileId.split("-")[0],
-													year: activeFileId.split("-")[1],
-												}}>
-												Upload Document
-											</Button>
+
+										{showUploadButton(
+											activeFileId,
+											studentUser?.yearLevel!,
+											studentUser?.semester!,
+											studentUser?.yearLevelJoined!
+										) && (
+											<>
+												{data.length > 0 && !sentNotification && (
+													<Button
+														isLoading={sendingNotif}
+														color="success"
+														className="text-white"
+														onPress={handleSendNotification}>
+														Send Notification to Admin
+													</Button>
+												)}
+												<Button
+													isDisabled={sendingNotif}
+													as={Link}
+													to="upload"
+													color="primary"
+													state={{
+														semester: activeFileId.split("-")[0],
+														year: activeFileId.split("-")[1],
+													}}>
+													Upload Document
+												</Button>
+											</>
 										)}
 									</div>
 								</div>{" "}

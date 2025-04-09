@@ -9,6 +9,7 @@ interface FileTreeProps {
 	level?: number;
 	onFileSelect?: (fileId: string) => void;
 	activeFileId?: string;
+	isDisabled?: boolean;
 }
 
 export const FileTree: React.FC<FileTreeProps> = ({
@@ -16,6 +17,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
 	level = 0,
 	activeFileId,
 	onFileSelect,
+	isDisabled = false,
 }) => {
 	const renderIcon = (type: "file" | "folder", isOpen?: boolean) => {
 		if (type === "folder") {
@@ -38,11 +40,11 @@ export const FileTree: React.FC<FileTreeProps> = ({
 			return (
 				<button
 					onClick={() => {
-						if (onFileSelect) {
+						if (!isDisabled && onFileSelect) {
 							onFileSelect(item.id);
 						}
 					}}
-					disabled={item.disabled}
+					disabled={item.disabled || isDisabled}
 					className={`flex disabled:opacity-50 disabled:cursor-not-allowed disabled:line-through   w-full cursor-pointer items-center gap-2 rounded-md py-1 px-2 transition-colors ${
 						isActive
 							? "bg-primary-100 text-primary-500"
@@ -59,7 +61,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
 				key={item.id}
 				selectionMode="single"
 				className="px-0"
-				isDisabled={item.disabled}
+				isDisabled={item.disabled || isDisabled}
 				itemClasses={{
 					base: "py-0",
 					title: "text-sm",
@@ -77,6 +79,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
 						level={level + 1}
 						onFileSelect={onFileSelect}
 						activeFileId={activeFileId}
+						isDisabled={isDisabled}
 					/>
 				</AccordionItem>
 			</Accordion>

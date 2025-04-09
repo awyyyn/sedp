@@ -363,9 +363,7 @@ export default function SemesterSubmissions() {
 								<TableRow
 									key={`${item.id}`}
 									onClick={() => {
-										navigate(`/admin/semester-submissions/${item.id}`, {
-											state: { scholar: item },
-										});
+										navigate(`/admin/semester-submissions/${item.id}`);
 									}}>
 									{(columnKey) => (
 										<TableCell className="min-w-[140px]">
