@@ -374,3 +374,9 @@ export const UPDATE_ALLOWANCE_STATUS_MUTATION = gql`
 		}
 	}
 `;
+
+export const UPDATE_STUDENT_NOTIFICATION_MUTATION = gql`
+	mutation ($notificationId: ID) {
+		notification: updateStudentNotification(notificationId: $notificationId)
+	}
+`;
