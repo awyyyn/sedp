@@ -167,12 +167,18 @@ export const typeDefs = gql`
 			monthlyAllowance: Float!
 		): Allowance
 		updateAllowanceStatus(id: String!, claimed: Boolean!): Allowance
-
+		createAdminNotification(
+			type: AdminNotificationType!
+			link: String!
+			message: String!
+			title: String!
+			role: SystemUserRole!
+		): AdminNotification
 		updateStudentNotification(notificationId: ID): Boolean
 		# updateAllStudentNotification: [ScholarNotification]
 
-		updateAllAdminNotification: [AdminNotification]
-		updateAdminNotification(notificationId: ID!): AdminNotification
+		# updateAllAdminNotification: [AdminNotification]
+		updateAdminNotification(notificationId: ID): AdminNotification
 	}
 
 	input DocumentInput {

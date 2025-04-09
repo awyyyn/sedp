@@ -45,6 +45,7 @@ import {
 	updateReadAdminNotificationResolver,
 	adminNotificationSubscription,
 	scholarNotificationSubscription,
+	createAdminNotificationResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -96,11 +97,11 @@ export const resolvers = {
 		updateDocument: updateDocumentResolver,
 		createAllowance: createAllowanceResolver,
 		updateAllowanceStatus: updateAllowanceStatusResolver,
-
+		createAdminNotification: createAdminNotificationResolver,
 		updateStudentNotification: updateReadStudentNotificationResolver,
 		// updateAllStudentNotification: updateReadAllNotificationsResolver,
 
-		updateAllAdminNotification: updateReadAllAdminNotificationResolver,
+		// updateAllAdminNotification: updateReadAllAdminNotificationResolver,
 		updateAdminNotification: updateReadAdminNotificationResolver,
 	},
 };
