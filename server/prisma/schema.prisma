@@ -72,6 +72,7 @@ model Student {
   mfaEnabled Boolean @default(false) 
 
   yearLevel Int 
+  yearLevelJoined Int? @default(1)
   schoolName String 
   course String @default("") 
 

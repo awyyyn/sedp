@@ -125,6 +125,7 @@ export const CREATE_STUDENT_MUTATION = gql`
 		$schoolName: String!
 		$gender: Gender!
 		$password: String!
+		$semester: Int!
 		$birthDate: String!
 		$phoneNumber: String!
 		$middleName: String
@@ -136,6 +137,7 @@ export const CREATE_STUDENT_MUTATION = gql`
 			email: $email
 			course: $course
 			yearLevel: $yearLevel
+			semester: $semester
 			schoolName: $schoolName
 			gender: $gender
 			password: $password

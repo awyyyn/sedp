@@ -47,6 +47,7 @@ export const studentsFragment = gql`
 		schoolName
 		course
 		statusUpdatedAt
+		yearLevelJoined
 		createdAt
 		updatedAt
 	}

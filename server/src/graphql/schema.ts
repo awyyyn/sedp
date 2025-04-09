@@ -302,6 +302,7 @@ export const typeDefs = gql`
 		address: Address
 		phoneNumber: String
 		status: StudentStatus
+		yearLevelJoined: Int
 		gender: Gender
 		mfaSecret: String
 		birthDate: String

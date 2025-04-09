@@ -46,6 +46,7 @@ export const createStudent = async (
 			lastName,
 			phoneNumber,
 			schoolName,
+			yearLevelJoined: yearLevel,
 			gender,
 			yearLevel,
 			middleName,
