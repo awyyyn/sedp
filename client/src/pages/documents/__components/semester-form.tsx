@@ -12,10 +12,7 @@ import { ImageUploader } from "../__components/image-uploader";
 
 import { PreviewModal } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
-import {
-	AddMonthlyDocumentSchema,
-	AddSemesterDocumentSchema,
-} from "@/definitions";
+import { AddSemesterDocumentSchema } from "@/definitions";
 import { AddSemesterSchemaData, Document } from "@/types";
 import {
 	CREATE_DOCUMENT_MUTATION,
@@ -95,7 +92,7 @@ export default function SemesterDocumentForm({
 						richColors: true,
 					}
 				);
-			} catch (error) {
+			} catch {
 				toast.error("Something went wrong!", {
 					description: "Error uploading document",
 					position: "top-center",

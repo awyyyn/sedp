@@ -1,13 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import {
-	ApolloClient,
-	ApolloProvider,
-	createHttpLink,
-	InMemoryCache,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
+import { ApolloProvider } from "@apollo/client";
 import { Toaster } from "sonner";
 
 import App from "./App.tsx";

@@ -42,7 +42,7 @@ export default function AddSystemUser() {
 						validationSchema={addAdminSchema}
 						initialValues={{} as AddAdminSchemaData}
 						validateOnBlur
-						onSubmit={async (values: AddAdminSchemaData, helpers) => {
+						onSubmit={async (values: AddAdminSchemaData) => {
 							try {
 								const { street, city, ...data } = values;
 

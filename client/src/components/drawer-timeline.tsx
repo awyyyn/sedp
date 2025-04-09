@@ -7,7 +7,6 @@ import {
 } from "@heroui/drawer";
 import { Tooltip } from "@heroui/tooltip";
 import { Dispatch, SetStateAction } from "react";
-import { Link } from "react-router-dom";
 import { Skeleton } from "@heroui/skeleton";
 import { formatDate } from "date-fns";
 

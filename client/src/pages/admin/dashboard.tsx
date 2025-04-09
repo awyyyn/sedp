@@ -1,16 +1,16 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { formatDate, getDay } from "date-fns";
+import { formatDate } from "date-fns";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useQuery } from "@apollo/client";
+import { Skeleton } from "@heroui/skeleton";
+import { Link } from "react-router-dom";
 
 import { WebsiteCard } from "./__components";
 
 import { externalWebsite } from "@/constants";
 import { READ_MONTHLY_EVENTS } from "@/queries";
 import { Event } from "@/types";
-import { Skeleton } from "@heroui/skeleton";
-import { Link } from "react-router-dom";
 
 export default function Dashboard() {
 	const { data, loading, error, refetch } = useQuery<{ events: Event[] }>(
@@ -68,17 +68,17 @@ export default function Dashboard() {
 									</div>
 								))
 							) : data?.events && data?.events.length > 0 ? (
-								data.events.map((evnt, indx) => (
+								data.events.map((event) => (
 									<Link
-										to={`/admin/events/${evnt.id}`}
+										to={`/admin/events/${event.id}`}
 										className="flex bg-[#D9D9D9] p-2 items-center gap-2"
-										key={evnt.id}>
+										key={event.id}>
 										<Icon
-											icon={`arcticons:calendar-${new Date(evnt.startDate).getDate()}`}
+											icon={`arcticons:calendar-${new Date(event.startDate).getDate()}`}
 											width="30"
 											height="30"
 										/>
-										<p>{evnt.title}</p>
+										<p>{event.title}</p>
 									</Link>
 								))
 							) : (

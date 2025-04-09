@@ -2,11 +2,8 @@ import { Button } from "@heroui/button";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 
-import { useAuth } from "@/contexts";
-
 export default function AdminAccountLayout() {
 	const { pathname } = useLocation();
-	const { logout } = useAuth();
 
 	const links = ["/account", "/account/security"];
 

@@ -1,5 +1,4 @@
 import { ROLE } from "@/contexts";
-import { SystemUserRole } from "@/types";
 
 export const getFileExtension = (url: string) => {
 	const ext = url.split(".").pop()?.toLowerCase();

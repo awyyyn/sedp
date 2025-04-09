@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 					setStudentUser(data.data.user);
 				} else {
 					setSystemUser(userData);
-					setScholarNotifications(notifications || []);
+					setAdminNotifications(notifications || []);
 				}
 				setRole(data.data.user.role as ROLE);
 				localStorage.setItem("accessToken", data.data.accessToken);

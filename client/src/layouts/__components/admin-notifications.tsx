@@ -16,7 +16,7 @@ import { adminNotificationAtom, systemUserAtom } from "@/states";
 import { adminNotificationIconMap } from "@/constants";
 
 export default function NotificationDropdown() {
-	const [notifications, setNotifications] = useAtom(adminNotificationAtom);
+	const [notifications] = useAtom(adminNotificationAtom);
 	const systemUser = useAtomValue(systemUserAtom);
 
 	const navigate = useNavigate();

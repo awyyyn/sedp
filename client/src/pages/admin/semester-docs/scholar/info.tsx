@@ -11,25 +11,10 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 
-import GenerateAllowance from "../../__components/generate-allowance";
-
-import { ViewAllowanceModal } from "@/components";
 import { DocumentTable, PreviewModal } from "@/components";
-import { Allowance, Document, Student } from "@/types";
-import {
-	READ_SCHOLAR_DOCUMENTS_QUERY,
-	READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY,
-} from "@/queries";
-import {
-	Documents,
-	getFileExtension,
-	imagesExtensions,
-	months,
-	semester,
-} from "@/lib/constant";
-import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
-import { useAuth } from "@/contexts";
-
+import { Document, Student } from "@/types";
+import { READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY } from "@/queries";
+import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
 const getYears = (yearStarted: number) => {
 	const years = [];
 
@@ -50,9 +35,6 @@ export default function StudentSemesterFiles() {
 	const year = new Date(createdAt).getFullYear();
 	const [yearFilter, setYearFilter] = useState<Selection>(new Set([year]));
 	const [semesterFilter, setSemesterFilter] = useState<Selection>(new Set([1]));
-	const { role } = useAuth();
-	const [generateModal, setGenerateModal] = useState(false);
-	const [viewAllowanceModal, setViewAllowanceModal] = useState(false);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
 	const { loading, error, data, refetch } = useQuery<{
@@ -89,7 +71,7 @@ export default function StudentSemesterFiles() {
 	const years = getYears(yearStarted);
 
 	const selectedMonth = Number(Array.from(semesterFilter)[0]);
-	const selectedYear = Number(Array.from(yearFilter)[0]);
+	// const selectedYear = Number(Array.from(yearFilter)[0]);
 
 	return (
 		<div className="container mx-auto  py-5">
