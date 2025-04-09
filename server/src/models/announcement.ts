@@ -26,7 +26,7 @@ export const createAnnouncement = async ({
 export const readAnnouncements = async ({
 	filter,
 	pagination,
-}: PaginationArgs = {}): Promise<
+}: PaginationArgs<never> = {}): Promise<
 	PaginationResult<AnnouncementWithRelation>
 > => {
 	let where: Prisma.AnnouncementWhereInput = {};

@@ -1,4 +1,4 @@
-import { Gender, StudentStatus } from "./index.js";
+import { Gender } from "./index.js";
 
 export interface SystemUser {
 	readonly id: string;

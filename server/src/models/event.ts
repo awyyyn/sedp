@@ -2,7 +2,7 @@ import { prisma } from "../services/prisma.js";
 import { Events, Prisma } from "@prisma/client";
 import { PaginationArgs } from "../types/system-user.js";
 import { CalendarEvent, PaginationResult } from "../types/index.js";
-import { addDays, format, lastDayOfMonth } from "date-fns";
+import { addDays, format } from "date-fns";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 export const upsertEvent = async (

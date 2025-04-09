@@ -41,7 +41,7 @@ export const upsertMeeting = async (
 export async function readAllMeetings({
 	filter,
 	pagination,
-}: PaginationArgs = {}): Promise<PaginationResult<Meeting>> {
+}: PaginationArgs<never> = {}): Promise<PaginationResult<Meeting>> {
 	let where: Prisma.MeetingWhereInput = {};
 
 	if (filter) {
