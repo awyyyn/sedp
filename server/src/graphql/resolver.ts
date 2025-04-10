@@ -41,7 +41,6 @@ import {
 	readStudentNotificationResolver,
 	readAdminNotificationResolver,
 	updateReadStudentNotificationResolver,
-	updateReadAllAdminNotificationResolver,
 	updateReadAdminNotificationResolver,
 	adminNotificationSubscription,
 	scholarNotificationSubscription,

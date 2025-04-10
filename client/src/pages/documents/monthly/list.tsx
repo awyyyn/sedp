@@ -13,7 +13,7 @@ import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
 export const generateFolders = (
 	date: string,
-	yearLevel: number
+	yearLevelJoined: number
 ): FileTreeItem[] => {
 	const selectedYear = new Date(date).getFullYear();
 	const currentYear = new Date().getFullYear();
@@ -37,16 +37,16 @@ export const generateFolders = (
 
 	let plusYear = 0;
 
-	if (yearLevel === 1) {
+	if (yearLevelJoined === 1) {
+		plusYear = 6;
+	} else if (yearLevelJoined === 2) {
 		plusYear = 5;
-	} else if (yearLevel === 2) {
+	} else if (yearLevelJoined === 3) {
 		plusYear = 4;
-	} else if (yearLevel === 3) {
+	} else if (yearLevelJoined === 4) {
 		plusYear = 3;
-	} else if (yearLevel === 4) {
+	} else if (yearLevelJoined === 5) {
 		plusYear = 2;
-	} else if (yearLevel === 5) {
-		plusYear = 1;
 	}
 
 	for (let year = selectedYear; year < selectedYear + plusYear; year++) {
@@ -118,7 +118,7 @@ export default function Monthly() {
 							onFileSelect={handleFileSelect}
 							items={generateFolders(
 								studentUser?.createdAt || new Date().toISOString(),
-								studentUser?.yearLevel!
+								studentUser?.yearLevelJoined!
 							)}
 						/>
 					</div>

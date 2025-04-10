@@ -25,9 +25,7 @@ export default function NotificationDropdown() {
 	const systemUser = useAtomValue(systemUserAtom);
 
 	const navigate = useNavigate();
-	const [readNotification, { loading }] = useMutation(
-		READ_ADMIN_NOTIFICATION_MUTATION
-	);
+	const [readNotification] = useMutation(READ_ADMIN_NOTIFICATION_MUTATION);
 
 	useSubscription(READ_ADMIN_NOTIFICATIONS_SUBSCRIPTION, {
 		variables: {

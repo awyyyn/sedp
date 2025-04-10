@@ -3,6 +3,7 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 import { FileTree } from "../../../components/file-tree";
 
@@ -14,7 +15,6 @@ import {
 } from "@/queries";
 import { DocumentTable, PreviewModal } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
-import { toast } from "sonner";
 
 const semester = ["1st Semester", "2nd Semester", "3rd Semester"];
 
@@ -65,8 +65,7 @@ export const generateFolders = (
 function showUploadButton(
 	activeFileId: string,
 	yearLevel: number,
-	semester: number,
-	yearLevelJoined?: number
+	semester: number
 ) {
 	const selectedYearLevel = Number(activeFileId.split("-")[0]);
 	const selectedSem = Number(activeFileId.split("-")[2]);
@@ -128,8 +127,6 @@ export default function Semester() {
 				description: "Admin has been notified.",
 			});
 		} catch (error) {
-			console.error("Error sending notification:", error);
-
 			toast.error("Failed to send notification.", {
 				duration: 5000,
 				richColors: true,
@@ -202,8 +199,7 @@ export default function Semester() {
 										{showUploadButton(
 											activeFileId,
 											studentUser?.yearLevel!,
-											studentUser?.semester!,
-											studentUser?.yearLevelJoined!
+											studentUser?.semester!
 										) && (
 											<>
 												{data.length > 0 && !sentNotification && (
