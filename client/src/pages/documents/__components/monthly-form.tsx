@@ -65,6 +65,7 @@ export default function MonthlyDocumentForm({
 					year: Number(document?.year || year),
 					schoolYear: "-1",
 					semester: -1,
+					amount: Number(values?.amount || 0),
 				};
 
 				let variables = {};

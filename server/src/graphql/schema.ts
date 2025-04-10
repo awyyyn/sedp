@@ -199,6 +199,7 @@ export const typeDefs = gql`
 		year: Int!
 		schoolYear: String!
 		semester: Int!
+		amount: Float
 	}
 
 	enum DocType {

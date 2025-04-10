@@ -73,8 +73,12 @@ export default function Monthly() {
 	const currentYear = new Date().getFullYear();
 	const currentMonth = new Date().getMonth() + 1;
 	const [data, setData] = useState<Document[]>([]);
-	const [fetchDocuments, { loading, error, refetch }] =
-		useLazyQuery(READ_DOCUMENTS_QUERY);
+	const [fetchDocuments, { loading, error, refetch }] = useLazyQuery(
+		READ_DOCUMENTS_QUERY,
+		{
+			fetchPolicy: "no-cache",
+		}
+	);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
