@@ -250,7 +250,7 @@ export const READ_SCHOLAR_DOCUMENTS_QUERY = gql`
 
 export const READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY = gql`
 	${documentFragment}
-	${studentsFragment}
+
 	query Documents(
 		$year: Int
 		$scholarId: String!
@@ -270,9 +270,6 @@ export const READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY = gql`
 			month: $month
 		) {
 			...DocumentFragment
-		}
-		scholar: student(id: $scholarId) {
-			...StudentFragment
 		}
 	}
 `;

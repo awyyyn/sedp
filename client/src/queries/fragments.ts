@@ -44,6 +44,7 @@ export const studentsFragment = gql`
 		mfaEnabled
 		birthDate
 		yearLevel
+		semester
 		schoolName
 		course
 		statusUpdatedAt

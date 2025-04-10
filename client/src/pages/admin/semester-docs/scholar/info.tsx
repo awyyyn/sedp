@@ -13,13 +13,32 @@ import { useQuery } from "@apollo/client";
 
 import { DocumentTable, PreviewModal } from "@/components";
 import { Document, Student } from "@/types";
-import { READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY } from "@/queries";
+import {
+	READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY,
+	READ_STUDENT_QUERY,
+} from "@/queries";
 import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
-const getYears = (yearStarted: number) => {
+const getYears = (yearStarted: number, yearLevelJoined: number) => {
 	const years = [];
 
-	for (let i = yearStarted; i <= yearStarted + 4; i++) {
-		years.push(i);
+	let plusYear = 0;
+	let yearLevel = yearLevelJoined;
+
+	if (yearLevelJoined === 1) {
+		plusYear = 4;
+	} else if (yearLevelJoined === 2) {
+		plusYear = 3;
+	} else if (yearLevelJoined === 3) {
+		plusYear = 2;
+	} else if (yearLevelJoined === 4) {
+		plusYear = 1;
+	} else if (yearLevelJoined === 5) {
+		plusYear = 0;
+	}
+
+	for (let i = yearStarted; i <= yearStarted + plusYear; i++) {
+		years.push(`${i}-${yearLevel}`);
+		yearLevel++;
 	}
 
 	return years;
@@ -35,27 +54,42 @@ export default function StudentSemesterFiles() {
 	// 	? Number(scholar.createdAt)
 	// 	: scholar.createdAt;
 	// const year = new Date(createdAt).getFullYear();
+	const { data: studentData } = useQuery<{ student: Student }>(
+		READ_STUDENT_QUERY,
+		{
+			variables: {
+				id: scholarId,
+			},
+		}
+	);
 	const [yearFilter, setYearFilter] = useState<Selection>(
-		new Set([searchParams.get("year") || "none"])
+		new Set([
+			searchParams.get("year") ? `${searchParams.get("year")}-1` : "none",
+		])
 	);
 	const [semesterFilter, setSemesterFilter] = useState<Selection>(
 		new Set([searchParams.get("semester") || 1])
 	);
 	const { loading, data } = useQuery<{
 		documents: Document[];
-		scholar: Student;
 	}>(READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY, {
 		variables: {
 			scholarId: scholarId,
 			semester: Number(Array.from(semesterFilter)[0]),
-			schoolYear: !isNaN(Number(Array.from(yearFilter)[0]))
+			schoolYear: !isNaN(
+				Number(String(Array.from(yearFilter)[0]).split("-")[0])
+			)
 				? `${Number(Array.from(yearFilter)[0])}-${Number(Array.from(yearFilter)[0]) + 1}`
 				: null,
 			monthlyDocument: false,
 		},
 	});
+
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
+	const [selectedYear, setSelectedYear] = useState<string | null>(null);
+
+	if (!studentData?.student) return;
 
 	// useEffect(() => {
 	// 	if (!error) {
@@ -70,11 +104,7 @@ export default function StudentSemesterFiles() {
 	// 	}
 	// }, [yearFilter, semesterFilter]);
 
-	if (!data?.scholar) {
-		return null;
-	}
-
-	const scholar = data?.scholar;
+	const scholar = studentData.student;
 
 	const yearStarted = new Date(
 		!isNaN(Number(scholar.createdAt))
@@ -82,10 +112,12 @@ export default function StudentSemesterFiles() {
 			: scholar.createdAt
 	).getFullYear();
 
-	const years = getYears(yearStarted);
+	const years = getYears(yearStarted, studentData.student.yearLevelJoined);
 
-	const selectedMonth = Number(Array.from(semesterFilter)[0]);
+	const selectedSemester = Number(Array.from(semesterFilter)[0]);
 	// const selectedYear = Number(Array.from(yearFilter)[0]);
+
+	console.log(selectedSemester, "qqq", scholar.semester);
 
 	return (
 		<div className="container mx-auto  py-5">
@@ -101,25 +133,6 @@ export default function StudentSemesterFiles() {
 					</p>
 				</div>
 				<div className=" w-full md:w-auto py-4 md:py-0 flex gap-2 items-center">
-					{/* {data?.allowance ? (
-						<Button onPress={() => setViewAllowanceModal(true)}>
-							View
-							<span className="hidden md:block">Allowance</span>
-						</Button>
-					) : (
-						checkIfPreviousMonth(selectedMonth, selectedYear) && (
-							<>
-								<Button
-									className="bg-[#A6F3B2]"
-									isDisabled={!Documents.includes(role!)}
-									onPress={() => setGenerateModal(true)}>
-									Generate
-									<span className="hidden md:block">Allowance</span>
-								</Button>
-							</>
-						)
-					)} */}
-
 					<Dropdown
 						classNames={{
 							content: "bg-[#A6F3B2]",
@@ -145,7 +158,15 @@ export default function StudentSemesterFiles() {
 							// 	if (!year) return;
 							// 	setYearFilter(Number(year.currentKey));
 							// }}
-							onSelectionChange={setYearFilter}
+							onSelectionChange={(key) => {
+								if (!key) return;
+
+								const keyString = Array.from(key)[0].toString().split("-")[0];
+								const keySet = new Set([keyString]);
+
+								setSelectedYear(Array.from(key)[0].toString().split("-")[1]);
+								setYearFilter(keySet);
+							}}
 							selectedKeys={yearFilter}
 							aria-label="Year Filter"
 							selectionMode="single">
@@ -153,7 +174,8 @@ export default function StudentSemesterFiles() {
 								<DropdownItem
 									key={year}
 									className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
-									{year} - {year + 1}
+									{Number(year.split("-")[0])} -{" "}
+									{Number(year.split("-")[0]) + 1}
 								</DropdownItem>
 							))}
 						</DropdownMenu>
@@ -173,7 +195,7 @@ export default function StudentSemesterFiles() {
 								}
 								size="md"
 								variant="flat">
-								{semester[selectedMonth - 1]}
+								{semester[selectedSemester - 1]}
 							</Button>
 						</DropdownTrigger>
 						<DropdownMenu
@@ -219,7 +241,7 @@ export default function StudentSemesterFiles() {
 						type={
 							imagesExtensions.includes(getFileExtension(toPreview) || "png")
 								? `image`
-								: "document"
+								: `document`
 						}
 						isOpen={previewModal}
 						onOpenChange={onPreviewModalChange}
@@ -227,14 +249,22 @@ export default function StudentSemesterFiles() {
 				)}
 			</div>
 
-			{/* {data?.allowance && viewAllowanceModal && (
-				<ViewAllowanceModal
-					allowance={data.allowance}
-					isOpen={viewAllowanceModal}
-					onOpenChange={setViewAllowanceModal}
-					student={scholar}
-				/>
-			)} */}
+			{selectedYear}
+
+			{!isNaN(Number(Array.from(yearFilter)[0])) &&
+				(Number(selectedYear) > scholar.yearLevel ||
+					(Number(selectedYear) === scholar.yearLevel &&
+						selectedSemester > scholar.semester)) &&
+				(data?.documents.length || 0) > 0 && (
+					<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
+						<Button
+							fullWidth
+							className="text-white md:ml-auto md:max-w-[300px]"
+							color="success">
+							Edit Scholar
+						</Button>
+					</div>
+				)}
 		</div>
 	);
 }
