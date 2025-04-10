@@ -169,11 +169,13 @@ export default function SemesterDocumentForm({
 							classNames={{
 								value: "capitalize",
 							}}>
-							{["NARRATIVE_REPORT", "OSAS", "COR", "COG"].map((option) => (
-								<SelectItem key={option} className="capitalize">
-									{option.split("_").join(" ").toLowerCase()}
-								</SelectItem>
-							))}
+							{["NARRATIVE_REPORT", "ACKNOWLEDGEMENT", "COR", "COG"].map(
+								(option) => (
+									<SelectItem key={option} className="uppercase">
+										{option === "COR" ? "COR/COE" : option.split("_").join(" ")}
+									</SelectItem>
+								)
+							)}
 						</Select>
 					</div>
 				</div>

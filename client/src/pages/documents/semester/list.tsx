@@ -86,7 +86,9 @@ export default function Semester() {
 	const { studentUser } = useAuth();
 	const [activeFileId, setActiveFileId] = useState<string>();
 	const [data, setData] = useState<Document[]>([]);
-	const [fetchDocuments, { loading }] = useLazyQuery(READ_DOCUMENTS_QUERY);
+	const [fetchDocuments, { loading }] = useLazyQuery(READ_DOCUMENTS_QUERY, {
+		fetchPolicy: "no-cache",
+	});
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
 	const [sendNotification, { loading: sendingNotif }] = useMutation(
@@ -113,7 +115,7 @@ export default function Semester() {
 			await sendNotification({
 				variables: {
 					type: "SEMESTER_DOCUMENT",
-					link: `/admin/semester-submissions/${studentUser?.id!}?year=${activeFileId!.split("-")[1]}&semester=${Number(activeFileId!.split("-")[2])}`,
+					link: `/admin/semester-submissions/${studentUser?.id!}?year=${activeFileId!.split("-")[1]}&semester=${Number(activeFileId!.split("-")[2])}&yearLevel=${activeFileId!.split("-")[0]}`,
 					message: "A scholar has submitted documents for review.",
 					title: "Document Review Request",
 					role: "ADMIN_MANAGE_DOCUMENTS" as SystemUserRole,
@@ -217,7 +219,7 @@ export default function Semester() {
 													to="upload"
 													color="primary"
 													state={{
-														semester: activeFileId.split("-")[0],
+														semester: activeFileId.split("-")[2],
 														year: activeFileId.split("-")[1],
 													}}>
 													Upload Document
