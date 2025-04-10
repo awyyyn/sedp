@@ -174,6 +174,13 @@ export const typeDefs = gql`
 			title: String!
 			role: SystemUserRole!
 		): AdminNotification
+		createScholarNotification(
+			type: ScholarNotificationType!
+			link: String!
+			message: String!
+			title: String!
+			receiverId: String!
+		): ScholarNotification
 		updateStudentNotification(notificationId: ID): Boolean
 		# updateAllStudentNotification: [ScholarNotification]
 

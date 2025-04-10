@@ -428,3 +428,29 @@ export const READ_ADMIN_NOTIFICATION_MUTATION = gql`
 		}
 	}
 `;
+
+export const CREATE_SCHOLAR_NOTIFICATION_MUTATION = gql`
+	mutation (
+		$type: ScholarNotificationType!
+		$link: String!
+		$message: String!
+		$title: String!
+		$receiverId: String!
+	) {
+		notification: createScholarNotification(
+			type: $type
+			link: $link
+			message: $message
+			title: $title
+			receiverId: $receiverId
+		) {
+			id
+			read
+			message
+			title
+			type
+			link
+			createdAt
+		}
+	}
+`;
