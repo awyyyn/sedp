@@ -1,5 +1,7 @@
-import { verifyToken } from "../services/index.js";
+import { prisma, verifyToken } from "../services/index.js";
 import { NextFunction, Request, Response } from "express";
+import { GraphQLError } from "graphql";
+import { AppContext } from "../types/index.js";
 
 export const authMiddleware = async (
 	req: Request,
@@ -8,14 +10,38 @@ export const authMiddleware = async (
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		res.status(401).json({ error: { message: "Unauthorized" } });
+		return;
 	}
 
-	// Verify token
-	const isValid = verifyToken(token);
-	if (!isValid) {
-		return res.status(401).json({ message: "Unauthorized" });
+	const data = verifyToken(token);
+
+	if (!data) {
+		res.status(401).json({ error: { message: "Unauthorized" } });
+		return;
 	}
+
+	req.body = { ...req.body, ...data };
 
 	next();
+};
+
+export const contextMiddleware = async ({
+	req,
+}: {
+	req: Request;
+}): Promise<AppContext> => {
+	const token = req.headers.authorization?.split(" ")[1];
+
+	if (!token) {
+		throw new GraphQLError("UnAuthorized");
+	}
+
+	const data = verifyToken(token);
+
+	if (!data) {
+		throw new GraphQLError("UnAuthorized");
+	}
+
+	return { id: data.id, email: data.email, prisma, role: data.role };
 };

@@ -1,2 +1,2 @@
 server/dist/
-server/dist/app.js
+client/.env

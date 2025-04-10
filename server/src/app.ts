@@ -2,33 +2,86 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express, { Request } from "express";
+import express from "express";
 import http from "http";
 import cors from "cors";
 import { typeDefs, resolvers } from "./graphql/index.js";
 import dotenv from "dotenv";
+import { routes } from "./routes/index.js";
+import { environment } from "./environments/environment.js";
+import { GraphQLError } from "graphql";
+import { verifyToken } from "./services/jwt.js";
+import { AppContext } from "./types/index.js";
+import { prisma } from "./services/prisma.js";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
 
-interface MyContext {
-	token?: string;
-}
+import { useServer } from "graphql-ws/lib/use/ws";
 
 // Initialize an app and an httpServer
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
 
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+// WebSocket server
+const wsServer = new WebSocketServer({
+	server: httpServer,
+	path: "/graphql",
+});
+
+// Server Cleanup
+const serverCleanup = useServer({ schema }, wsServer as any);
+
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-const server = new ApolloServer<MyContext>({
-	typeDefs,
-	resolvers,
-	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+// Set up ApolloServer.
+const server = new ApolloServer({
+	schema,
+	plugins: [
+		ApolloServerPluginDrainHttpServer({ httpServer }),
+		{
+			async serverWillStart() {
+				return {
+					async drainServer() {
+						await serverCleanup.dispose();
+					},
+				};
+			},
+		},
+	],
 });
 
 // Health check endpoint
 app.get("/healthz", (_, res) => {
 	res.send("ok");
 });
+
+// Middlewares
+
+app.use(
+	cors<cors.CorsRequest>({
+		// origin: environment.CLIENT_URL,/
+		methods: ["GET", "POST", "PATCH", "PUT"],
+		origin: function (origin, callback) {
+			if (
+				origin === environment.CLIENT_URL ||
+				!origin ||
+				origin == "http://localhost:4444"
+			) {
+				callback(null, true);
+			} else {
+				callback(new Error("Not allowed by CORS"));
+			}
+		},
+		allowedHeaders: ["Content-Type", "Authorization"],
+	})
+);
+app.use(express.json());
+
+// REST endpoints
+app.use("/api", routes);
 
 // Ensure we wait for our server to start
 (async () => {
@@ -37,20 +90,38 @@ app.get("/healthz", (_, res) => {
 	// GraphQL endpoint
 	app.use(
 		"/graphql",
-		cors<cors.CorsRequest>(),
-		express.json(),
 		// @ts-ignore
 		expressMiddleware(server, {
-			context: async ({ req }) => {
-				console.log(req.headers);
-				return { token: req.headers.token };
+			context: async ({ req }): Promise<AppContext> => {
+				const token = req.headers.authorization?.split(" ")[1];
+
+				if (!token) {
+					throw new GraphQLError("UnAuthorized");
+				}
+
+				const data = verifyToken(token);
+
+				if (!data) {
+					throw new GraphQLError("UnAuthorized");
+				}
+
+				return {
+					id: data.id,
+					email: data.email,
+					role: data.role,
+					prisma: prisma,
+				};
 			},
 		})
 	);
 
 	// Modified server startup
-	await new Promise<void>((resolve) =>
-		httpServer.listen({ port: 4000 }, resolve)
-	);
-	console.log(`🚀 Server ready at http://localhost:4000/`);
+	// await new Promise<void>((resolve) =>
+	// 	httpServer.listen({ port: environment.PORT }, resolve)
+	// );
+	// console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
 })();
+
+httpServer.listen({ port: Number(environment.PORT) }, () => {
+	console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
+});

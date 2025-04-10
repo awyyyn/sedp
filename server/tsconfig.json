@@ -11,7 +11,14 @@
 		"removeComments": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+
+		"skipLibCheck": true,
+
+		/* Linting */
 		"strict": true,
-		"skipLibCheck": true
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
 	}
 }

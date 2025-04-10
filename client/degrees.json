@@ -1,0 +1,85 @@
+[
+	{
+		"category": "Bachelor of Science (BS)",
+		"programs": [
+			"BS in Accountancy",
+			"BS in Accounting Technology",
+			"BS in Agriculture",
+			"BS in Architecture",
+			"BS in Biology",
+			"BS in Business Administration",
+			"BS in Chemical Engineering",
+			"BS in Chemistry",
+			"BS in Civil Engineering",
+			"BS in Computer Engineering",
+			"BS in Computer Science",
+			"BS in Criminology",
+			"BS in Electrical Engineering",
+			"BS in Electronics and Communications Engineering",
+			"BS in Environmental Science",
+			"BS in Fisheries",
+			"BS in Food Technology",
+			"BS in Forestry",
+			"BS in Hospitality Management",
+			"BS in Industrial Engineering",
+			"BS in Information Systems",
+			"BS in Information Technology",
+			"BS in Marine Engineering",
+			"BS in Marine Transportation",
+			"BS in Mathematics",
+			"BS in Mechanical Engineering",
+			"BS in Medical Technology",
+			"BS in Mining Engineering",
+			"BS in Nursing",
+			"BS in Nutrition and Dietetics",
+			"BS in Pharmacy",
+			"BS in Physical Therapy",
+			"BS in Physics",
+			"BS in Psychology",
+			"BS in Radiologic Technology",
+			"BS in Real Estate Management",
+			"BS in Tourism Management"
+		]
+	},
+	{
+		"category": "Bachelor of Arts (BA)",
+		"programs": [
+			"BA in Broadcasting",
+			"BA in Communication",
+			"BA in Economics",
+			"BA in English",
+			"BA in Filipino",
+			"BA in History",
+			"BA in International Studies",
+			"BA in Journalism",
+			"BA in Literature",
+			"BA in Mass Communication",
+			"BA in Philosophy",
+			"BA in Political Science",
+			"BA in Psychology",
+			"BA in Sociology"
+		]
+	},
+	{
+		"category": "Education Degrees",
+		"programs": [
+			"Bachelor of Elementary Education (BEEd)",
+			"Bachelor of Secondary Education (BSEd)",
+			"Bachelor of Physical Education (BPE)",
+			"Bachelor of Early Childhood Education (BECEd)",
+			"Bachelor of Special Needs Education (BSNEd)"
+		]
+	},
+	{
+		"category": "Other Bachelor's Degrees",
+		"programs": [
+			"Bachelor of Fine Arts (BFA)",
+			"Bachelor of Music (BMus)",
+			"Bachelor of Library and Information Science (BLIS)",
+			"Bachelor of Public Administration (BPA)",
+			"Bachelor of Laws (LLB)",
+			"Bachelor of Science in Public Health (BSPH)",
+			"Bachelor of Science in Social Work (BSSW)"
+		]
+	}
+]

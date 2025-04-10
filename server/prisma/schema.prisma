@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -13,46 +8,290 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Project {
+model SystemUser {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content String
-  techStack   String[]
-  duration    String
-  imgUrls String[]
+  email String @unique
+  firstName String
+  lastName String
+  middleName String?
+  password String
+  mfaSecret String?
+  phoneNumber String
+  birthDate DateTime
+  gender Gender
+  mfaEnabled Boolean @default(false) 
+  address address 
+  role SystemUserRole
+  status SystemUserStatus @default(UNVERIFIED)
+  verifiedAt DateTime?
 
-  repoUrl String
-  liveUrl String?
-  type String
-  tags String[]
+  transactions Transactions[]
+  announcements Announcement[] 
+
   // TimeStamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("projects")
+  @@map("system_users")
 }
+
+enum SystemUserStatus {
+  PENDING
+  VERIFIED
+  UNVERIFIED
+  DELETED
+}
+
+enum SystemUserRole {
+  SUPER_ADMIN
+  ADMIN_MANAGE_SCHOLAR
+  ADMIN_MANAGE_GATHERINGS
+  ADMIN_MANAGE_DOCUMENTS
+  ADMIN_VIEWER
+}
+
+model Student {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  email String @unique
+  firstName String
+  lastName String 
+  middleName String?
+  address address
+  password String
+  gender Gender
+  birthDate DateTime
+  phoneNumber String
+  status StudentStatus @default(SCHOLAR)
+  semester Int @default(1)
+
+  allowance Allowance[]
+  notifications ScholarNotification[]
+
+  mfaSecret String?
+  mfaEnabled Boolean @default(false) 
+
+  yearLevel Int 
+  yearLevelJoined Int? @default(1)
+  schoolName String 
+  course String @default("") 
+
+  statusUpdatedAt DateTime? 
+
+  documents Document[]
+
+  // TimeStamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+type address {
+  street String
+  city String 
+}
+
+enum StudentStatus {
+  REQUESTING
+  SCHOLAR
+  GRADUATED
+  DISQUALIFIED
+  ARCHIVED
+}
+
+ 
+model token {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  token String
+  time  DateTime  
+
+  @@map("tokens")
+}
+
+enum documentTypeEnum {
+  photo
+  document
+}
+
  
 
-model Technology {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model Events {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
 
-  imgUrl String
-  name   String @unique
-  skill Int
-  category Category
+  title String
+  description String
+  startTime String
+  endTime String
+  location String
+  startDate String
+  endDate String
 
-  // TimeStamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("technologies")
+  createdAt DateTime@default(now())
+  @@map("events")
 }
 
-enum Category {
-  FRONTEND
-	BACKEND
-	DATABASE
-	DEVOPS
-	DESIGN
-	OTHER
+model Announcement {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  content String
+  createdBy SystemUser   @relation(references: [id], fields: [createdById])
+  createdById String @db.ObjectId 
+
+  createdAt DateTime @default(now())
+
+  @@map("announcements")
+}
+
+model Meeting {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  description String
+
+  startTime String
+  endTime String
+  location String
+  date String
+
+  createdAt DateTime @default(now())
+
+  @@map("meetings")
+}
+
+
+model Transactions {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  transaction String
+  transactionId String @db.ObjectId
+
+  userId String @db.ObjectId
+  user SystemUser @relation(references: [id], fields: [userId])
+
+  createdAt DateTime @default(now())
+}
+
+
+ 
+
+model Document {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId 
+
+  documentName String
+  documentType documentTypeEnum @default(photo)
+  documentUrl  String
+  docType DocType 
+  otherType String?
+  
+  
+  // folderId     String?  @db.ObjectId // Nullable in case the document isn't assigned to any folder
+  // folder       Folder?   @relation(fields: [folderId], references: [id]) // Relation to Folder
+
+  monthlyDocument Boolean @default(true)
+  month Int
+  year Int
+  schoolYear String
+  semester Int
+
+  studentId String @db.ObjectId
+  student Student @relation(references: [id], fields: [studentId])
+  amount Float? @default(0.0) // Nullable to allow for documents without an amount
+
+  // TimeStamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("documents")
+}
+
+
+enum DocType {
+  NARRATIVE_REPORT
+  RECEIPT
+  COR
+  COG
+  OSAS
+MISCELLANEOUS
+  OTHER
+}
+
+model Allowance {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String @db.ObjectId
+  student Student @relation(references: [id], fields: [studentId])
+
+  yearLevel Int
+  year Int
+  month Int
+  semester Int
+  monthlyAllowance Float @default(0.0)
+  miscellaneousAllowance Float @default(0.0)
+  bookAllowance Float @default(0.0) 
+  thesisAllowance Float @default(0.0)
+
+  totalAmount Float @default(0.0)
+  claimedAt DateTime?
+  claimed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+
+  @@map("allowance")
+}
+
+
+model ScholarNotification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  read Boolean @default(false)
+  message String
+  title String
+  receiverId String @db.ObjectId
+  receiver Student @relation(references: [id], fields: [receiverId])
+
+  type ScholarNotificationType
+  link String?
+
+  createdAt DateTime @default(now())
+
+  @@map("scholar_notifications")
+}
+
+enum ScholarNotificationType {
+  MEETING
+  EVENT
+  ANNOUNCEMENT
+  ALLOWANCE 
+  SYSTEM_UPDATE
+  OTHER
+}
+
+enum AdminNotificationType {
+  SEMESTER_DOCUMENT
+  MONTHLY_DOCUMENT
+  OTHER
+}
+
+model AdminNotification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  read Boolean @default(false)
+  message String
+  title String
+  role SystemUserRole
+  type AdminNotificationType
+
+  readerIds String[] @db.ObjectId
+
+  link String?
+
+  createdAt DateTime @default(now())
+
+  @@map("admin_notifications")
 }
