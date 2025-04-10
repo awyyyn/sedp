@@ -131,6 +131,7 @@ export const createStudentNotification = async (
 					id: data.receiverId,
 				},
 			},
+
 			link: data.link || null,
 			type: data.type,
 		},

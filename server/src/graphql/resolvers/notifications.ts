@@ -86,17 +86,22 @@ export const readAdminNotificationResolver = async (
 
 export const createStudentNotificationResolver = async (
 	_: never,
-	data: Omit<ScholarNotification, "id" | "createdAt" | "read" | "receiverId">,
-	app: AppContext
+	data: Omit<ScholarNotification, "id" | "createdAt" | "read">
 ) => {
 	try {
-		return await createStudentNotification({
+		const notification = await createStudentNotification({
 			link: data.link,
 			message: data.message,
-			receiverId: app.id,
+			receiverId: data.receiverId,
 			title: data.title,
 			type: data.type,
 		});
+
+		pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
+			scholarNotificationSent: notification,
+		});
+
+		return notification;
 	} catch (err) {
 		console.log(err);
 		throw new GraphQLError("Internal Server Error!");

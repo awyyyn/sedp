@@ -27,6 +27,7 @@ import degrees from "../../../../../../degrees.json";
 import { Student } from "@/types";
 import { semester as semesterArray, yearLevels } from "@/lib/constant";
 import {
+	CREATE_SCHOLAR_NOTIFICATION_MUTATION,
 	READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY,
 	READ_STUDENT_QUERY,
 	UPDATE_STUDENT_MUTATION,
@@ -63,6 +64,7 @@ export default function EditModal({
 	});
 
 	const [updateStudent] = useMutation(UPDATE_STUDENT_MUTATION);
+	const [sendNotif] = useMutation(CREATE_SCHOLAR_NOTIFICATION_MUTATION);
 
 	const handleUpdate = async () => {
 		try {
@@ -86,6 +88,17 @@ export default function EditModal({
 					READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY,
 					READ_STUDENT_QUERY,
 				],
+			});
+			await sendNotif({
+				variables: {
+					title: "Scholar Academic Record Update",
+					type: "OTHER",
+					// link: `/scholar/semester-documents/${scholar.id}?year=${yearLevel}&semester=${semester}`,
+					link: "#",
+					message:
+						"Your academic records have been formally updated in accordance with the qualification standards.",
+					receiverId: scholar.id,
+				},
 			});
 
 			onClose();
