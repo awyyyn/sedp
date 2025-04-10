@@ -55,6 +55,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 		$mfaEnabled: Boolean
 		$yearLevel: Int
 		$schoolName: String
+		$semester: Int
 		$gender: Gender
 		$course: String
 	) {
@@ -72,6 +73,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 			status: $status
 			mfaSecret: $mfaSecret
 			mfaEnabled: $mfaEnabled
+			semester: $semester
 			yearLevel: $yearLevel
 			schoolName: $schoolName
 			gender: $gender
