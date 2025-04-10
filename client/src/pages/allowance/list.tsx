@@ -11,12 +11,30 @@ import { Allowance, FileTreeItem, PaginationResult } from "@/types";
 import { PreviewModal, FileTree, MonthsTable } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
-export const generateFolders = (date: string): FileTreeItem[] => {
+export const generateFolders = (
+	date: string,
+	yearLevelJoined: number
+): FileTreeItem[] => {
 	const selectedYear = new Date(date).getFullYear();
 	const currentYear = new Date().getFullYear();
 	const items: FileTreeItem[] = [];
 
-	for (let year = selectedYear; year < selectedYear + 5; year++) {
+	let plusYear = 0;
+	let yearLevel = yearLevelJoined;
+
+	if (yearLevel === 1) {
+		plusYear = 5;
+	} else if (yearLevel === 2) {
+		plusYear = 4;
+	} else if (yearLevel === 3) {
+		plusYear = 3;
+	} else if (yearLevel === 4) {
+		plusYear = 2;
+	} else if (yearLevel === 5) {
+		plusYear = 1;
+	}
+
+	for (let year = selectedYear; year < selectedYear + plusYear; year++) {
 		items.push({
 			id: year.toString(),
 			name: `${year}`,
@@ -79,7 +97,8 @@ export default function MyAllowanceList() {
 							activeFileId={activeFileId}
 							onFileSelect={handleFileSelect}
 							items={generateFolders(
-								studentUser?.createdAt || new Date().toISOString()
+								studentUser?.createdAt || new Date().toISOString(),
+								studentUser?.yearLevelJoined!
 							)}
 						/>
 					</div>

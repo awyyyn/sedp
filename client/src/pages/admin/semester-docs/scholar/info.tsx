@@ -11,6 +11,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
 
+import EditModal from "./_components/edit-modal";
+
 import { DocumentTable, PreviewModal } from "@/components";
 import { Document, Student } from "@/types";
 import {
@@ -18,6 +20,8 @@ import {
 	READ_STUDENT_QUERY,
 } from "@/queries";
 import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
+import { formatDate } from "@/lib/utils";
+
 const getYears = (yearStarted: number, yearLevelJoined: number) => {
 	const years = [];
 
@@ -63,9 +67,7 @@ export default function StudentSemesterFiles() {
 		}
 	);
 	const [yearFilter, setYearFilter] = useState<Selection>(
-		new Set([
-			searchParams.get("year") ? `${searchParams.get("year")}-1` : "none",
-		])
+		new Set([searchParams.get("year") ? `${searchParams.get("year")}` : "none"])
 	);
 	const [semesterFilter, setSemesterFilter] = useState<Selection>(
 		new Set([searchParams.get("semester") || 1])
@@ -87,7 +89,9 @@ export default function StudentSemesterFiles() {
 
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
-	const [selectedYear, setSelectedYear] = useState<string | null>(null);
+	const [selectedYear, setSelectedYear] = useState<string | null>(
+		searchParams.get("yearLevel") ? `${searchParams.get("yearLevel")}` : null
+	);
 
 	if (!studentData?.student) return;
 
@@ -106,6 +110,14 @@ export default function StudentSemesterFiles() {
 
 	const scholar = studentData.student;
 
+	console.log(
+		Number(Array.from(yearFilter)[0].toString()) +
+			Number(scholar.yearLevelJoined) -
+			new Date(formatDate(scholar.createdAt)).getFullYear(),
+		new Date(formatDate(scholar.createdAt)).getFullYear(),
+		"qqq"
+	);
+
 	const yearStarted = new Date(
 		!isNaN(Number(scholar.createdAt))
 			? Number(scholar.createdAt)
@@ -116,8 +128,6 @@ export default function StudentSemesterFiles() {
 
 	const selectedSemester = Number(Array.from(semesterFilter)[0]);
 	// const selectedYear = Number(Array.from(yearFilter)[0]);
-
-	console.log(selectedSemester, "qqq", scholar.semester);
 
 	return (
 		<div className="container mx-auto  py-5">
@@ -249,20 +259,17 @@ export default function StudentSemesterFiles() {
 				)}
 			</div>
 
-			{selectedYear}
-
 			{!isNaN(Number(Array.from(yearFilter)[0])) &&
 				(Number(selectedYear) > scholar.yearLevel ||
 					(Number(selectedYear) === scholar.yearLevel &&
 						selectedSemester > scholar.semester)) &&
 				(data?.documents.length || 0) > 0 && (
 					<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
-						<Button
-							fullWidth
-							className="text-white md:ml-auto md:max-w-[300px]"
-							color="success">
-							Edit Scholar
-						</Button>
+						<EditModal
+							scholar={scholar}
+							semester={selectedSemester}
+							yearLevel={Number(selectedYear)}
+						/>
 					</div>
 				)}
 		</div>
