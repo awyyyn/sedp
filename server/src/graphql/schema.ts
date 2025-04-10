@@ -199,7 +199,7 @@ export const typeDefs = gql`
 		RECEIPT
 		COR
 		COG
-		OSAS
+		ACKNOWLEDGEMENT
 		MISCELLANEOUS
 		OTHER
 	}

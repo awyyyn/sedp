@@ -29,5 +29,5 @@ export type DocType =
 	| "RECEIPT"
 	| "COR"
 	| "COG"
-	| "OSAS"
+	| "ACKNOWLEDGEMENT"
 	| "OTHER";
