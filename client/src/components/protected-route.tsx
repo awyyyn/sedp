@@ -1,5 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 
+import { Loader } from "./loader";
+
 import { ROLE, useAuth } from "@/contexts";
 
 interface ProtectedRouteProps {
@@ -9,7 +11,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
 	const { isAuthenticated, role, loading } = useAuth();
 
-	if (loading) return <div>Loading...</div>;
+	if (loading) return <Loader />;
 
 	if (!isAuthenticated) return <Navigate to="/login" />;
 
