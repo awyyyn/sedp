@@ -20,7 +20,6 @@ import {
 	READ_STUDENT_QUERY,
 } from "@/queries";
 import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
-import { formatDate } from "@/lib/utils";
 
 const getYears = (yearStarted: number, yearLevelJoined: number) => {
 	const years = [];

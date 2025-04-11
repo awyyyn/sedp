@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as yup from "yup";
 import { useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
@@ -9,10 +9,10 @@ import { InputOtp } from "@heroui/input-otp";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
+import { useSetAtom } from "jotai";
 
 import { useAuth } from "@/contexts";
 import { verifyTOTPMutation } from "@/queries";
-import { useSetAtom } from "jotai";
 import { scholarNotificationAtom } from "@/states";
 
 const validationSchema = yup.object({
