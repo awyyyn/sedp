@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
+import { useMutation, useQuery } from "@apollo/client";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { FileTree } from "../../../components/file-tree";
+import ErrorFetching from "../__components/error-fetch";
 
 import { useAuth } from "@/contexts";
 import { Document, FileTreeItem, SystemUserRole } from "@/types";
@@ -84,9 +85,24 @@ function showUploadButton(
 
 export default function Semester() {
 	const { studentUser } = useAuth();
-	const [activeFileId, setActiveFileId] = useState<string>();
-	const [data, setData] = useState<Document[]>([]);
-	const [fetchDocuments, { loading }] = useLazyQuery(READ_DOCUMENTS_QUERY);
+	const [searchParams] = useSearchParams();
+	const defaultActiveField = searchParams.get("active") || "";
+	const [activeFileId, setActiveFileId] = useState<string>(defaultActiveField);
+	// const [data, setData] = useState<Document[]>([]);
+	// const [fetchDocuments, { loading }] = useLazyQuery(READ_DOCUMENTS_QUERY, {
+	// 	fetchPolicy: "no-cache",
+	// });
+	const { loading, refetch, error, data } = useQuery<{ documents: Document[] }>(
+		READ_DOCUMENTS_QUERY,
+		{
+			fetchPolicy: "no-cache",
+			variables: {
+				monthlyDocument: false,
+				semester: Number(activeFileId.split("-")[2]),
+				schoolYear: `${activeFileId.split("-")[1]}-${Number(activeFileId.split("-")[1]) + 1}`,
+			},
+		}
+	);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
 	const [sendNotification, { loading: sendingNotif }] = useMutation(
@@ -96,16 +112,6 @@ export default function Semester() {
 
 	const handleFileSelect = async (fileId: string) => {
 		setActiveFileId(fileId);
-
-		const { data } = await fetchDocuments({
-			variables: {
-				monthlyDocument: false,
-				semester: Number(fileId.split("-")[2]),
-				schoolYear: `${fileId.split("-")[1]}-${Number(fileId.split("-")[1]) + 1}`,
-			},
-		});
-
-		setData(data.documents || []);
 	};
 
 	const handleSendNotification = async () => {
@@ -113,7 +119,7 @@ export default function Semester() {
 			await sendNotification({
 				variables: {
 					type: "SEMESTER_DOCUMENT",
-					link: `/admin/semester-submissions/${studentUser?.id!}?year=${activeFileId!.split("-")[1]}&semester=${Number(activeFileId!.split("-")[2])}`,
+					link: `/admin/semester-submissions/${studentUser?.id!}?year=${activeFileId!.split("-")[1]}&semester=${Number(activeFileId!.split("-")[2])}&yearLevel=${activeFileId!.split("-")[0]}`,
 					message: "A scholar has submitted documents for review.",
 					title: "Document Review Request",
 					role: "ADMIN_MANAGE_DOCUMENTS" as SystemUserRole,
@@ -135,6 +141,16 @@ export default function Semester() {
 		}
 	};
 
+	const handleRefetch = async () => {
+		await refetch({
+			variables: {
+				monthlyDocument: false,
+				semester: Number(activeFileId.split("-")[2]),
+				schoolYear: `${activeFileId.split("-")[1]}-${Number(activeFileId.split("-")[1]) + 1}`,
+			},
+		});
+	};
+
 	return (
 		<>
 			<div className="px-5 container mx-auto md:px-0">
@@ -147,7 +163,7 @@ export default function Semester() {
 
 				<div className=" mt-5 relative">
 					<div className="md:absolute relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
-						<h1>School Year </h1>
+						<h1>School Year {activeFileId}</h1>
 						<p className="text-sm mb-2 text-gray-500">
 							Select a semester to view documents.{" "}
 							{activeFileId && semester[Number(activeFileId.split("-")[1]) - 1]}
@@ -169,10 +185,8 @@ export default function Semester() {
 									Select a folder.
 								</p>
 							</div>
-						) : loading ? (
-							<div className="text-2xl font-semibold text-gray-500">
-								Loading documents...
-							</div>
+						) : error ? (
+							<ErrorFetching handleRefetch={handleRefetch} />
 						) : (
 							<>
 								<div className="sticky p-2 flex justify-between md:p-4 top-0 left-0 w-full h-full bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
@@ -186,6 +200,7 @@ export default function Semester() {
 										<Button
 											className=""
 											isIconOnly
+											onPress={handleRefetch}
 											variant="light"
 											radius="full">
 											<Icon
@@ -195,30 +210,32 @@ export default function Semester() {
 												height="24"
 											/>
 										</Button>
-
 										{showUploadButton(
 											activeFileId,
 											studentUser?.yearLevel!,
 											studentUser?.semester!
 										) && (
 											<>
-												{data.length > 0 && !sentNotification && (
-													<Button
-														isLoading={sendingNotif}
-														color="success"
-														className="text-white"
-														onPress={handleSendNotification}>
-														Send Notification to Admin
-													</Button>
-												)}
+												{data?.documents &&
+													data.documents.length > 0 &&
+													!sentNotification && (
+														<Button
+															isLoading={sendingNotif}
+															color="success"
+															className="text-white"
+															onPress={handleSendNotification}>
+															Send Notification to Admin
+														</Button>
+													)}
 												<Button
 													isDisabled={sendingNotif}
 													as={Link}
 													to="upload"
 													color="primary"
 													state={{
-														semester: activeFileId.split("-")[0],
+														semester: activeFileId.split("-")[2],
 														year: activeFileId.split("-")[1],
+														yearLevel: activeFileId.split("-")[0],
 													}}>
 													Upload Document
 												</Button>
@@ -232,7 +249,8 @@ export default function Semester() {
 											onPreviewModalChange(true);
 											setToPreview(url);
 										}}
-										data={data || []}
+										isLoading={loading}
+										data={data?.documents || []}
 										// isLoading={loading || isLoading}
 									/>
 								</div>

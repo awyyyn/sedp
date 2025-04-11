@@ -6,16 +6,15 @@ import {
 	DropdownItem,
 } from "@heroui/dropdown";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Link } from "@heroui/link";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react";
 import { useLocation } from "react-router-dom";
+import { useAtomValue } from "jotai";
 
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { useAuth } from "@/contexts";
 import { roles } from "@/lib/constant";
-import { useAtomValue } from "jotai";
 import { systemUserAtom } from "@/states";
 
 const defaultLinks = [
@@ -98,17 +97,18 @@ export function AppSidebar() {
 		}
 
 		return links.map((link) => (
-			<MenuItem
-				key={link.path}
-				component={<Link to={`/admin${link.path}`} as={RouterLink} />}
-				className={`${
-					pathname.includes(link.path)
-						? "bg-[#A6F3B2]  "
-						: "bg-[#A6F3B240] hover:bg-[#A6F3B2]"
-				}   mx-auto rounded-xl my-1 capitalize`}
-				icon={<Icon icon={link.icon} />}>
-				{link.path.split("/")[1].replace("-", " ")}
-			</MenuItem>
+			<RouterLink key={`${link.path}-link`} to={`/admin${link.path}`}>
+				<MenuItem
+					key={link.path}
+					className={`${
+						pathname.includes(link.path)
+							? "bg-[#A6F3B2]  "
+							: "bg-[#A6F3B240] hover:bg-[#A6F3B2]"
+					}   mx-auto rounded-xl my-1 capitalize`}
+					icon={<Icon icon={link.icon} />}>
+					{link.path.split("/")[1].replace("-", " ")}
+				</MenuItem>
+			</RouterLink>
 		));
 	}
 
@@ -134,12 +134,13 @@ export function AppSidebar() {
 						{renderLinks()}
 
 						{role === "SUPER_ADMIN" && (
-							<MenuItem
-								component={<Link to="/admin/system-users" as={RouterLink} />}
-								className={`${pathname.includes("system-users") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
-								icon={<Icon icon="fa-solid:users-cog" />}>
-								System Users
-							</MenuItem>
+							<RouterLink to="/admin/system-users">
+								<MenuItem
+									className={`${pathname.includes("system-users") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
+									icon={<Icon icon="fa-solid:users-cog" />}>
+									System Users
+								</MenuItem>
+							</RouterLink>
 						)}
 					</Menu>
 

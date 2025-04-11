@@ -55,6 +55,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 		$mfaEnabled: Boolean
 		$yearLevel: Int
 		$schoolName: String
+		$semester: Int
 		$gender: Gender
 		$course: String
 	) {
@@ -72,6 +73,7 @@ export const UPDATE_STUDENT_MUTATION = gql`
 			status: $status
 			mfaSecret: $mfaSecret
 			mfaEnabled: $mfaEnabled
+			semester: $semester
 			yearLevel: $yearLevel
 			schoolName: $schoolName
 			gender: $gender
@@ -421,6 +423,32 @@ export const READ_ADMIN_NOTIFICATION_MUTATION = gql`
 			role
 			type
 			readerIds
+			link
+			createdAt
+		}
+	}
+`;
+
+export const CREATE_SCHOLAR_NOTIFICATION_MUTATION = gql`
+	mutation (
+		$type: ScholarNotificationType!
+		$link: String!
+		$message: String!
+		$title: String!
+		$receiverId: String!
+	) {
+		notification: createScholarNotification(
+			type: $type
+			link: $link
+			message: $message
+			title: $title
+			receiverId: $receiverId
+		) {
+			id
+			read
+			message
+			title
+			type
 			link
 			createdAt
 		}

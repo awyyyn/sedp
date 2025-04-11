@@ -53,8 +53,8 @@ import AdminAccount from "@/pages/admin/account/account";
 import AdminNotifications from "@/pages/admin/notifications";
 import AdminAccountLayout from "@/pages/admin/account/layout";
 import AdminSecurity from "@/pages/admin/account/security";
-import SemesterSubmissions from "./pages/admin/semester-docs/list";
-import StudentSemesterFiles from "./pages/admin/semester-docs/scholar/info";
+import SemesterSubmissions from "@/pages/admin/semester-docs/list";
+import StudentSemesterFiles from "@/pages/admin/semester-docs/scholar/info";
 
 function App() {
 	const manageScholarRoutes = {

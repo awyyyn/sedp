@@ -174,6 +174,13 @@ export const typeDefs = gql`
 			title: String!
 			role: SystemUserRole!
 		): AdminNotification
+		createScholarNotification(
+			type: ScholarNotificationType!
+			link: String!
+			message: String!
+			title: String!
+			receiverId: String!
+		): ScholarNotification
 		updateStudentNotification(notificationId: ID): Boolean
 		# updateAllStudentNotification: [ScholarNotification]
 
@@ -192,6 +199,7 @@ export const typeDefs = gql`
 		year: Int!
 		schoolYear: String!
 		semester: Int!
+		amount: Float
 	}
 
 	enum DocType {
@@ -199,7 +207,7 @@ export const typeDefs = gql`
 		RECEIPT
 		COR
 		COG
-		OSAS
+		ACKNOWLEDGEMENT
 		MISCELLANEOUS
 		OTHER
 	}

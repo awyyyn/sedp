@@ -25,6 +25,7 @@ interface MonthlyDocumentFormProps {
 	document?: Document;
 	semester: number;
 	year: number;
+	yearLevel: number;
 }
 
 export default function SemesterDocumentForm({
@@ -32,6 +33,7 @@ export default function SemesterDocumentForm({
 	isEditing = false,
 	semester,
 	year,
+	yearLevel,
 }: MonthlyDocumentFormProps) {
 	const navigate = useNavigate();
 	const [uploadedUrls, setUploadedUrls] = useState<string[]>(
@@ -115,7 +117,7 @@ export default function SemesterDocumentForm({
 				<div className="flex gap-2 items-center">
 					<Button
 						as={Link}
-						to="/my-documents/semester"
+						to={`/my-documents/semester?active=${yearLevel}-${year}-${semester}`}
 						isIconOnly
 						className=""
 						variant="light"
@@ -169,11 +171,13 @@ export default function SemesterDocumentForm({
 							classNames={{
 								value: "capitalize",
 							}}>
-							{["NARRATIVE_REPORT", "OSAS", "COR", "COG"].map((option) => (
-								<SelectItem key={option} className="capitalize">
-									{option.split("_").join(" ").toLowerCase()}
-								</SelectItem>
-							))}
+							{["NARRATIVE_REPORT", "ACKNOWLEDGEMENT", "COR", "COG"].map(
+								(option) => (
+									<SelectItem key={option} className="uppercase">
+										{option === "COR" ? "COR/COE" : option.split("_").join(" ")}
+									</SelectItem>
+								)
+							)}
 						</Select>
 					</div>
 				</div>

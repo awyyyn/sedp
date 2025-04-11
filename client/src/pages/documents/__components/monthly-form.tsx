@@ -65,6 +65,7 @@ export default function MonthlyDocumentForm({
 					year: Number(document?.year || year),
 					schoolYear: "-1",
 					semester: -1,
+					amount: Number(values?.amount || 0),
 				};
 
 				let variables = {};
@@ -117,7 +118,7 @@ export default function MonthlyDocumentForm({
 				<div className="flex gap-2 items-center">
 					<Button
 						as={Link}
-						to="/my-documents/monthly"
+						to={`/my-documents/monthly?active=${year}-${month}`}
 						isIconOnly
 						className=""
 						variant="light"

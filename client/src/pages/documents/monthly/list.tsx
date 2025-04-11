@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { formatDate } from "date-fns";
-import { useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+
+import ErrorFetching from "../__components/error-fetch";
 
 import { READ_DOCUMENTS_QUERY } from "@/queries";
 import { useAuth } from "@/contexts";
@@ -68,30 +70,54 @@ export const generateFolders = (
 };
 
 export default function Monthly() {
+	const [searchParams] = useSearchParams();
+	const defaultActiveField = searchParams.get("active") || "";
 	const { studentUser } = useAuth();
-	const [activeFileId, setActiveFileId] = useState<string>("");
+	const [activeFileId, setActiveFileId] = useState<string>(defaultActiveField);
 	const currentYear = new Date().getFullYear();
 	const currentMonth = new Date().getMonth() + 1;
-	const [data, setData] = useState<Document[]>([]);
-	const [fetchDocuments, { loading, error, refetch }] =
-		useLazyQuery(READ_DOCUMENTS_QUERY);
+	// const [data, setData] = useState<Document[]>([]);
+	// const [fetchDocuments, { loading, error, refetch }] = useLazyQuery(
+	// 	READ_DOCUMENTS_QUERY,
+	// 	{
+	// 		fetchPolicy: "no-cache",
+	// 	}
+	// );
+	const { data, loading, error, refetch } = useQuery<{ documents: Document[] }>(
+		READ_DOCUMENTS_QUERY,
+		{
+			fetchPolicy: "no-cache",
+
+			variables: {
+				month: Number(activeFileId.split("-")[1]),
+				year: Number(activeFileId.split("-")[0]),
+			},
+		}
+	);
 	const [previewModal, onPreviewModalChange] = useState(false);
 	const [toPreview, setToPreview] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const handleFileSelect = async (fileId: string) => {
 		setActiveFileId(fileId);
-		setIsLoading(true);
+		// setIsLoading(true);
 
-		const { data } = await fetchDocuments({
+		// const { data } = await fetchDocuments({
+		// 	variables: {
+		// 		month: Number(fileId.split("-")[1]),
+		// 		year: Number(fileId.split("-")[0]),
+		// 	},
+		// });
+
+		// setIsLoading(false);
+		// setData(data.documents || []);
+	};
+	const handleRefetch = async () => {
+		await refetch({
 			variables: {
-				month: Number(fileId.split("-")[1]),
-				year: Number(fileId.split("-")[0]),
+				month: Number(activeFileId.split("-")[1]),
+				year: Number(activeFileId.split("-")[0]),
 			},
 		});
-
-		setIsLoading(false);
-		setData(data.documents || []);
 	};
 
 	return (
@@ -107,7 +133,7 @@ export default function Monthly() {
 				<div className=" mt-5 max-h-[calc(100dvh-35dvh)]   overflow-y-auto relative md:flex">
 					<div className="md:sticky overflow-auto  relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
 						<div className="sticky z-20 py-2 bg-white/5 scroll-py-32 top-0 backdrop-blur-md">
-							<h1>Folders </h1>
+							<h1>Folders</h1>
 							<p className="text-sm mb-2 text-gray-500">
 								Select a month to view documents.{" "}
 								{formatDate(new Date(`${activeFileId}-01`), "MMM yyyy	")}
@@ -129,10 +155,8 @@ export default function Monthly() {
 									Select a folder.
 								</p>
 							</div>
-						) : error ? (
-							<div className="text-2xl font-semibold text-gray-500">
-								Error fetching documents.
-							</div>
+						) : !error ? (
+							<ErrorFetching handleRefetch={handleRefetch} />
 						) : (
 							<>
 								<div className="absolute p-2 flex max-h-[80px] justify-between md:p-4 top-0 left-0 w-full  bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
@@ -142,18 +166,9 @@ export default function Monthly() {
 									</h1>
 									<div className="flex flex-col items-end md:flex-row gap-2">
 										<Button
-											className={`${loading || isLoading ? "animate-spin" : ""}`}
-											isDisabled={loading || isLoading}
-											onPress={async () => {
-												setIsLoading(true);
-												await refetch({
-													variables: {
-														month: Number(activeFileId.split("-")[1]),
-														year: Number(activeFileId.split("-")[0]),
-													},
-												});
-												setIsLoading(false);
-											}}
+											className={`${loading ? "animate-spin" : ""}`}
+											isDisabled={loading}
+											onPress={handleRefetch}
 											isIconOnly
 											variant="light"
 											radius="full">
@@ -193,8 +208,8 @@ export default function Monthly() {
 										hasActions={
 											`${currentYear}-${currentMonth}` === activeFileId
 										}
-										data={data || []}
-										isLoading={loading || isLoading}
+										data={data?.documents || []}
+										isLoading={loading}
 									/>
 								</div>
 							</>
