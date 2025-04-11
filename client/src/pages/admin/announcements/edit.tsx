@@ -8,6 +8,7 @@ import AnnouncementForm from "./__components/form";
 
 import { READ_ANNOUNCEMENT_QUERY } from "@/queries";
 import { Announcement } from "@/types";
+import { SkeletonAnnouncementCard } from "@/components";
 
 export default function EditAnnouncement() {
 	const { id } = useParams();
@@ -23,7 +24,10 @@ export default function EditAnnouncement() {
 
 	if (!id) return <Navigate to="/announcements" />;
 
-	if (loading) return <h1>Loading...</h1>;
+	if (loading)
+		return Array.from({ length: 2 }).map((_, index) => (
+			<SkeletonAnnouncementCard key={index} />
+		));
 
 	if (error) return <h1>Error fetching announcement: {error.message}</h1>;
 
