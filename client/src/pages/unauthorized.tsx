@@ -36,7 +36,7 @@ export default function Unauthorized() {
 					</h3>
 				</div>
 
-				<Button href={link} as={Link} radius="sm">
+				<Button to={link} as={Link} radius="sm">
 					Go to {buttonLabel}
 				</Button>
 			</div>

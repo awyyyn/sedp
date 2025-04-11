@@ -87,6 +87,12 @@ export default function StudentLogin() {
 								throw new Error(data.error.message);
 							}
 
+							if (data.data.user.status === "DISQUALIFIED") {
+								return navigate("/disqualify", {
+									replace: true,
+								});
+							}
+
 							if (data.data.user.mfaEnabled) {
 								setMfaEnabled(true);
 								localStorage.setItem("isLoggedIn", "false");

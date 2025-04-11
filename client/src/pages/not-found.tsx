@@ -33,7 +33,7 @@ export default function NotFound() {
 					<h3>Sorry we were unable to find that page</h3>
 				</div>
 
-				<Button href={link} as={Link} radius="sm">
+				<Button to={link} as={Link} radius="sm">
 					Go to {buttonLabel}
 				</Button>
 			</div>
