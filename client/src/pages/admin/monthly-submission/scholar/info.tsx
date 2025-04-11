@@ -104,7 +104,7 @@ export default function StudentFiles() {
 				</div>
 				<div className=" w-full md:w-auto py-4 md:py-0 flex gap-2 items-center">
 					{data?.allowance ? (
-						<Button onPress={() => setViewAllowanceModal(true)}>
+						<Button color="primary" onPress={() => setViewAllowanceModal(true)}>
 							View
 							<span className="hidden md:block">Allowance</span>
 						</Button>
@@ -112,8 +112,10 @@ export default function StudentFiles() {
 						checkIfPreviousMonth(selectedMonth, selectedYear) && (
 							<>
 								<Button
-									className="bg-[#A6F3B2]"
-									isDisabled={!Documents.includes(role!)}
+									color="primary"
+									isDisabled={
+										!Documents.includes(role!) || data?.documents.length === 0
+									}
 									onPress={() => setGenerateModal(true)}>
 									Generate
 									<span className="hidden md:block">Allowance</span>

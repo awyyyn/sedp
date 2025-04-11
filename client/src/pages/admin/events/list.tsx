@@ -27,6 +27,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useSetAtom } from "jotai";
 
 import { DeleteModal } from "../__components";
 
@@ -34,7 +35,6 @@ import { DELETE_EVENT_MUTATION, READ_EVENTS_QUERY } from "@/queries";
 import { CalendarEvent, Event, PaginationResult, StudentStatus } from "@/types";
 import { FCalendar } from "@/components";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
-import { useSetAtom } from "jotai";
 import { eventsAtom } from "@/states";
 import { useAuth } from "@/contexts";
 import { Gatherings } from "@/lib/constant";

@@ -96,7 +96,7 @@ export const allowancesResolver = async (
 		if (
 			!(app.role === "SUPER_ADMIN" || app.role === "ADMIN_MANAGE_DOCUMENTS")
 		) {
-			app.id;
+			studentId = app.id;
 		}
 
 		return await readAllowances({ ...filters, studentId });

@@ -11,12 +11,12 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react";
 import { useLocation } from "react-router-dom";
 import { useAtom, useAtomValue } from "jotai";
+import { useMediaQuery } from "usehooks-ts";
 
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { useAuth } from "@/contexts";
 import { roles } from "@/lib/constant";
 import { sidebarAtom, systemUserAtom } from "@/states";
-import { useMediaQuery } from "usehooks-ts";
 
 const defaultLinks = [
 	{

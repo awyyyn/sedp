@@ -320,16 +320,27 @@ export default function GenerateAllowance({
 									<h1 className="text-2xl font-bold">
 										{formatCurrency(
 											Number(formik.values.monthlyAllowance || 0) +
-												Number(formik.values.bookAllowance || 0) +
 												Number(formik.values.miscellaneousAllowance || 0) +
 												Number(formik.values.thesisAllowance || 0) +
+												// Number(formik.values.bookAllowance || 0) +
+												// getDocsTotalAmount(
+												// 	formik.values.docs || [],
+												// 	"MISCELLANEOUS_ALLOWANCE"
+												// ) +
+												(getDocsTotalAmount(
+													formik.values.docs || [],
+													"BOOK_ALLOWANCE"
+												) +
+													Number(formik.values.bookAllowance || 0) >
+												2000
+													? 2000
+													: getDocsTotalAmount(
+															formik.values.docs || [],
+															"BOOK_ALLOWANCE"
+														) + Number(formik.values.bookAllowance || 0)) +
 												getDocsTotalAmount(
 													formik.values.docs || [],
 													"MISCELLANEOUS_ALLOWANCE"
-												) +
-												getDocsTotalAmount(
-													formik.values.docs || [],
-													"BOOK_ALLOWANCE"
 												)
 										)}
 									</h1>

@@ -10,16 +10,16 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Badge } from "@heroui/badge";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { useMutation, useSubscription } from "@apollo/client";
 
 import { scholarNotificationAtom } from "@/states";
 import { notificationIconMap } from "@/constants";
-import { useMutation, useSubscription } from "@apollo/client";
 import {
 	READ_STUDENT_NOTIFICATIONS_SUBSCRIPTION,
 	UPDATE_STUDENT_NOTIFICATION_MUTATION,
 } from "@/queries";
 import { useAuth } from "@/contexts";
-import { formatDistanceToNow } from "date-fns";
 
 export default function ScholarNotificationDropdown() {
 	const [notifications, setNotifications] = useAtom(scholarNotificationAtom);
