@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useMutation, useQuery } from "@apollo/client";

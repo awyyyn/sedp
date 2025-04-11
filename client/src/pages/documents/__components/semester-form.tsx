@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ImageUploader } from "../__components/image-uploader";
 
 import { PreviewModal } from "@/components";
-import { getFileExtension, imagesExtensions, yearLevels } from "@/lib/constant";
+import { getFileExtension, imagesExtensions } from "@/lib/constant";
 import { AddSemesterDocumentSchema } from "@/definitions";
 import { AddSemesterSchemaData, Document } from "@/types";
 import {
