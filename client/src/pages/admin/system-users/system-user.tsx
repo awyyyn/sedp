@@ -16,6 +16,7 @@ import {
 } from "@/queries";
 import { SystemUser } from "@/types";
 import { formatDate, getRoleDescription } from "@/lib/utils";
+import { Loader } from "@/components/loader";
 
 export default function SystemUserPage() {
 	const { id } = useParams();
@@ -36,7 +37,7 @@ export default function SystemUserPage() {
 		}
 	);
 
-	if (loading || !data) return "loading...";
+	if (loading || !data) return <Loader />;
 
 	const isBlocked = data.systemUser.status === "DELETED";
 

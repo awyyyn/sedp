@@ -5,6 +5,8 @@ import { Button } from "@heroui/button";
 import { useSearchParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
+import ErrorFetching from "../documents/__components/error-fetch";
+
 import { READ_ALLOWANCES_QUERY } from "@/queries";
 import { useAuth } from "@/contexts";
 import { Allowance, FileTreeItem, PaginationResult } from "@/types";
@@ -74,6 +76,14 @@ export default function MyAllowanceList() {
 		})();
 	}, [qYear]);
 
+	const handleRefetch = async () => {
+		await refetch({
+			variables: {
+				year: Number(activeFileId),
+			},
+		});
+	};
+
 	return (
 		<>
 			<div className="px-5 container mx-auto md:px-0 max-h-screen pt-24 overflow-hidden">
@@ -110,9 +120,7 @@ export default function MyAllowanceList() {
 								</p>
 							</div>
 						) : error ? (
-							<div className="text-2xl font-semibold text-gray-500">
-								Error fetching documents.
-							</div>
+							<ErrorFetching handleRefetch={handleRefetch} />
 						) : (
 							<>
 								<div className="absolute p-2 flex max-h-[80px] justify-between md:p-4 top-0 left-0 w-full  bg-primary  bg-opacity-5 backdrop-blur-md   z-10">
@@ -124,13 +132,7 @@ export default function MyAllowanceList() {
 										<Button
 											className={`${loading ? "animate-spin" : ""}`}
 											isDisabled={loading}
-											onPress={async () => {
-												await refetch({
-													variables: {
-														year: Number(activeFileId),
-													},
-												});
-											}}
+											onPress={handleRefetch}
 											isIconOnly
 											variant="light"
 											radius="full">

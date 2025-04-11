@@ -272,8 +272,11 @@ export default function SystemUsers() {
 						onValueChange={setFilterValue}
 					/>
 					<div className="flex gap-3 justify-between md:justify-end w-full">
-						<Dropdown>
-							<DropdownTrigger className="hidden sm:flex">
+						<Dropdown
+							classNames={{
+								content: "bg-[#A6F3B2]",
+							}}>
+							<DropdownTrigger className=" flex bg-[#A6F3B2]">
 								<Button
 									endContent={
 										<Icon
@@ -294,14 +297,19 @@ export default function SystemUsers() {
 								disallowEmptySelection
 								onSelectionChange={setVisibleColumns}>
 								{columns.map((column) => (
-									<DropdownItem key={column.uid} className="capitalize">
+									<DropdownItem
+										key={column.uid}
+										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
 										{column.name.toLowerCase()}
 									</DropdownItem>
 								))}
 							</DropdownMenu>
 						</Dropdown>
-						<Dropdown>
-							<DropdownTrigger className="">
+						<Dropdown
+							classNames={{
+								content: "bg-[#A6F3B2]",
+							}}>
+							<DropdownTrigger className=" flex bg-[#A6F3B2]">
 								<Button
 									endContent={
 										<Icon
@@ -322,7 +330,9 @@ export default function SystemUsers() {
 								aria-label="Table Columns"
 								selectionMode="multiple">
 								{roleOptions.map((status) => (
-									<DropdownItem key={status} className={`capitalize `}>
+									<DropdownItem
+										key={status}
+										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
 										{getRoleDescription(status)}
 									</DropdownItem>
 								))}
@@ -346,7 +356,11 @@ export default function SystemUsers() {
 							</p>
 						</div>
 
-						<Button as={Link} to="/admin/system-users/add">
+						<Button
+							color="success"
+							className="text-white"
+							as={Link}
+							to="/admin/system-users/add">
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add System User
 						</Button>

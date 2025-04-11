@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils";
 import { years } from "@/constants";
 import { Scholars } from "@/lib/constant";
 import { useAuth } from "@/contexts";
+import { Loader } from "@/components/loader";
 
 export default function ScholarInfo() {
 	const { id } = useParams();
@@ -26,7 +27,7 @@ export default function ScholarInfo() {
 		}
 	);
 
-	if (loading || !data) return <h1>loading...</h1>;
+	if (loading || !data) return <Loader />;
 
 	if (error) return <h1>Error: {JSON.stringify(error, null, 2)}</h1>;
 
