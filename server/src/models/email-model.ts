@@ -154,3 +154,59 @@ export const sendCredentials = async ({
 
 	await transporter.sendMail(mailOptions);
 };
+
+export const sendDisqualificationEmail = async ({
+	email,
+}: {
+	email: string;
+}) => {
+	const mailOptions = {
+		from: environment.EMAIL,
+		sender: {
+			name: "SEDP - Ligao",
+			address: environment.EMAIL!,
+		},
+		to: email,
+		subject: "Disqualification Notice",
+		html: `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Disqualification Notice</title>
+			</head>
+			<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f9f9f9;">
+				<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+					
+					<!-- Header -->
+					<div style="background-color: #d9534f; padding: 25px; text-align: center;">
+						<h1 style="color: white; margin: 0; font-size: 24px;">Disqualification Notice</h1>
+					</div>
+					
+					<!-- Content -->
+					<div style="padding: 30px 25px; color: #333333;">
+						<p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+							We regret to inform you that you have been disqualified for not meeting the requirements needed to be maintained.
+						</p>
+						<p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+							If you believe this decision is in error or you have any questions, please contact our support team.
+						</p>
+						<p style="font-size: 16px; line-height: 1.5;">
+							Best regards,<br />
+							The SEDP - Ligao Team
+						</p>
+					</div>
+					
+					<!-- Footer -->
+					<div style="background-color: #f5f5f5; padding: 20px; text-align: center; color: #666666; font-size: 14px; border-top: 1px solid #eeeeee;">
+						<p style="margin: 0;">This is an automated message. Please do not reply to this email.</p>
+					</div>
+				</div>
+			</body>
+			</html>
+		`,
+	};
+
+	await transporter.sendMail(mailOptions);
+};

@@ -181,19 +181,24 @@ export function DocumentTable({
 					isLoading={isLoading}>
 					{data.map((doc) => {
 						const exe = getFileExtension(doc.documentUrl);
+						const isCor = doc.docType === "COR";
+						const docLabel = isCor ? "COR/COE" : doc.documentName;
+						const docType =
+							doc.docType === "OTHER"
+								? doc.otherType
+								: isCor
+									? "COR/COE"
+									: doc.docType;
 
 						return (
 							<TableRow
 								onClick={() => handleRowClick(doc.documentUrl)}
 								className="cursor-pointer"
 								key={doc.id}>
-								<TableCell>{doc.documentName}</TableCell>
+								<TableCell>{docLabel.replace("_", " ")}</TableCell>
 								<TableCell>{exe?.toUpperCase()}</TableCell>
 								<TableCell className="capitalize">
-									{(doc.docType === "OTHER"
-										? doc.otherType
-										: doc.docType
-									)?.toLowerCase()}
+									{docType?.replace(/_/g, " ")}
 								</TableCell>
 								<TableCell className={`${!showAmount && "hidden"}`}>
 									{formatCurrency(doc.amount)}

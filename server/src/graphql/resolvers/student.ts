@@ -5,6 +5,7 @@ import {
 	readAllStudents,
 	createStudent,
 	sendCredentials,
+	sendDisqualificationEmail,
 } from "../../models/index.js";
 import {
 	AppContext,
@@ -29,6 +30,10 @@ export const updateStudentResolver = async (
 
 		if (!updatedStudent) {
 			throw new GraphQLError("Error occurred while updating your information!");
+		}
+
+		if (updatedStudent.status === "DISQUALIFIED") {
+			await sendDisqualificationEmail({ email: updatedStudent.email });
 		}
 
 		return updatedStudent;
