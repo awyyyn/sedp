@@ -55,6 +55,7 @@ import AdminAccountLayout from "@/pages/admin/account/layout";
 import AdminSecurity from "@/pages/admin/account/security";
 import SemesterSubmissions from "@/pages/admin/semester-docs/list";
 import StudentSemesterFiles from "@/pages/admin/semester-docs/scholar/info";
+import DisqualifyPage from "@/pages/disqualify";
 
 function App() {
 	const manageScholarRoutes = {
@@ -96,6 +97,8 @@ function App() {
 				allowedRoles={[
 					"SUPER_ADMIN",
 					"ADMIN_MANAGE_GATHERINGS",
+					"ADMIN_MANAGE_DOCUMENTS",
+					"ADMIN_MANAGE_SCHOLAR",
 					"ADMIN_VIEWER",
 				]}
 			/>
@@ -323,6 +326,10 @@ function App() {
 		{
 			element: <Unauthorized />,
 			path: "unauthorized",
+		},
+		{
+			element: <DisqualifyPage />,
+			path: "disqualify",
 		},
 		{
 			element: <NotFound />,

@@ -10,12 +10,13 @@ import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react";
 import { useLocation } from "react-router-dom";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { useAuth } from "@/contexts";
 import { roles } from "@/lib/constant";
-import { systemUserAtom } from "@/states";
+import { sidebarAtom, systemUserAtom } from "@/states";
+import { useMediaQuery } from "usehooks-ts";
 
 const defaultLinks = [
 	{
@@ -70,7 +71,9 @@ export function AppSidebar() {
 	const { role, logout } = useAuth();
 	const { pathname } = useLocation();
 	const systemUser = useAtomValue(systemUserAtom);
+	const [isSidebarOpen, setIsSidebarOpen] = useAtom(sidebarAtom);
 	const navigate = useNavigate();
+	const width = useMediaQuery("(max-width: 770px)");
 
 	function renderLinks() {
 		let links = [];
@@ -115,11 +118,16 @@ export function AppSidebar() {
 	return (
 		<aside>
 			<Sidebar
-				className="h-full  border-none outline-none ring-0 "
+				className="h-full  border-none bg-white  outline-none ring-0 "
 				collapsedWidth="0"
-				toggled={false}
+				onBackdropClick={() => {
+					if (width) {
+						setIsSidebarOpen(false);
+					}
+				}}
+				toggled={width ? isSidebarOpen : true}
 				// onBackdropClick={() => alert("asd")}
-				backgroundColor="#A6F3B235"
+				backgroundColor={width ? "white" : "#A6F3B235"}
 				breakPoint="md">
 				{/* <h1 className="p-5">SEDP</h1> */}
 				<div className="flex flex-col h-full  justify-between">
