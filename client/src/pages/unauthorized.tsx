@@ -1,5 +1,5 @@
 import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import { Link } from "react-router-dom";
 
 import { useAuth } from "@/contexts";
 import unauthroziedImg from "@/assets/web-error.png";
