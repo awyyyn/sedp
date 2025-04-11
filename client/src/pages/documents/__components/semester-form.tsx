@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ImageUploader } from "../__components/image-uploader";
 
 import { PreviewModal } from "@/components";
-import { getFileExtension, imagesExtensions } from "@/lib/constant";
+import { getFileExtension, imagesExtensions, yearLevels } from "@/lib/constant";
 import { AddSemesterDocumentSchema } from "@/definitions";
 import { AddSemesterSchemaData, Document } from "@/types";
 import {
@@ -25,6 +25,7 @@ interface MonthlyDocumentFormProps {
 	document?: Document;
 	semester: number;
 	year: number;
+	yearLevel: number;
 }
 
 export default function SemesterDocumentForm({
@@ -32,6 +33,7 @@ export default function SemesterDocumentForm({
 	isEditing = false,
 	semester,
 	year,
+	yearLevel,
 }: MonthlyDocumentFormProps) {
 	const navigate = useNavigate();
 	const [uploadedUrls, setUploadedUrls] = useState<string[]>(
@@ -115,7 +117,7 @@ export default function SemesterDocumentForm({
 				<div className="flex gap-2 items-center">
 					<Button
 						as={Link}
-						to="/my-documents/semester"
+						to={`/my-documents/semester?active=${yearLevel}-${year}-${semester}`}
 						isIconOnly
 						className=""
 						variant="light"

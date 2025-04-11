@@ -118,7 +118,7 @@ export default function MonthlyDocumentForm({
 				<div className="flex gap-2 items-center">
 					<Button
 						as={Link}
-						to="/my-documents/monthly"
+						to={`/my-documents/monthly?active=${year}-${month}`}
 						isIconOnly
 						className=""
 						variant="light"
