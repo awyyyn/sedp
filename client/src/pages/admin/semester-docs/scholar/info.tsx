@@ -110,14 +110,6 @@ export default function StudentSemesterFiles() {
 
 	const scholar = studentData.student;
 
-	console.log(
-		Number(Array.from(yearFilter)[0].toString()) +
-			Number(scholar.yearLevelJoined) -
-			new Date(formatDate(scholar.createdAt)).getFullYear(),
-		new Date(formatDate(scholar.createdAt)).getFullYear(),
-		"qqq"
-	);
-
 	const yearStarted = new Date(
 		!isNaN(Number(scholar.createdAt))
 			? Number(scholar.createdAt)
@@ -263,7 +255,8 @@ export default function StudentSemesterFiles() {
 				(Number(selectedYear) > scholar.yearLevel ||
 					(Number(selectedYear) === scholar.yearLevel &&
 						selectedSemester > scholar.semester)) &&
-				(data?.documents.length || 0) > 0 && (
+				(data?.documents.length || 0) > 0 &&
+				scholar.status === "SCHOLAR" && (
 					<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
 						<EditModal
 							scholar={scholar}

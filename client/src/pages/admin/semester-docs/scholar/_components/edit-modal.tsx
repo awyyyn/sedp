@@ -63,8 +63,12 @@ export default function EditModal({
 		validationSchema: AcademicFormSchema,
 	});
 
-	const [updateStudent] = useMutation(UPDATE_STUDENT_MUTATION);
-	const [sendNotif] = useMutation(CREATE_SCHOLAR_NOTIFICATION_MUTATION);
+	const [updateStudent, { loading: updating }] = useMutation(
+		UPDATE_STUDENT_MUTATION
+	);
+	const [sendNotif, { loading }] = useMutation(
+		CREATE_SCHOLAR_NOTIFICATION_MUTATION
+	);
 
 	const handleUpdate = async () => {
 		try {
@@ -159,7 +163,7 @@ export default function EditModal({
 									label="Status"
 									name="status"
 									size="sm"
-									isDisabled={formik.isSubmitting}
+									isDisabled={formik.isSubmitting || loading || updating}
 									errorMessage={formik.touched.status && formik.errors.status}
 									onBlur={formik.handleBlur}
 									isInvalid={!!formik.touched.status && !!formik.errors.status}
@@ -178,7 +182,7 @@ export default function EditModal({
 									label="Select Year Level"
 									name="yearLevel"
 									size="sm"
-									isDisabled={formik.isSubmitting}
+									isDisabled={formik.isSubmitting || loading || updating}
 									errorMessage={
 										formik.touched.yearLevel && formik.errors.yearLevel
 									}
@@ -213,7 +217,7 @@ export default function EditModal({
 								<Suspense
 									fallback={<Input fullWidth readOnly label="Course" />}>
 									<Autocomplete
-										isDisabled={formik.isSubmitting}
+										isDisabled={formik.isSubmitting || loading || updating}
 										name="course"
 										className="lg:col-span-6"
 										label="Course"
@@ -256,7 +260,7 @@ export default function EditModal({
 									label="Semester"
                                     name="semester"
                                     
-									isDisabled={formik.isSubmitting}
+									isDisabled={formik.isSubmitting || loading || updating}
 									size="sm"
 									errorMessage={
 										formik.touched.semester && formik.errors.semester
@@ -288,13 +292,13 @@ export default function EditModal({
 									color="danger"
 									variant="light"
 									onPress={onClose}
-									isDisabled={formik.isSubmitting}>
+									isDisabled={formik.isSubmitting || loading || updating}>
 									Close
 								</Button>
 								<Button
 									color="primary"
 									onPress={handleUpdate}
-									isLoading={formik.isSubmitting}>
+									isLoading={formik.isSubmitting || loading || updating}>
 									Submit
 								</Button>
 							</ModalFooter>

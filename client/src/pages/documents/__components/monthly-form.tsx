@@ -86,7 +86,7 @@ export default function MonthlyDocumentForm({
 					refetchQueries: [READ_DOCUMENTS_QUERY],
 				});
 
-				navigate(`/my-documents/monthly`);
+				navigate(`/my-documents/monthly?active=${year}-${month}`);
 				toast.success(
 					`Document ${isEditing ? "updated" : "uploaded"} successfully`,
 					{

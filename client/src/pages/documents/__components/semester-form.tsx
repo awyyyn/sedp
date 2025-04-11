@@ -85,7 +85,9 @@ export default function SemesterDocumentForm({
 					refetchQueries: [READ_DOCUMENTS_QUERY],
 				});
 
-				navigate(`/my-documents/semester`);
+				navigate(
+					`/my-documents/semester?active=${yearLevel}-${year}-${semester}`
+				);
 				toast.success(
 					`Document ${isEditing ? "updated" : "uploaded"} successfully`,
 					{

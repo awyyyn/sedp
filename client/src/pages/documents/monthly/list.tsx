@@ -155,7 +155,7 @@ export default function Monthly() {
 									Select a folder.
 								</p>
 							</div>
-						) : !error ? (
+						) : error ? (
 							<ErrorFetching handleRefetch={handleRefetch} />
 						) : (
 							<>
