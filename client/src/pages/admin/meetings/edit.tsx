@@ -5,6 +5,7 @@ import MeetingForm from "./__components/form";
 
 import { READ_MEETING_QUERY } from "@/queries";
 import { Meeting } from "@/types";
+import { Loader } from "@/components/loader";
 
 export default function EditMeeting() {
 	const { id } = useParams();
@@ -20,7 +21,7 @@ export default function EditMeeting() {
 
 	if (error) return <div>Something went wrong!</div>;
 
-	if (!data?.meeting || loading) return <h1>loading...</h1>;
+	if (!data?.meeting || loading) return <Loader />;
 
 	return (
 		<div>

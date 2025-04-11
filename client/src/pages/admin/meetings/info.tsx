@@ -10,6 +10,7 @@ import { Meeting } from "@/types";
 import { READ_MEETING_QUERY } from "@/queries";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
+import { Loader } from "@/components/loader";
 
 const MeetingInfo = () => {
 	const { id } = useParams();
@@ -25,7 +26,7 @@ const MeetingInfo = () => {
 
 	if (error) return <h1>Error: {error.message}</h1>;
 
-	if (loading || !data?.meeting) return <h1>loading...</h1>;
+	if (loading || !data?.meeting) return <Loader />;
 
 	return (
 		<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">
