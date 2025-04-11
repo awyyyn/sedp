@@ -11,6 +11,7 @@ import { READ_EVENT_QUERY } from "@/queries";
 import { formatEventDate } from "@/lib/utils";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
+import { Loader } from "@/components/loader";
 
 const EventInfo = () => {
 	const { id } = useParams();
@@ -26,7 +27,7 @@ const EventInfo = () => {
 
 	if (error) return <h1>Error: {error.message}</h1>;
 
-	if (loading || !data?.event) return <h1>loading...</h1>;
+	if (loading || !data?.event) return <Loader />;
 
 	return (
 		<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">

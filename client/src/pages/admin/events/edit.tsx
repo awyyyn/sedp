@@ -5,6 +5,7 @@ import EventForm from "./__components/form";
 
 import { READ_EVENT_QUERY } from "@/queries";
 import { Event } from "@/types";
+import { Loader } from "@/components/loader";
 
 export default function EditEvent() {
 	const { id } = useParams();
@@ -20,7 +21,7 @@ export default function EditEvent() {
 
 	if (error) return <div>Something went wrong!</div>;
 
-	if (!data?.event || loading) return <h1>loading...</h1>;
+	if (!data?.event || loading) return <Loader />;
 
 	return (
 		<div>
