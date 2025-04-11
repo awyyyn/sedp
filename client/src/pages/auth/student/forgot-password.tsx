@@ -32,7 +32,7 @@ export default function StudentForgotPassword() {
 		setLoading(true);
 		try {
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/api/auth/admin-forgot-password`,
+				`${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
 
 				{
 					method: "POST",
@@ -52,6 +52,15 @@ export default function StudentForgotPassword() {
 			if (step === 1) {
 				setStep((stp) => stp + 1);
 			}
+
+			toast.success("OTP Sent", {
+				richColors: true,
+				dismissible: true,
+				duration: 5000,
+				position: "top-center",
+				icon: <Icon icon="hugeicons:sent" />,
+				description: `We sent a code to ${values.email}. Please check your email.`,
+			});
 		} catch (error) {
 			toast.error((error as Error).message, {
 				richColors: true,
@@ -118,7 +127,7 @@ export default function StudentForgotPassword() {
 
 			setLoading(true);
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/api/auth/admin-reset-password`,
+				`${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
 				{
 					method: "POST",
 					body: JSON.stringify({ password: values.confirmPassword }),
@@ -223,7 +232,7 @@ export default function StudentForgotPassword() {
 							label="Email"
 							fullWidth
 							value={values.email}
-							readOnly={loading}
+							isReadOnly={loading}
 							onValueChange={(value) => {
 								const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -263,7 +272,7 @@ export default function StudentForgotPassword() {
 									segmentWrapper:
 										"flex flex-wrap justify-center gap-1 sm:gap-3 md:gap-5",
 								}}
-								readOnly={loading}
+								isReadOnly={loading}
 								errorMessage={error}
 							/>
 						</>,
@@ -333,7 +342,9 @@ export default function StudentForgotPassword() {
 				{step === 2 && (
 					<div className="flex items-center flex-wrap justify-center gap-0.5">
 						<p className="text-gray-500">Don&apos; receive the email?</p>
-						<button className="bg-none border-none outline-none p-0 text-blue-400 underline cursor-pointer">
+						<button
+							onClick={handleSubmit}
+							className="bg-none border-none outline-none p-0 text-blue-400 underline cursor-pointer">
 							Click to resend
 						</button>
 					</div>
@@ -344,6 +355,7 @@ export default function StudentForgotPassword() {
 						onPress={
 							[handleSubmit, handleVerifyOTP, handleResetPassword][step - 1]
 						}
+						isDisabled={loading}
 						isLoading={loading}
 						className="block"
 						fullWidth
@@ -353,6 +365,7 @@ export default function StudentForgotPassword() {
 				)}
 				<Button
 					disabled={loading}
+					isDisabled={loading}
 					variant={step === 4 ? "solid" : "light"}
 					startContent={<Icon icon="solar:square-arrow-left-bold" />}
 					onPress={() => {

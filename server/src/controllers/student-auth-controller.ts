@@ -13,6 +13,7 @@ import {
 } from "../services/index.js";
 import { environment } from "../environments/environment.js";
 import { readStudentNotification } from "../models/notification.js";
+import { differenceInMinutes, differenceInSeconds } from "date-fns";
 
 export const studentLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -192,11 +193,18 @@ export const studentForgotPasswordController = async (
 		const token = await readToken(email);
 
 		if (token !== null) {
+			const min = differenceInMinutes(new Date(), token.time);
+			const minutesLeft = 5 - min;
+			const seconds = differenceInSeconds(new Date(), token.time);
+
+			console.log(minutesLeft, seconds);
+
 			res.status(400).json({
 				error: {
 					code: 400,
-					message:
-						"Token is already sent, please check your spam folder! You can request a new OTP after 5 minutes.",
+					message: `Token already sent. Please wait for ${
+						!minutesLeft ? seconds : minutesLeft
+					} ${!minutesLeft ? "second(s)" : "minute(s)"}`,
 				},
 			});
 			return;
@@ -314,7 +322,7 @@ export const studentResetPasswordController = async (
 		const generatedSALT = await bcrypt.genSalt(environment.SALT);
 		const hashedPassword = await bcrypt.hash(password, generatedSALT);
 
-		const updatedUser = await prisma.systemUser.update({
+		const updatedUser = await prisma.student.update({
 			where: { id: user.id },
 			data: { password: hashedPassword },
 		});
@@ -333,6 +341,7 @@ export const studentResetPasswordController = async (
 			},
 		});
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({
 			error: {
 				code: 500,

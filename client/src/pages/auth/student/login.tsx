@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
 import { useNavigate } from "react-router";
 import { useMutation } from "@apollo/client";
@@ -56,6 +56,22 @@ export default function StudentLogin() {
 			}
 		},
 	});
+
+	// useEffect(() => {
+	// 	const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+	// 		// Custom behavior (optional)
+	// 		// Standard way to show a confirmation dialog (may be ignored by modern browsers)
+	// 		event.preventDefault();
+	// 		event.cancelable;
+	// 		event.returnValue = "Are you sure you want to leave this page?";
+	// 	};
+
+	// 	window.addEventListener("beforeunload", handleBeforeUnload);
+
+	// 	return () => {
+	// 		window.removeEventListener("beforeunload", handleBeforeUnload);
+	// 	};
+	// }, []);
 
 	return (
 		<div className=" rounded-none shadow-md min-w-[90%] w-[90%] md:max-w-[680px] md:min-w-[380px] bg-[#A6F3B228] ">
@@ -226,16 +242,7 @@ export default function StudentLogin() {
 										fullWidth>
 										{mfaEnabled ? "Verify OTP" : "Login"}
 									</Button>
-									{!mfaEnabled && (
-										<div className="flex gap-1 justify-center">
-											<p>Doesn&apos;t have an account?</p>
-											<Link
-												to="/register"
-												className="hover:underline cursor-pointer hover:text-[#266530]">
-												Register
-											</Link>
-										</div>
-									)}
+
 									{mfaEnabled && (
 										<Button
 											disabled={isSubmitting || mutating}

@@ -55,6 +55,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		(async () => {
 			const token = localStorage.getItem("accessToken");
+			const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+			if (isLoggedIn === "false") {
+				setIsAuthenticated(false);
+				localStorage.clear();
+
+				return;
+			}
 
 			if (!token) {
 				setIsAuthenticated(false);

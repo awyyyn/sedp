@@ -19,6 +19,7 @@ import {
 	readAdminNotification,
 	readStudentNotification,
 } from "../models/notification.js";
+import { differenceInMinutes, differenceInSeconds } from "date-fns";
 
 export const adminLoginController = async (req: Request, res: Response) => {
 	const { password, email } = req.body;
@@ -190,11 +191,16 @@ export const adminForgotPasswordController = async (
 		const token = await readToken(email);
 
 		if (token !== null) {
+			const min = differenceInMinutes(new Date(), token.time);
+			const minutesLeft = 5 - min;
+			const seconds = differenceInSeconds(new Date(), token.time);
+
 			res.status(400).json({
 				error: {
 					code: 400,
-					message:
-						"Token is already sent, please check your spam folder! You can request a new OTP after 5 minutes.",
+					message: `Token already sent. Please wait for ${
+						!minutesLeft ? seconds : minutesLeft
+					} ${!minutesLeft ? "second(s)" : "minute(s)"}`,
 				},
 			});
 			return;

@@ -51,6 +51,15 @@ export default function ForgotPassword() {
 			if (step === 1) {
 				setStep((stp) => stp + 1);
 			}
+
+			toast.success("OTP Sent", {
+				richColors: true,
+				dismissible: true,
+				duration: 5000,
+				position: "top-center",
+				icon: <Icon icon="hugeicons:sent" />,
+				description: `We sent a code to ${values.email}. Please check your email.`,
+			});
 		} catch (error) {
 			toast.error((error as Error).message, {
 				richColors: true,
@@ -221,7 +230,7 @@ export default function ForgotPassword() {
 							label="Email"
 							fullWidth
 							value={values.email}
-							readOnly={loading}
+							isReadOnly={loading}
 							onValueChange={(value) => {
 								const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -261,7 +270,7 @@ export default function ForgotPassword() {
 									segmentWrapper:
 										"flex flex-wrap justify-center gap-1 sm:gap-3 md:gap-5",
 								}}
-								readOnly={loading}
+								isReadOnly={loading}
 								errorMessage={error}
 							/>
 						</>,
@@ -331,14 +340,16 @@ export default function ForgotPassword() {
 				{step === 2 && (
 					<div className="flex items-center flex-wrap justify-center gap-0.5">
 						<p className="text-gray-500">Don&apos; receive the email?</p>
-						<button className="bg-none border-none outline-none p-0 text-blue-400 underline cursor-pointer">
+						<button
+							onClick={handleSubmit}
+							className="bg-none border-none outline-none p-0 text-blue-400 underline cursor-pointer">
 							Click to resend
 						</button>
 					</div>
 				)}
 				{step < 4 && (
 					<Button
-						disabled={loading}
+						isDisabled={loading}
 						onPress={
 							[handleSubmit, handleVerifyOTP, handleResetPassword][step - 1]
 						}
@@ -350,7 +361,7 @@ export default function ForgotPassword() {
 					</Button>
 				)}
 				<Button
-					disabled={loading}
+					isDisabled={loading}
 					variant={step === 4 ? "solid" : "light"}
 					startContent={<Icon icon="solar:square-arrow-left-bold" />}
 					onPress={() => {
