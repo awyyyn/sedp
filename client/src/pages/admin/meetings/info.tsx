@@ -31,7 +31,7 @@ const MeetingInfo = () => {
 		<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">
 			{/* Personal Information */}
 			<Card className="py-4">
-				<CardHeader className="flex justify-between flex-wrap ">
+				<CardHeader className="flex justify-between   ">
 					<div className="flex gap-2 ">
 						<Button
 							as={Link}

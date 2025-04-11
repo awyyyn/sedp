@@ -34,12 +34,13 @@ export default function Dashboard() {
 							{formatDate(new Date(), "MMMM")} Events
 						</h1>
 
-						<Button isIconOnly variant="light">
-							<Icon
-								icon="qlementine-icons:menu-dots-16"
-								width="16"
-								height="16"
-							/>
+						<Button
+							size="sm"
+							isDisabled={loading}
+							as={Link}
+							to="/admin/events"
+							variant="light">
+							View All
 						</Button>
 					</CardHeader>
 					{/* <CardHeader className="justify-between"></CardHeader> */}
@@ -59,9 +60,9 @@ export default function Dashboard() {
 								</div>
 							)}
 							{loading ? (
-								[1, 2, 3].map((sklton) => (
+								Array.from({ length: 3 }).map((_, index) => (
 									<div
-										key={sklton}
+										key={index}
 										className="bg-[#D9D9D9] items-center flex gap-2 bg-opacity-30 p-2">
 										<Skeleton className="h-7 w-7" />
 										<Skeleton className="h-6 w-3/5" />

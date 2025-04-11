@@ -3,11 +3,11 @@ import { Button } from "@heroui/button";
 import { Link, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Divider } from "@heroui/divider";
+import { format } from "date-fns";
 import { useQuery } from "@apollo/client";
 
 import { Event } from "@/types";
 import { READ_EVENT_QUERY } from "@/queries";
-import { format } from "date-fns";
 import { formatEventDate } from "@/lib/utils";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
@@ -32,7 +32,7 @@ const EventInfo = () => {
 		<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">
 			{/* Personal Information */}
 			<Card className="py-4">
-				<CardHeader className="flex justify-between flex-wrap ">
+				<CardHeader className="flex justify-between   ">
 					<div className="flex gap-2 ">
 						<Button
 							as={Link}
@@ -46,7 +46,7 @@ const EventInfo = () => {
 						</Button>
 						<div className="leading-none">
 							<h1 className="text-2xl leading-none">Event Information</h1>
-							<p className="text-sm leading-none text-gray-500 text-muted-foreground">
+							<p className="text-sm leading-none  text-gray-500 text-muted-foreground">
 								Details about the event&apos;s schedule and location.
 							</p>
 						</div>

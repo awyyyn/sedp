@@ -89,7 +89,7 @@ export default function AnnouncementForm({
 			}) => {
 				return (
 					<Form
-						className="grid grid-cols-12 gap-x-4 gap-y-2 lg:grid-cols-6"
+						className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
 						onSubmit={handleSubmit}>
 						<div className="lg:col-span-6">Announcement Information</div>
 						<Input
