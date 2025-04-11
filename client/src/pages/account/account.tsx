@@ -494,7 +494,7 @@ export default function StudentProfile() {
 										description="Academic information cannot be edited by scholar; only admins can edit."
 									/>
 								)}
-								<CardHeader className="px-6 pt-4">
+								<CardHeader id="academic-information" className="px-6 pt-4">
 									<h1 className="flex items-center gap-2">
 										<Icon
 											icon="solar:square-academic-cap-2-outline"

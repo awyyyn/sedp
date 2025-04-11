@@ -93,8 +93,7 @@ export default function EditModal({
 				variables: {
 					title: "Scholar Academic Record Update",
 					type: "OTHER",
-					// link: `/scholar/semester-documents/${scholar.id}?year=${yearLevel}&semester=${semester}`,
-					link: "#",
+					link: "/account#academic-information",
 					message:
 						"Your academic records have been formally updated in accordance with the qualification standards.",
 					receiverId: scholar.id,
