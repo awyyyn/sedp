@@ -158,7 +158,7 @@ export default function SystemUsers() {
 								<Icon icon="solar:info-square-bold" color="gray" />
 							</Button>
 						</Tooltip>
-						<Tooltip content="Update Status">
+						{/* <Tooltip content="Update Status">
 							<Button
 								size="sm"
 								variant="light"
@@ -168,7 +168,7 @@ export default function SystemUsers() {
 								className="text-lg text-default-400  cursor-pointer active:opacity-50">
 								<Icon icon="fluent:slide-text-edit-28-filled" color="green" />
 							</Button>
-						</Tooltip>
+						</Tooltip> */}
 						<Tooltip
 							color="danger"
 							content={`${user.status === "DELETED" ? "Unblock" : "Block"} System User`}>

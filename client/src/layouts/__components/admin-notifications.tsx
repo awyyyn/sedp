@@ -70,7 +70,7 @@ export default function NotificationDropdown() {
 						notifications.map((notification) => (
 							<DropdownItem
 								key="new"
-								className={`${!notification.read && "bg-black/5"} p-2  my-1 `}
+								className={`${!notification.readerIds.includes(systemUser?.id!) && "bg-black/5"} p-2  my-1 `}
 								startContent={
 									<div className="p-1">
 										<Icon

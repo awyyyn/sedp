@@ -75,6 +75,10 @@ export const readAdminNotification = async (role: SystemUserRole) => {
 
 	const notifications = await prisma.adminNotification.findMany({
 		where,
+
+		orderBy: {
+			createdAt: "desc",
+		},
 	});
 
 	return notifications.map((notification) => ({
