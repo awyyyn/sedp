@@ -62,6 +62,7 @@ const adminManageGatheringRoutes = [
 const adminManageScholarRoutes = ["/dashboard", "/scholars"];
 const adminManageDocsRoutes = [
 	"/dashboard",
+	"/scholars",
 	"/monthly-submissions",
 	"/semester-submissions",
 	"/allowances",
