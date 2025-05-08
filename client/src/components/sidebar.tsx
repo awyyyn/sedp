@@ -31,14 +31,14 @@ const defaultLinks = [
 		path: "/allowances",
 		icon: "solar:hand-money-outline",
 	},
-	{
-		path: "/monthly-submissions",
-		icon: "et:documents",
-	},
-	{
-		path: "/semester-submissions",
-		icon: "wpf:books",
-	},
+	// {
+	// 	path: "/monthly-submissions",
+	// 	icon: "et:documents",
+	// },
+	// {
+	// 	path: "/semester-submissions",
+	// 	icon: "wpf:books",
+	// },
 	{
 		path: "/events",
 		icon: "mdi:events",
@@ -131,8 +131,12 @@ export function AppSidebar() {
 				breakPoint="md">
 				{/* <h1 className="p-5">SEDP</h1> */}
 				<div className="flex flex-col h-full  justify-between">
-					<div className="mt-5 items-center gap-2 flex px-5 ">
-						<img src={logo} alt="logo" className="rounded-lg h-12 w-12  " />
+					<div className="mt-5 items-center gap-2 bg-[#edfdef] flex flex-col px-5 ">
+						<img
+							src={logo}
+							alt="logo"
+							className="rounded-full mix-blend-multiply h-42 w-42 bg-blend-multiply  "
+						/>
 						<div>
 							<h2 className="leading-5">SEDP-Simbag sa</h2>
 							<h2 className="leading-5">Pag-asenso, Inc.</h2>
