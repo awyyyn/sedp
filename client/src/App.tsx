@@ -56,12 +56,18 @@ import AdminSecurity from "@/pages/admin/account/security";
 import SemesterSubmissions from "@/pages/admin/semester-docs/list";
 import StudentSemesterFiles from "@/pages/admin/semester-docs/scholar/info";
 import DisqualifyPage from "@/pages/disqualify";
+import ScholarAllowances from "@/pages/admin/scholars/allowances";
 
 function App() {
 	const manageScholarRoutes = {
 		element: (
 			<ProtectedRoute
-				allowedRoles={["SUPER_ADMIN", "ADMIN_MANAGE_SCHOLAR", "ADMIN_VIEWER"]}
+				allowedRoles={[
+					"SUPER_ADMIN",
+					"ADMIN_MANAGE_SCHOLAR",
+					"ADMIN_VIEWER",
+					"ADMIN_MANAGE_DOCUMENTS",
+				]}
 			/>
 		),
 		path: "admin",
@@ -83,6 +89,24 @@ function App() {
 							{
 								path: ":id",
 								element: <ScholarInfo />,
+							},
+
+							{
+								path: ":scholarId",
+								children: [
+									{
+										path: "monthly-docs",
+										element: <StudentFiles />,
+									},
+									{
+										path: "semester-docs",
+										element: <StudentSemesterFiles />,
+									},
+									{
+										path: "allowance-history",
+										element: <ScholarAllowances />,
+									},
+								],
 							},
 						],
 					},
