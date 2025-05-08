@@ -30,6 +30,7 @@ import { Chip } from "@heroui/chip";
 
 import ClaimModal from "../__components/claim-modal";
 
+import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { ViewAllowanceModal } from "@/components";
 import { READ_ALLOWANCES_QUERY } from "@/queries";
 import {
@@ -527,14 +528,21 @@ export default function AllowanceList() {
 			{data?.allowances.data && data?.allowances.data.length > 0 && (
 				<div ref={toPrintRef} className="hidden print:block print:m-[0.75in]">
 					<div className="w-full bg-white overflow-hidden">
-						<div className="bg-yellow-100 py-2 px-4 border-b">
-							<h2 className="text-center font-semibold">
-								{semester[data.allowances.data[0].semester]}
-							</h2>
-							<p className="text-center text-sm">
-								{months[data.allowances.data[0].month]}{" "}
-								{data.allowances.data[0].year}
-							</p>
+						<div className="bg-yellow-100 py-8 relative flex justify-center items-center  px-4 border-b">
+							<img
+								src={logo}
+								className="h-24 w-24 absolute left-3 rounded-full items-center mix-blend-multiply"
+								alt="sedp logo"
+							/>
+							<div>
+								<h2 className="text-center font-semibold">
+									{semester[data.allowances.data[0].semester]}
+								</h2>
+								<p className="text-center text-sm">
+									{months[data.allowances.data[0].month]}{" "}
+									{data.allowances.data[0].year}
+								</p>
+							</div>
 						</div>
 
 						<div className="w-full overflow-visible print:overflow-visible">
