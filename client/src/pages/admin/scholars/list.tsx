@@ -30,23 +30,14 @@ import UpdateStatusModal from "./__components/update-status";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
 import { Scholars as AllowedRoles } from "@/lib/constant";
-import { PaginationResult, Student, StudentStatus } from "@/types";
+import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
-
-const statusOptions: StudentStatus[] = [
-	"REQUESTING",
-	"SCHOLAR",
-	"GRADUATED",
-	"DISQUALIFIED",
-	"ARCHIVED",
-];
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
-	{ name: "EMAIL", uid: "email", sortable: true },
-	{ name: "PHONE", uid: "phoneNumber", sortable: true },
-	{ name: "ADDRESS", uid: "address" },
-	{ name: "STATUS", uid: "status" },
+	{ name: "ALLOWANCES", uid: "email", sortable: true },
+	{ name: "MONTHLY DOCS", uid: "phoneNumber", sortable: true },
+	{ name: "SEMESTER DOCS", uid: "address" },
 	{ name: "ACTIONS", uid: "actions" },
 ];
 
@@ -55,7 +46,6 @@ const INITIAL_VISIBLE_COLUMNS = [
 	"email",
 	"phoneNumber",
 	"address",
-	"status",
 	"actions",
 ];
 
@@ -121,22 +111,43 @@ export default function Scholars() {
 
 				return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
 
+			case "email":
+				return (
+					<Button
+						size="sm"
+						as={Link}
+						variant="light"
+						state={{ scholar: user }}
+						to={`/admin/scholars/${user.id}/allowance-history`}>
+						Allowances
+					</Button>
+				);
+
+			case "phoneNumber":
+				return (
+					<Button
+						size="sm"
+						variant="light"
+						as={Link}
+						state={{ scholar: user }}
+						to={`/admin/scholars/${user.id}/monthly-docs`}>
+						Monthly Docs
+					</Button>
+				);
 			case "address":
 				return (
-					<p>
-						{user.address.street}, {user.address.city}
-					</p>
-					// <Chip
-					// 	className="capitalize"
-					// 	color={statusColorMap[user.status]}
-					// 	size="sm"
-					// 	variant="flat">
-					// 	{cellValue?.toString()}
-					// </Chip>
+					<Button
+						size="sm"
+						as={Link}
+						variant="light"
+						state={{ scholar: user }}
+						to={`/admin/scholars/${user.id}/semester-docs`}>
+						Semester Docs
+					</Button>
 				);
 			case "actions":
 				return (
-					<div className="relative flex  justify-center items-center gap-2">
+					<div className="relative flex justify-center items-center gap-2">
 						<Tooltip content="Details">
 							<Link to={`/admin/scholars/${user.id}`}>
 								<span className="text-lg text-default-400 cursor-pointer active:opacity-50">
@@ -144,7 +155,7 @@ export default function Scholars() {
 								</span>
 							</Link>
 						</Tooltip>
-						{!user.statusUpdatedAt && (
+						{/* {!user.statusUpdatedAt && (
 							<Tooltip content="Update Status">
 								<Button
 									size="sm"
@@ -159,7 +170,7 @@ export default function Scholars() {
 									<Icon icon="fluent:status-12-filled" color="green" />
 								</Button>
 							</Tooltip>
-						)}
+						)} */}
 						{/* <Tooltip color="danger" content="Delete announcement">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
@@ -193,15 +204,6 @@ export default function Scholars() {
 					lastName.toLowerCase().includes(filterVal) ||
 					fullName.includes(filterVal)
 				);
-			});
-		}
-
-		if (
-			statusFilter !== "all" &&
-			Array.from(statusFilter).length !== statusOptions.length
-		) {
-			filteredUsers = filteredUsers.filter((user) => {
-				return Array.from(statusFilter).includes(user.status);
 			});
 		}
 
@@ -280,39 +282,6 @@ export default function Scholars() {
 										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize"
 										key={column.uid}>
 										{column.name.toLowerCase()}
-									</DropdownItem>
-								))}
-							</DropdownMenu>
-						</Dropdown>
-						<Dropdown
-							classNames={{
-								content: "bg-[#A6F3B2]",
-							}}>
-							<DropdownTrigger className="hidden sm:flex bg-[#A6F3B2]">
-								<Button
-									endContent={
-										<Icon
-											icon="mynaui:chevron-down-solid"
-											width="24"
-											height="24"
-										/>
-									}
-									size="md"
-									variant="flat">
-									Status
-								</Button>
-							</DropdownTrigger>
-							<DropdownMenu
-								onSelectionChange={setStatusFilter}
-								selectedKeys={statusFilter}
-								closeOnSelect={false}
-								aria-label="Table Columns"
-								selectionMode="multiple">
-								{statusOptions.map((status) => (
-									<DropdownItem
-										key={status}
-										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
-										{status.toLowerCase()}
 									</DropdownItem>
 								))}
 							</DropdownMenu>
