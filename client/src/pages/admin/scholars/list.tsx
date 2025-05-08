@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import {
 	Table,
 	TableHeader,
@@ -10,7 +10,7 @@ import {
 	Selection,
 } from "@heroui/table";
 import { Spinner } from "@heroui/spinner";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Pagination } from "@heroui/pagination";
 import { Tooltip } from "@heroui/tooltip";
 import { Select, SelectItem } from "@heroui/select";
@@ -25,13 +25,16 @@ import {
 	DropdownTrigger,
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
+import { useReactToPrint } from "react-to-print";
 
 import UpdateStatusModal from "./__components/update-status";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
+import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { Scholars as AllowedRoles } from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
+import { toast } from "sonner";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -63,11 +66,18 @@ export default function Scholars() {
 	const [page, setPage] = useState(1);
 	const { role } = useAuth();
 	const [filterValue, setFilterValue] = useState("");
+	const { loading: fetchingAllUsers, data: allUsers } = useQuery<{
+		students: PaginationResult<Student>;
+	}>(READ_STUDENTS_QUERY);
 
 	const [openModal, setOpenModal] = useState(false);
 
 	const [toUpdateScholar, setToUpdateScholar] = useState<Student | null>(null);
-
+	const toPrintRef = useRef<HTMLDivElement>(null);
+	const printFn = useReactToPrint({
+		contentRef: toPrintRef,
+		documentTitle: "Allowance List",
+	});
 	const [visibleColumns, setVisibleColumns] = useState<Selection>(
 		new Set(INITIAL_VISIBLE_COLUMNS)
 	);
@@ -292,8 +302,12 @@ export default function Scholars() {
 		);
 	}, [visibleColumns, statusFilter]);
 
+	const handlePrint = async () => {
+		printFn();
+	};
+
 	return (
-		<>
+		<div className="relative ">
 			<Card className="bg-[#A6F3B235]">
 				<CardBody className="pt-8 ">
 					<div className="px-5 flex justify-between">
@@ -304,15 +318,24 @@ export default function Scholars() {
 							</p>
 						</div>
 
-						<Button
-							color="success"
-							className="text-white/90"
-							as={Link}
-							isDisabled={!AllowedRoles.includes(role!)}
-							to="/admin/scholars/add">
-							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
-							Add Scholar
-						</Button>
+						<div className="flex gap-3 items-center">
+							<Button
+								color="success"
+								className="text-white/90"
+								as={Link}
+								isDisabled={!AllowedRoles.includes(role!)}
+								to="/admin/scholars/add">
+								<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
+								Add Scholar
+							</Button>
+							<Button
+								color="primary"
+								onPress={handlePrint}
+								className="text-white/90">
+								<Icon width="20" height="20" icon="fluent:print-16-regular" />
+								Print
+							</Button>
+						</div>
 					</div>
 					<Table
 						classNames={{
@@ -417,6 +440,83 @@ export default function Scholars() {
 					data={toUpdateScholar}
 				/>
 			)}
-		</>
+
+			{allUsers?.students.data && allUsers?.students.data.length > 0 && (
+				<div ref={toPrintRef} className="hidden print:block print:m-[0.75in]">
+					<div className="w-full bg-white overflow-hidden">
+						<div className="bg-yellow-100 py-10 relative flex justify-center items-center  px-4 border-b">
+							<img
+								src={logo}
+								className="h-24 w-24 absolute left-3 rounded-full items-center mix-blend-multiply"
+								alt="sedp logo"
+							/>
+							<div>
+								<h2 className="text-center font-semibold">
+									Scholarship Program
+								</h2>
+							</div>
+						</div>
+
+						<div className="w-full overflow-visible print:overflow-visible">
+							<table className="w-full border-collapse text-sm print:text-xs">
+								<thead>
+									<tr>
+										<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
+											NO.
+										</th>
+										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+											SCHOLAR&apos;S NAME
+										</th>
+										<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
+											YR
+										</th>
+										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+											COURSE
+										</th>
+										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+											SCHOOL
+										</th>
+									</tr>
+								</thead>
+								<tbody className="text-xs bo print:text-xs">
+									{allUsers.students.data.map((scholar: any, index: number) => {
+										return (
+											<tr key={scholar.id} className="print:break-inside-avoid">
+												<td className="border border-gray-300 px-1 py-1 text-center">
+													{index + 1}
+												</td>
+												<td className="px-1 py-1 max-w-xs truncate">
+													{scholar.lastName}, {scholar.firstName}
+												</td>
+												<td className="px-1 py-1 text-center">
+													{scholar.yearLevel}
+												</td>
+												<td className="px-1 py-1 max-w-xs truncate">
+													{scholar.course}
+												</td>
+												<td className="px-1 py-1 max-w-xs truncate">
+													{scholar.schoolName}
+												</td>
+											</tr>
+										);
+									})}
+
+									{/* <tr className="print:break-inside-avoid">
+										<td
+											colSpan={3}
+											className="border border-gray-300 px-1 py-1 text-right font-medium">
+											Total Scholars:
+										</td>
+										<td className="border border-gray-300 px-1 py-1 text-right font-bold">
+											{allUsers.students.count}
+										</td>
+									</tr> */}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
 	);
 }
