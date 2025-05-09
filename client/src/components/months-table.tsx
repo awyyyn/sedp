@@ -15,21 +15,23 @@ import { Tooltip } from "@heroui/tooltip";
 
 import { ViewAllowanceModal } from "./view-allowance-detail";
 
-import { Allowance } from "@/types";
+import { Allowance, Student } from "@/types";
 import { months } from "@/lib/constant";
 import { formatCurrency } from "@/lib/utils";
-import { useAuth } from "@/contexts";
 
 export function MonthsTable({
 	data,
 	isLoading = false,
+	studentUser,
 }: {
 	data: Allowance[];
 	isLoading?: boolean;
+	studentUser: Student;
 }) {
 	const [viewAllowanceModal, setViewAllowanceModal] = useState(false);
 	const [viewAllowance, setViewAllowance] = useState<Allowance | null>(null);
-	const { studentUser } = useAuth();
+
+	const allowanceData = data.sort((a, b) => a.month - b.month);
 
 	return (
 		<>
@@ -44,7 +46,7 @@ export function MonthsTable({
 					emptyContent="No documents found"
 					loadingContent={<Spinner label="Loading..." />}
 					isLoading={isLoading}>
-					{data.map((allowance) => {
+					{allowanceData.map((allowance) => {
 						return (
 							<TableRow
 								onClick={() => {}}
