@@ -138,6 +138,7 @@ export const readAllowances = async ({
 			createdAt: allowance.createdAt.toISOString(),
 			updatedAt: allowance.updatedAt.toISOString(),
 		})),
-		count: hasMore,
+		count,
+		hasMore,
 	};
 };
