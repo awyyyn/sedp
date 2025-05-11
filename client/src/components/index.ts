@@ -18,3 +18,4 @@ export * from "./view-allowance-detail";
 export * from "./role-based-btn";
 export * from "./announcement-skeleton";
 export * from "./error-ui";
+export * from "./no-data";
