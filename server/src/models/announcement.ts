@@ -43,6 +43,9 @@ export const readAnnouncements = async ({
 			createdBy: true,
 		},
 		take: pagination ? pagination.take : undefined,
+		orderBy: {
+			createdAt: "desc",
+		},
 		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
 	});
 
