@@ -73,6 +73,7 @@
 		"react-pro-sidebar": "^1.1.0",
 		"react-router-dom": "6.23.0",
 		"react-to-print": "^3.0.5",
+		"recharts": "^2.15.3",
 		"sonner": "^1.7.3",
 		"tailwind-merge": "^3.0.2",
 		"tailwind-variants": "0.1.20",
