@@ -102,9 +102,7 @@ export default function Announcements() {
 									as={Link}
 									isIconOnly
 									isDisabled={
-										!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(
-											role!
-										)
+										!["SUPER_ADMIN", "ADMIN_MANAGE_GATHERINGS"].includes(role!)
 									}
 									size="sm"
 									variant="light"
@@ -117,9 +115,7 @@ export default function Announcements() {
 								<Button
 									isIconOnly
 									isDisabled={
-										!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(
-											role!
-										)
+										!["SUPER_ADMIN", "ADMIN_MANAGE_GATHERINGS"].includes(role!)
 									}
 									size="sm"
 									variant="light"
@@ -231,7 +227,7 @@ export default function Announcements() {
 							as={Link}
 							to="/admin/announcements/add"
 							isDisabled={
-								!["SUPER_ADMIN", "ADMIN_MANAGE_ANNOUNCEMENTS"].includes(role!)
+								!["SUPER_ADMIN", "ADMIN_MANAGE_GATHERINGS"].includes(role!)
 							}>
 							<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
 							Add Announcement
