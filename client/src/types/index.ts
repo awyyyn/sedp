@@ -1,6 +1,8 @@
 import { SVGProps } from "react";
 import * as yup from "yup";
 
+import { Announcement } from "./announcement";
+
 import {
 	addAdminSchema,
 	AddAnnouncementSchema,
@@ -62,4 +64,25 @@ export interface FileTreeItem {
 	type: "file" | "folder";
 	disabled?: boolean;
 	children?: FileTreeItem[];
+}
+
+type ChartData = {
+	avg: number;
+	new: number;
+};
+
+export interface DashboardOverviewData {
+	chart: {
+		yearLevel: number;
+		disqualified: number;
+		active: number;
+		graduated: number;
+	}[];
+	briefOverview: {
+		activeScholars: ChartData;
+		totalScholars: ChartData;
+		graduated: ChartData;
+		events: ChartData;
+	};
+	announcements: Announcement[];
 }
