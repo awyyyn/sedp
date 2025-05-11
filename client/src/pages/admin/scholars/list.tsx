@@ -1,4 +1,4 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import {
 	Table,
 	TableHeader,
@@ -34,7 +34,6 @@ import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { Scholars as AllowedRoles } from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
-import { toast } from "sonner";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -66,13 +65,13 @@ export default function Scholars() {
 	const [page, setPage] = useState(1);
 	const { role } = useAuth();
 	const [filterValue, setFilterValue] = useState("");
-	const { loading: fetchingAllUsers, data: allUsers } = useQuery<{
+	const { data: allUsers } = useQuery<{
 		students: PaginationResult<Student>;
 	}>(READ_STUDENTS_QUERY);
 
 	const [openModal, setOpenModal] = useState(false);
 
-	const [toUpdateScholar, setToUpdateScholar] = useState<Student | null>(null);
+	const [toUpdateScholar] = useState<Student | null>(null);
 	const toPrintRef = useRef<HTMLDivElement>(null);
 	const printFn = useReactToPrint({
 		contentRef: toPrintRef,
@@ -87,7 +86,7 @@ export default function Scholars() {
 		direction: "ascending",
 	});
 	// const [statusFilter] = useState<Array<SystemUserRole>>([]);
-	const [statusFilter, setStatusFilter] = useState<Selection>("all");
+	const [statusFilter] = useState<Selection>("all");
 	const hasSearchFilter = Boolean(filterValue);
 
 	const { loading, data } = useQuery<{
