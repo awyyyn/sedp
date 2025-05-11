@@ -324,3 +324,44 @@ export const READ_MONTHLY_EVENTS = gql`
 		}
 	}
 `;
+
+export const READ_DASHBOARD_DATA = gql`
+	${systemUsersFragment}
+	query {
+		data: dashboardOverviewData {
+			chart {
+				yearLevel
+				disqualified
+				active
+				graduated
+			}
+			briefOverview {
+				activeScholars {
+					avg
+					new
+				}
+				events {
+					avg
+					new
+				}
+				graduated {
+					avg
+					new
+				}
+				totalScholars {
+					avg
+					new
+				}
+			}
+			announcements {
+				id
+				content
+				title
+				createdAt
+				createdBy {
+					...SystemUserFragment
+				}
+			}
+		}
+	}
+`;
