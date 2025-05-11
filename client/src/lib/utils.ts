@@ -114,3 +114,20 @@ export const checkIfPreviousMonth = (
 	// Check if the selected month and year match the previous month and year
 	return selectedMonth === currentMonth - 1;
 };
+
+export const getYearLevelLabel = (yearLevel: number): string => {
+	switch (yearLevel) {
+		case 1:
+			return "First Year";
+		case 2:
+			return "Second Year";
+		case 3:
+			return "Third Year";
+		case 4:
+			return "Fourth Year";
+		case 5:
+			return "Fifth Year";
+		default:
+			return "Unknown Year Level";
+	}
+};
