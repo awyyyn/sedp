@@ -53,6 +53,7 @@ export const typeDefs = gql`
 		monthlyEvents: [Event]
 		notifications: [ScholarNotification]
 		adminNotifications: [AdminNotification]
+		dashboardOverviewData: DashboardOverviewData
 	}
 
 	type Mutation {
@@ -333,6 +334,31 @@ export const typeDefs = gql`
 	enum Gender {
 		MALE
 		FEMALE
+	}
+
+	type OverviewData {
+		avg: Float
+		new: Int
+	}
+
+	type BriefOverviewData {
+		activeScholars: OverviewData
+		totalScholars: OverviewData
+		graduated: OverviewData
+		events: OverviewData
+	}
+
+	type ChartData {
+		yearLevel: Int
+		disqualified: Int
+		active: Int
+		graduated: Int
+	}
+
+	type DashboardOverviewData {
+		briefOverview: BriefOverviewData
+		chart: [ChartData]
+		announcements: [Announcement]
 	}
 
 	enum StudentStatus {

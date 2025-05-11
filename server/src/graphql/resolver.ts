@@ -46,6 +46,7 @@ import {
 	scholarNotificationSubscription,
 	createAdminNotificationResolver,
 	createStudentNotificationResolver,
+	dashboardOverviewDataResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -73,6 +74,7 @@ export const resolvers = {
 		monthlyEvents: monthlyEventsResolver,
 		notifications: readStudentNotificationResolver,
 		adminNotifications: readAdminNotificationResolver,
+		dashboardOverviewData: dashboardOverviewDataResolver,
 	},
 	Mutation: {
 		verifyTOTP: verifyTOTPResolver,
