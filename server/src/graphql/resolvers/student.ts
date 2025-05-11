@@ -48,13 +48,11 @@ export const studentsResolver = async (
 	{ filter, pagination, status }: PaginationArgs<StudentStatus>
 ) => {
 	try {
-		const data = await readAllStudents({
+		return await readAllStudents({
 			filter: filter ?? undefined,
 			pagination: pagination ? pagination : undefined,
 			status,
 		});
-
-		return data;
 	} catch (err) {
 		console.log(err);
 		throw new GraphQLError("Internal Server Error!");
