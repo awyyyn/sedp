@@ -188,8 +188,6 @@ export default function Scholars() {
 						</Tooltip> */}
 					</div>
 				);
-			case "phoneNumber":
-				return <p>+63 {cellValue?.toString()}</p>;
 			case "status":
 				return <p className="capitalize">{user.status.toLocaleLowerCase()}</p>;
 			default:
