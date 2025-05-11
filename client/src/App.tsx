@@ -4,7 +4,7 @@ import AuthLayout from "@/layouts/auth-layout";
 import Login from "@/pages/auth/admin/login";
 import ForgotPassword from "@/pages/auth/admin/forgot-password";
 import ProtectedRoute from "@/components/protected-route";
-import Dashboard from "@/pages/admin/dashboard";
+import Dashboard from "@/pages/admin/dashboard/dashboard";
 import AdminLayout from "@/layouts/admin-layout";
 import Scholars from "@/pages/admin/scholars/list";
 import SystemUsers from "@/pages/admin/system-users/system-users";
