@@ -27,6 +27,7 @@ import {
 import { Card, CardBody } from "@heroui/card";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { Helmet } from "react-helmet";
 
 import { DeleteModal } from "../__components";
 
@@ -346,6 +347,15 @@ export default function SystemUsers() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>System Users | Admin</title>
+				<meta
+					name="description"
+					content="Manage system users, view their details, and update their status."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235]">
 				<CardBody className="pt-8 ">
 					<div className="px-5 flex justify-between">
