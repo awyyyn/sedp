@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client";
+import { Helmet } from "react-helmet";
 
 import { READ_ANNOUNCEMENTS_QUERY } from "@/queries";
 import { Announcement, PaginationResult } from "@/types";
@@ -10,18 +11,29 @@ export default function AnnouncementFeed() {
 	}>(READ_ANNOUNCEMENTS_QUERY);
 
 	return (
-		<div className="container mx-auto px-5 md:px-5">
-			<div className="space-y-4">
-				{loading
-					? Array.from({ length: 2 }).map((_, index) => (
-							<SkeletonAnnouncementCard key={index} />
-						))
-					: (data?.announcements.data || []).map((announcement) => {
-							return (
-								<AnnouncementCard key={announcement.id} {...announcement} />
-							);
-						})}
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Timeline Announcements | SEDP</title>
+				<meta
+					name="description"
+					content="View the latest announcements related to SEDP scholarship programs."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
+			<div className="container mx-auto px-5 md:px-5">
+				<div className="space-y-4">
+					{loading
+						? Array.from({ length: 2 }).map((_, index) => (
+								<SkeletonAnnouncementCard key={index} />
+							))
+						: (data?.announcements.data || []).map((announcement) => {
+								return (
+									<AnnouncementCard key={announcement.id} {...announcement} />
+								);
+							})}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }

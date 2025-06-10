@@ -1,5 +1,6 @@
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { useState } from "react";
+import { Helmet } from "react-helmet";
 
 import { formatEventDate, formatEventTime } from "@/lib/utils";
 import { GET_CALENDAR_MEETINGS_QUERY, READ_MEETING_QUERY } from "@/queries";
@@ -19,6 +20,15 @@ export default function MeetingFeed() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Timeline Meetings | SEDP</title>
+				<meta
+					name="description"
+					content="View the timeline of meetings related to SEDP scholarship programs."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
 			<div className="container mx-auto px-5 md:px-5">
 				<FCalendar
 					handlePress={(id) => {
