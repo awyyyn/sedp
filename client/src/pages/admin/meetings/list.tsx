@@ -37,6 +37,7 @@ import { FCalendar } from "@/components";
 import { formatEventTime } from "@/lib/utils";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
+import { Helmet } from "react-helmet";
 
 export const columns = [
 	{ name: "TITLE", uid: "title", sortable: true },
@@ -300,6 +301,15 @@ export default function MeetingList() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Meetings | Admin</title>
+				<meta
+					name="description"
+					content="Manage your meetings efficiently with our admin page. View, add, edit, and delete meetings seamlessly. Stay organized and keep track of all your scheduled gatherings."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235] mb-8">
 				<CardBody className="pt-8 ">
 					<div className="md:px-5 flex justify-between">
