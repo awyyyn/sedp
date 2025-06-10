@@ -38,6 +38,7 @@ import { formatEventDate, formatEventTime } from "@/lib/utils";
 import { eventsAtom } from "@/states";
 import { useAuth } from "@/contexts";
 import { Gatherings } from "@/lib/constant";
+import { Helmet } from "react-helmet";
 
 const statusOptions: StudentStatus[] = [
 	"REQUESTING",
@@ -321,6 +322,15 @@ export default function EventList() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Events | Admin</title>
+				<meta
+					name="description"
+					content="Manage events to engage scholars and provide them with opportunities for learning and growth."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235] mb-8">
 				<CardBody className="pt-8 ">
 					<div className="md:px-5 flex justify-between">

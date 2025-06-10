@@ -24,8 +24,19 @@ export default function EditEvent() {
 	if (!data?.event || loading) return <Loader />;
 
 	return (
-		<div>
-			<EventForm edit defaultValues={data.event} />
-		</div>
+		<>
+			<>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Edit Event | Admin</title>
+				<meta
+					name="description"
+					content="Modify an existing event to keep scholars informed about upcoming opportunities and activities."
+				/>
+			</>
+			<div>
+				<EventForm edit defaultValues={data.event} />
+			</div>
+		</>
 	);
 }

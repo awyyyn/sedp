@@ -12,6 +12,7 @@ import { formatEventDate } from "@/lib/utils";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
 import { Loader } from "@/components/loader";
+import { Helmet } from "react-helmet";
 
 const EventInfo = () => {
 	const { id } = useParams();
@@ -30,87 +31,98 @@ const EventInfo = () => {
 	if (loading || !data?.event) return <Loader />;
 
 	return (
-		<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">
-			{/* Personal Information */}
-			<Card className="py-4">
-				<CardHeader className="flex justify-between   ">
-					<div className="flex gap-2 ">
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Event Info | Admin</title>
+				<meta
+					name="description"
+					content="View detailed information about the event, including its schedule and location."
+				/>
+			</Helmet>
+			<div className="space-y-6 pb-10 max-w-screen-lg mx-auto">
+				{/* Personal Information */}
+				<Card className="py-4">
+					<CardHeader className="flex justify-between   ">
+						<div className="flex gap-2 ">
+							<Button
+								as={Link}
+								to="/admin/events"
+								color="success"
+								className="text-white"
+								isIconOnly
+								// startContent={<Icon icon="ep:back" />}>
+							>
+								<Icon icon="ep:back" />
+							</Button>
+							<div className="leading-none">
+								<h1 className="text-2xl leading-none">Event Information</h1>
+								<p className="text-sm leading-none  text-gray-500 text-muted-foreground">
+									Details about the event&apos;s schedule and location.
+								</p>
+							</div>
+						</div>
 						<Button
 							as={Link}
-							to="/admin/events"
-							color="success"
+							isDisabled={!Gatherings.includes(role!)}
+							to={`/admin/events/${data.event.id}/edit`}
 							className="text-white"
-							isIconOnly
-							// startContent={<Icon icon="ep:back" />}>
-						>
-							<Icon icon="ep:back" />
+							color="success">
+							Edit
 						</Button>
-						<div className="leading-none">
-							<h1 className="text-2xl leading-none">Event Information</h1>
-							<p className="text-sm leading-none  text-gray-500 text-muted-foreground">
-								Details about the event&apos;s schedule and location.
+					</CardHeader>
+				</Card>
+
+				<Card>
+					<CardHeader className="px-6 pt-4">
+						<h1 className="flex items-center gap-2">
+							<Icon icon="solar:info-square-broken" width="24" height="24" />
+							Event Information
+						</h1>
+					</CardHeader>
+					<Divider />
+					<CardBody className="p-6 space-y-4">
+						<div className="space-y-1">
+							<p className="text-sm font-medium text-gray-500 text-muted-foreground">
+								Event Name
+							</p>
+							<p className="font-medium">{data.event.title}</p>
+						</div>
+
+						<div className="space-y-1">
+							<p className="text-sm font-medium text-gray-500 text-muted-foreground">
+								Description
+							</p>
+							<p className="font-medium">{data.event.description}</p>
+						</div>
+						<div className="space-y-1">
+							<p className="text-sm font-medium text-gray-500 text-muted-foreground">
+								Time
+							</p>
+							<p className="font-medium">
+								{format(data.event.startTime, "hh:mm a")} -{" "}
+								{format(data.event.endTime, "hh:mm a")}
 							</p>
 						</div>
-					</div>
-					<Button
-						as={Link}
-						isDisabled={!Gatherings.includes(role!)}
-						to={`/admin/events/${data.event.id}/edit`}
-						className="text-white"
-						color="success">
-						Edit
-					</Button>
-				</CardHeader>
-			</Card>
-
-			<Card>
-				<CardHeader className="px-6 pt-4">
-					<h1 className="flex items-center gap-2">
-						<Icon icon="solar:info-square-broken" width="24" height="24" />
-						Event Information
-					</h1>
-				</CardHeader>
-				<Divider />
-				<CardBody className="p-6 space-y-4">
-					<div className="space-y-1">
-						<p className="text-sm font-medium text-gray-500 text-muted-foreground">
-							Event Name
-						</p>
-						<p className="font-medium">{data.event.title}</p>
-					</div>
-
-					<div className="space-y-1">
-						<p className="text-sm font-medium text-gray-500 text-muted-foreground">
-							Description
-						</p>
-						<p className="font-medium">{data.event.description}</p>
-					</div>
-					<div className="space-y-1">
-						<p className="text-sm font-medium text-gray-500 text-muted-foreground">
-							Time
-						</p>
-						<p className="font-medium">
-							{format(data.event.startTime, "hh:mm a")} -{" "}
-							{format(data.event.endTime, "hh:mm a")}
-						</p>
-					</div>
-					<div className="space-y-1">
-						<p className="text-sm font-medium text-gray-500 text-muted-foreground">
-							Date
-						</p>
-						<p className="font-medium">
-							{formatEventDate(data.event.startDate, data.event.endDate)}
-						</p>
-					</div>
-					<div className="space-y-1">
-						<p className="text-sm font-medium text-gray-500 text-muted-foreground">
-							Location
-						</p>
-						<p className="font-medium">{data.event.location}</p>
-					</div>
-				</CardBody>
-			</Card>
-		</div>
+						<div className="space-y-1">
+							<p className="text-sm font-medium text-gray-500 text-muted-foreground">
+								Date
+							</p>
+							<p className="font-medium">
+								{formatEventDate(data.event.startDate, data.event.endDate)}
+							</p>
+						</div>
+						<div className="space-y-1">
+							<p className="text-sm font-medium text-gray-500 text-muted-foreground">
+								Location
+							</p>
+							<p className="font-medium">{data.event.location}</p>
+						</div>
+					</CardBody>
+				</Card>
+			</div>
+		</>
 	);
 };
 
