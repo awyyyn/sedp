@@ -1,2 +1,3 @@
 server/dist/
 client/.env
+client/bun.lock
