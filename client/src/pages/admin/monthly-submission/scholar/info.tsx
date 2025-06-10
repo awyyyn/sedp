@@ -10,6 +10,7 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
+import { Helmet } from "react-helmet";
 
 import GenerateAllowance from "../../__components/generate-allowance";
 
@@ -90,175 +91,188 @@ export default function StudentFiles() {
 	const selectedYear = Number(Array.from(yearFilter)[0]);
 
 	return (
-		<div className="container mx-auto  py-5">
-			<div className="flex-col md:flex-row flex  justify-between items-center ">
-				<div>
-					<h1 className="text-2xl">
-						{scholar.firstName} {scholar.lastName}&apos;s <span>files</span>
-					</h1>
-					<p className="md:max-w-2xl text-sm text-default-400">
-						The list below displays the files submitted by the student for the
-						monthly submission process. Please click on a file to view more
-						details.
-					</p>
-				</div>
-				<div className=" w-full md:w-auto py-4 md:py-0 flex gap-2 items-center">
-					{data?.allowance ? (
-						<Button color="primary" onPress={() => setViewAllowanceModal(true)}>
-							View
-							<span className="hidden md:block">Allowance</span>
-						</Button>
-					) : (
-						checkIfPreviousMonth(selectedMonth, selectedYear) && (
-							<>
-								<Button
-									color="primary"
-									isDisabled={
-										!Documents.includes(role!) || data?.documents.length === 0
-									}
-									onPress={() => setGenerateModal(true)}>
-									Generate
-									<span className="hidden md:block">Allowance</span>
-								</Button>
-							</>
-						)
-					)}
-
-					<Dropdown
-						classNames={{
-							content: "bg-[#A6F3B2]",
-						}}>
-						<DropdownTrigger className=" flex bg-[#A6F3B2]">
-							<Button
-								endContent={
-									<Icon
-										icon="mynaui:chevron-down-solid"
-										width="24"
-										height="24"
-									/>
-								}
-								size="md"
-								variant="flat">
-								Year {yearFilter}
-							</Button>
-						</DropdownTrigger>
-						<DropdownMenu
-							// onSelectionChange={(year) => {
-							// 	if (!year) return;
-							// 	setYearFilter(Number(year.currentKey));
-							// }}
-							onSelectionChange={setYearFilter}
-							selectedKeys={yearFilter}
-							aria-label="Year Filter"
-							selectionMode="single">
-							{years.map((year) => (
-								<DropdownItem
-									key={year}
-									className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
-									{year}
-								</DropdownItem>
-							))}
-						</DropdownMenu>
-					</Dropdown>
-					<Dropdown
-						classNames={{
-							content: "bg-[#A6F3B2]",
-						}}>
-						<DropdownTrigger className="  bg-[#A6F3B2]">
-							<Button
-								endContent={
-									<Icon
-										icon="mynaui:chevron-down-solid"
-										width="24"
-										height="24"
-									/>
-								}
-								size="md"
-								variant="flat">
-								{Array.from(monthFilter).length === 0 && "Month"}{" "}
-								{months[Number(Array.from(monthFilter)[0]) - 1]}
-							</Button>
-						</DropdownTrigger>
-						<DropdownMenu
-							// onSelectionChange={(year) => {
-							// 	if (!year) return;
-							// 	setYearFilter(Number(year.currentKey));
-							// }}
-							disallowEmptySelection
-							onSelectionChange={setMonthFilter}
-							selectedKeys={monthFilter}
-							aria-label="Year Filter"
-							selectionMode="single">
-							{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((year) => (
-								<DropdownItem
-									key={year}
-									className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
-									{months[year - 1]}
-								</DropdownItem>
-							))}
-						</DropdownMenu>
-					</Dropdown>
-				</div>
-			</div>
-			<div className="px-0.5">
-				<DocumentTable
-					showAmount
-					data={data?.documents || []}
-					isLoading={loading}
-					handleRowClick={(url) => {
-						onPreviewModalChange(true);
-						setToPreview(url);
-					}}
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Scholar Monthly Info | Admin</title>
+				<meta
+					name="description"
+					content="View the monthly submission files of a scholar."
 				/>
-				{toPreview && (
-					<PreviewModal
-						src={toPreview}
-						type={
-							imagesExtensions.includes(getFileExtension(toPreview) || "png")
-								? `image`
-								: "document"
-						}
-						isOpen={previewModal}
-						onOpenChange={onPreviewModalChange}
+			</Helmet>
+			<div className="container mx-auto  py-5">
+				<div className="flex-col md:flex-row flex  justify-between items-center ">
+					<div>
+						<h1 className="text-2xl">
+							{scholar.firstName} {scholar.lastName}&apos;s <span>files</span>
+						</h1>
+						<p className="md:max-w-2xl text-sm text-default-400">
+							The list below displays the files submitted by the student for the
+							monthly submission process. Please click on a file to view more
+							details.
+						</p>
+					</div>
+					<div className=" w-full md:w-auto py-4 md:py-0 flex gap-2 items-center">
+						{data?.allowance ? (
+							<Button
+								color="primary"
+								onPress={() => setViewAllowanceModal(true)}>
+								View
+								<span className="hidden md:block">Allowance</span>
+							</Button>
+						) : (
+							checkIfPreviousMonth(selectedMonth, selectedYear) && (
+								<>
+									<Button
+										color="primary"
+										isDisabled={
+											!Documents.includes(role!) || data?.documents.length === 0
+										}
+										onPress={() => setGenerateModal(true)}>
+										Generate
+										<span className="hidden md:block">Allowance</span>
+									</Button>
+								</>
+							)
+						)}
+
+						<Dropdown
+							classNames={{
+								content: "bg-[#A6F3B2]",
+							}}>
+							<DropdownTrigger className=" flex bg-[#A6F3B2]">
+								<Button
+									endContent={
+										<Icon
+											icon="mynaui:chevron-down-solid"
+											width="24"
+											height="24"
+										/>
+									}
+									size="md"
+									variant="flat">
+									Year {yearFilter}
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu
+								// onSelectionChange={(year) => {
+								// 	if (!year) return;
+								// 	setYearFilter(Number(year.currentKey));
+								// }}
+								onSelectionChange={setYearFilter}
+								selectedKeys={yearFilter}
+								aria-label="Year Filter"
+								selectionMode="single">
+								{years.map((year) => (
+									<DropdownItem
+										key={year}
+										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
+										{year}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown>
+						<Dropdown
+							classNames={{
+								content: "bg-[#A6F3B2]",
+							}}>
+							<DropdownTrigger className="  bg-[#A6F3B2]">
+								<Button
+									endContent={
+										<Icon
+											icon="mynaui:chevron-down-solid"
+											width="24"
+											height="24"
+										/>
+									}
+									size="md"
+									variant="flat">
+									{Array.from(monthFilter).length === 0 && "Month"}{" "}
+									{months[Number(Array.from(monthFilter)[0]) - 1]}
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu
+								// onSelectionChange={(year) => {
+								// 	if (!year) return;
+								// 	setYearFilter(Number(year.currentKey));
+								// }}
+								disallowEmptySelection
+								onSelectionChange={setMonthFilter}
+								selectedKeys={monthFilter}
+								aria-label="Year Filter"
+								selectionMode="single">
+								{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((year) => (
+									<DropdownItem
+										key={year}
+										className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize">
+										{months[year - 1]}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown>
+					</div>
+				</div>
+				<div className="px-0.5">
+					<DocumentTable
+						showAmount
+						data={data?.documents || []}
+						isLoading={loading}
+						handleRowClick={(url) => {
+							onPreviewModalChange(true);
+							setToPreview(url);
+						}}
+					/>
+					{toPreview && (
+						<PreviewModal
+							src={toPreview}
+							type={
+								imagesExtensions.includes(getFileExtension(toPreview) || "png")
+									? `image`
+									: "document"
+							}
+							isOpen={previewModal}
+							onOpenChange={onPreviewModalChange}
+						/>
+					)}
+				</div>
+				{(data?.documents || []).length > 0 && (
+					<>
+						<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
+							{/*  */}
+							<h3>Total expenses:</h3>
+							<h2 className="text-2xl font-bold">
+								{formatCurrency(
+									data?.documents
+										? data.documents.reduce(
+												(acc, curr) => acc + (curr.amount || 0),
+												0
+											)
+										: 0
+								)}
+							</h2>
+						</div>
+						{generateModal && (
+							<GenerateAllowance
+								isOpen={generateModal}
+								onOpenChange={setGenerateModal}
+								scholar={scholar}
+								documents={data?.documents.filter((doc) => doc.amount) || []}
+								month={Number(Array.from(monthFilter)[0])}
+								year={Number(Array.from(yearFilter)[0])}
+							/>
+						)}
+					</>
+				)}
+				{data?.allowance && viewAllowanceModal && (
+					<ViewAllowanceModal
+						allowance={data.allowance}
+						isOpen={viewAllowanceModal}
+						onOpenChange={setViewAllowanceModal}
+						student={scholar}
 					/>
 				)}
 			</div>
-			{(data?.documents || []).length > 0 && (
-				<>
-					<div className="absolute bottom-0 left-0 right-0 bg-white p-5 md:px-10 flex justify-between items-center">
-						{/*  */}
-						<h3>Total expenses:</h3>
-						<h2 className="text-2xl font-bold">
-							{formatCurrency(
-								data?.documents
-									? data.documents.reduce(
-											(acc, curr) => acc + (curr.amount || 0),
-											0
-										)
-									: 0
-							)}
-						</h2>
-					</div>
-					{generateModal && (
-						<GenerateAllowance
-							isOpen={generateModal}
-							onOpenChange={setGenerateModal}
-							scholar={scholar}
-							documents={data?.documents.filter((doc) => doc.amount) || []}
-							month={Number(Array.from(monthFilter)[0])}
-							year={Number(Array.from(yearFilter)[0])}
-						/>
-					)}
-				</>
-			)}
-			{data?.allowance && viewAllowanceModal && (
-				<ViewAllowanceModal
-					allowance={data.allowance}
-					isOpen={viewAllowanceModal}
-					onOpenChange={setViewAllowanceModal}
-					student={scholar}
-				/>
-			)}
-		</div>
+		</>
 	);
 }

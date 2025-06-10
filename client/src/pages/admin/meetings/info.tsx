@@ -5,13 +5,13 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Divider } from "@heroui/divider";
 import { useQuery } from "@apollo/client";
 import { format, formatDate } from "date-fns";
+import { Helmet } from "react-helmet";
 
 import { Meeting } from "@/types";
 import { READ_MEETING_QUERY } from "@/queries";
 import { Gatherings } from "@/lib/constant";
 import { useAuth } from "@/contexts";
 import { Loader } from "@/components/loader";
-import { Helmet } from "react-helmet";
 
 const MeetingInfo = () => {
 	const { id } = useParams();

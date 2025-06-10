@@ -26,6 +26,7 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { useReactToPrint } from "react-to-print";
+import { Helmet } from "react-helmet";
 
 import UpdateStatusModal from "./__components/update-status";
 
@@ -304,201 +305,220 @@ export default function Scholars() {
 	};
 
 	return (
-		<div className="relative ">
-			<Card className="bg-[#A6F3B235]">
-				<CardBody className="pt-8 ">
-					<div className="px-5 flex justify-between">
-						<div className="leading-loose">
-							<h1 className="text-xl leading-none font-medium">Scholar</h1>
-							<p className="text-sm leading-loose text-gray-400">
-								List of scholars
-							</p>
-						</div>
-
-						<div className="flex gap-3 items-center">
-							<Button
-								color="success"
-								className="text-white/90"
-								as={Link}
-								isDisabled={!AllowedRoles.includes(role!)}
-								to="/admin/scholars/add">
-								<Icon icon="lets-icons:add-ring-light" width="24" height="24" />
-								Add Scholar
-							</Button>
-							<Button
-								color="primary"
-								onPress={handlePrint}
-								className="text-white/90">
-								<Icon width="20" height="20" icon="fluent:print-16-regular" />
-								Print
-							</Button>
-						</div>
-					</div>
-					<Table
-						classNames={{
-							wrapper: "bg-transparent",
-						}}
-						sortDescriptor={sortDescriptor}
-						onSortChange={setSortDescriptor}
-						aria-label="Example table with custom cells"
-						shadow="none"
-						bottomContentPlacement="outside"
-						topContent={topContent}
-						bottomContent={
-							pages > 0 ? (
-								<div className="flex w-full  justify-between px-5 flex-wrap">
-									<Pagination
-										isCompact
-										showControls
-										// showControls={pages > 3}
-										// showShadow
-										color="primary"
-										classNames={{
-											// base: "bg-[#A6F3B2]",
-											cursor: "bg-green-600",
-										}}
-										page={page}
-										isDisabled={hasSearchFilter}
-										total={pages}
-										onChange={setPage}
-									/>
-									<div className="flex gap-3 items-center">
-										<p className="min-w-[100px] inline  ">
-											<span className="text-sm">Total Scholars: </span>
-											{data?.students.count || 0}
-										</p>
-										<Select
-											classNames={{
-												trigger: "bg-green-600   group-hover:bg-green-600/95 ",
-												value: " !text-white",
-											}}
-											className="max-w-[200px] text-white w-[100px] inline "
-											items={rowsPerPageItems}
-											selectedKeys={[rowsPerPage.toString()]}
-											onSelectionChange={(v) => {
-												if (
-													!!v &&
-													v.currentKey?.toString()! !== rowsPerPage &&
-													v.currentKey?.toString()! !== undefined
-												) {
-													setRowsPerPage(v.currentKey?.toString()!);
-												}
-											}}>
-											{rowsPerPageItems.map((row) => (
-												<SelectItem
-													color="success"
-													key={row.key}
-													className="data-[hover=true]:text-white data-[selected=true]:text-white data-[focus=true]:text-white data-[focus-visible=true]:text-white data-[hover=true]:bg-green-600   data-[selected=true]:bg-green-600"
-													isReadOnly={
-														(data?.students.count || 0) < Number(row.key)
-													}>
-													{row.label}
-												</SelectItem>
-											))}
-										</Select>
-									</div>
-								</div>
-							) : null
-						}>
-						<TableHeader columns={headerColumns}>
-							{(column) => (
-								<TableColumn
-									className="bg-[#A6F3B2]"
-									allowsSorting={column.sortable}
-									key={column.uid}
-									align={column.uid === "actions" ? "center" : "start"}>
-									{column.name}
-								</TableColumn>
-							)}
-						</TableHeader>
-						<TableBody
-							emptyContent={"No rows to display."}
-							loadingContent={<Spinner />}
-							loadingState={loadingState}
-							// items={sortedItems ?? []}
-							items={sortedItems ?? []}>
-							{(item) => (
-								<TableRow key={`${item.id}`}>
-									{(columnKey) => (
-										<TableCell className="min-w-[140px]">
-											{renderCell(item, columnKey)}
-										</TableCell>
-									)}
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
-				</CardBody>
-			</Card>
-			{toUpdateScholar && (
-				<UpdateStatusModal
-					isOpen={openModal}
-					setIsOpen={setOpenModal}
-					data={toUpdateScholar}
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Scholars | Admin</title>
+				<meta
+					name="description"
+					content="View and manage scholars in the admin panel."
 				/>
-			)}
+			</Helmet>
+			<div className="relative ">
+				<Card className="bg-[#A6F3B235]">
+					<CardBody className="pt-8 ">
+						<div className="px-5 flex justify-between">
+							<div className="leading-loose">
+								<h1 className="text-xl leading-none font-medium">Scholar</h1>
+								<p className="text-sm leading-loose text-gray-400">
+									List of scholars
+								</p>
+							</div>
 
-			{allUsers?.students.data && allUsers?.students.data.length > 0 && (
-				<div ref={toPrintRef} className="hidden print:block print:m-[0.75in]">
-					<div className="w-full bg-white overflow-hidden">
-						<div className="bg-yellow-100 py-10 relative flex justify-center items-center  px-4 border-b">
-							<img
-								src={logo}
-								className="h-24 w-24 absolute left-3 rounded-full items-center mix-blend-multiply"
-								alt="sedp logo"
-							/>
-							<div>
-								<h2 className="text-center font-semibold">
-									Scholarship Program
-								</h2>
+							<div className="flex gap-3 items-center">
+								<Button
+									color="success"
+									className="text-white/90"
+									as={Link}
+									isDisabled={!AllowedRoles.includes(role!)}
+									to="/admin/scholars/add">
+									<Icon
+										icon="lets-icons:add-ring-light"
+										width="24"
+										height="24"
+									/>
+									Add Scholar
+								</Button>
+								<Button
+									color="primary"
+									onPress={handlePrint}
+									className="text-white/90">
+									<Icon width="20" height="20" icon="fluent:print-16-regular" />
+									Print
+								</Button>
 							</div>
 						</div>
+						<Table
+							classNames={{
+								wrapper: "bg-transparent",
+							}}
+							sortDescriptor={sortDescriptor}
+							onSortChange={setSortDescriptor}
+							aria-label="Example table with custom cells"
+							shadow="none"
+							bottomContentPlacement="outside"
+							topContent={topContent}
+							bottomContent={
+								pages > 0 ? (
+									<div className="flex w-full  justify-between px-5 flex-wrap">
+										<Pagination
+											isCompact
+											showControls
+											// showControls={pages > 3}
+											// showShadow
+											color="primary"
+											classNames={{
+												// base: "bg-[#A6F3B2]",
+												cursor: "bg-green-600",
+											}}
+											page={page}
+											isDisabled={hasSearchFilter}
+											total={pages}
+											onChange={setPage}
+										/>
+										<div className="flex gap-3 items-center">
+											<p className="min-w-[100px] inline  ">
+												<span className="text-sm">Total Scholars: </span>
+												{data?.students.count || 0}
+											</p>
+											<Select
+												classNames={{
+													trigger:
+														"bg-green-600   group-hover:bg-green-600/95 ",
+													value: " !text-white",
+												}}
+												className="max-w-[200px] text-white w-[100px] inline "
+												items={rowsPerPageItems}
+												selectedKeys={[rowsPerPage.toString()]}
+												onSelectionChange={(v) => {
+													if (
+														!!v &&
+														v.currentKey?.toString()! !== rowsPerPage &&
+														v.currentKey?.toString()! !== undefined
+													) {
+														setRowsPerPage(v.currentKey?.toString()!);
+													}
+												}}>
+												{rowsPerPageItems.map((row) => (
+													<SelectItem
+														color="success"
+														key={row.key}
+														className="data-[hover=true]:text-white data-[selected=true]:text-white data-[focus=true]:text-white data-[focus-visible=true]:text-white data-[hover=true]:bg-green-600   data-[selected=true]:bg-green-600"
+														isReadOnly={
+															(data?.students.count || 0) < Number(row.key)
+														}>
+														{row.label}
+													</SelectItem>
+												))}
+											</Select>
+										</div>
+									</div>
+								) : null
+							}>
+							<TableHeader columns={headerColumns}>
+								{(column) => (
+									<TableColumn
+										className="bg-[#A6F3B2]"
+										allowsSorting={column.sortable}
+										key={column.uid}
+										align={column.uid === "actions" ? "center" : "start"}>
+										{column.name}
+									</TableColumn>
+								)}
+							</TableHeader>
+							<TableBody
+								emptyContent={"No rows to display."}
+								loadingContent={<Spinner />}
+								loadingState={loadingState}
+								// items={sortedItems ?? []}
+								items={sortedItems ?? []}>
+								{(item) => (
+									<TableRow key={`${item.id}`}>
+										{(columnKey) => (
+											<TableCell className="min-w-[140px]">
+												{renderCell(item, columnKey)}
+											</TableCell>
+										)}
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</CardBody>
+				</Card>
+				{toUpdateScholar && (
+					<UpdateStatusModal
+						isOpen={openModal}
+						setIsOpen={setOpenModal}
+						data={toUpdateScholar}
+					/>
+				)}
 
-						<div className="w-full overflow-visible print:overflow-visible">
-							<table className="w-full border-collapse text-sm print:text-xs">
-								<thead>
-									<tr>
-										<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
-											NO.
-										</th>
-										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-											SCHOLAR&apos;S NAME
-										</th>
-										<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
-											YR
-										</th>
-										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-											COURSE
-										</th>
-										<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-											SCHOOL
-										</th>
-									</tr>
-								</thead>
-								<tbody className="text-xs bo print:text-xs">
-									{allUsers.students.data.map((scholar: any, index: number) => {
-										return (
-											<tr key={scholar.id} className="print:break-inside-avoid">
-												<td className="border border-gray-300 px-1 py-1 text-center">
-													{index + 1}
-												</td>
-												<td className="px-1 py-1 max-w-xs truncate">
-													{scholar.lastName}, {scholar.firstName}
-												</td>
-												<td className="px-1 py-1 text-center">
-													{scholar.yearLevel}
-												</td>
-												<td className="px-1 py-1 max-w-xs truncate">
-													{scholar.course}
-												</td>
-												<td className="px-1 py-1 max-w-xs truncate">
-													{scholar.schoolName}
-												</td>
-											</tr>
-										);
-									})}
+				{allUsers?.students.data && allUsers?.students.data.length > 0 && (
+					<div ref={toPrintRef} className="hidden print:block print:m-[0.75in]">
+						<div className="w-full bg-white overflow-hidden">
+							<div className="bg-yellow-100 py-10 relative flex justify-center items-center  px-4 border-b">
+								<img
+									src={logo}
+									className="h-24 w-24 absolute left-3 rounded-full items-center mix-blend-multiply"
+									alt="sedp logo"
+								/>
+								<div>
+									<h2 className="text-center font-semibold">
+										Scholarship Program
+									</h2>
+								</div>
+							</div>
 
-									{/* <tr className="print:break-inside-avoid">
+							<div className="w-full overflow-visible print:overflow-visible">
+								<table className="w-full border-collapse text-sm print:text-xs">
+									<thead>
+										<tr>
+											<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
+												NO.
+											</th>
+											<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+												SCHOLAR&apos;S NAME
+											</th>
+											<th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
+												YR
+											</th>
+											<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+												COURSE
+											</th>
+											<th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+												SCHOOL
+											</th>
+										</tr>
+									</thead>
+									<tbody className="text-xs bo print:text-xs">
+										{allUsers.students.data.map(
+											(scholar: any, index: number) => {
+												return (
+													<tr
+														key={scholar.id}
+														className="print:break-inside-avoid">
+														<td className="border border-gray-300 px-1 py-1 text-center">
+															{index + 1}
+														</td>
+														<td className="px-1 py-1 max-w-xs truncate">
+															{scholar.lastName}, {scholar.firstName}
+														</td>
+														<td className="px-1 py-1 text-center">
+															{scholar.yearLevel}
+														</td>
+														<td className="px-1 py-1 max-w-xs truncate">
+															{scholar.course}
+														</td>
+														<td className="px-1 py-1 max-w-xs truncate">
+															{scholar.schoolName}
+														</td>
+													</tr>
+												);
+											}
+										)}
+
+										{/* <tr className="print:break-inside-avoid">
 										<td
 											colSpan={3}
 											className="border border-gray-300 px-1 py-1 text-right font-medium">
@@ -508,12 +528,13 @@ export default function Scholars() {
 											{allUsers.students.count}
 										</td>
 									</tr> */}
-								</tbody>
-							</table>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
-				</div>
-			)}
-		</div>
+				)}
+			</div>
+		</>
 	);
 }
