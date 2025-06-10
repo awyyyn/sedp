@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import { Button } from "@heroui/button";
 import { useSearchParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Helmet } from "react-helmet";
 
 import ErrorFetching from "../documents/__components/error-fetch";
 
@@ -86,6 +87,15 @@ export default function MyAllowanceList() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Scholar Allowance List | SEDP</title>
+				<meta
+					name="description"
+					content="View and manage your scholar allowances for the SEDP scholarship program."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
 			<div className="px-5 container mx-auto md:px-0 max-h-screen pt-24 overflow-hidden">
 				<div className="">
 					<div className="text-2xl font-semibold">Scholar Allowance List</div>
