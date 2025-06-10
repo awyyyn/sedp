@@ -1,3 +1,11 @@
-.env*
+
+# Ignore environment files
+*.env 
+# Do not track example environment files
+!.env.example
+
+# Ignore log files
 node_modules/ 
+
+# Ignore build output directories
 dist/
