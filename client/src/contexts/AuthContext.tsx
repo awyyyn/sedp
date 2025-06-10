@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		(async () => {
+			setLoading(true);
 			const token = localStorage.getItem("accessToken");
 			const isLoggedIn = localStorage.getItem("isLoggedIn");
 
