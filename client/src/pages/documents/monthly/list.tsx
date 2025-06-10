@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import ErrorFetching from "../__components/error-fetch";
 
@@ -122,6 +123,16 @@ export default function Monthly() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Monthly Documents | SEDP</title>
+				<meta
+					name="description"
+					content="View and manage your monthly documents for the SEDP scholarship program."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
+
 			<div className="px-5 container mx-auto md:px-0">
 				<div className="">
 					<div className="text-2xl font-semibold">Monthly Documents</div>

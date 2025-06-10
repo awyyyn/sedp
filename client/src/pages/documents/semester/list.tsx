@@ -3,6 +3,7 @@ import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useMutation, useQuery } from "@apollo/client";
 import { Link, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { toast } from "sonner";
 
 import { FileTree } from "../../../components/file-tree";
@@ -153,6 +154,15 @@ export default function Semester() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Semester Documents | SEDP</title>
+				<meta
+					name="description"
+					content="View and manage your semester documents for the SEDP scholarship program."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
 			<div className="px-5 container mx-auto md:px-0">
 				<div className="">
 					<div className="text-2xl font-semibold">Semester Documents</div>
