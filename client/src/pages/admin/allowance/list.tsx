@@ -42,6 +42,7 @@ import {
 import { Documents, months, semester } from "@/lib/constant";
 import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
+import { Helmet } from "react-helmet";
 
 export const columns = [
 	{ name: "NAME", uid: "name", sortable: true },
@@ -392,6 +393,15 @@ export default function AllowanceList() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Allowance Management</title>
+				<meta
+					name="description"
+					content="Manage and review allowance records for students."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235] mb-8">
 				<CardBody className="pt-8 ">
 					<div className="md:px-5 flex justify-between">
