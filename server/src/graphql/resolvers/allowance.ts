@@ -97,7 +97,8 @@ export const allowancesResolver = async (
       !(
         app.role === "SUPER_ADMIN" ||
         app.role === "ADMIN_MANAGE_DOCUMENTS" ||
-        app.role === "ADMIN_VIEWER"
+        app.role === "ADMIN_VIEWER" ||
+        app.role === "ADMIN_MANAGE_SCHOLAR"
       )
     ) {
       studentId = app.id;
