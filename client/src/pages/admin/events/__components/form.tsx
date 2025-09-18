@@ -19,16 +19,16 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { Link, useNavigate } from "react-router-dom";
 import { formatDate } from "date-fns";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { Tooltip } from "@heroui/tooltip";
 
-import { AddEventSchema, EditEventSchema } from "@/definitions";
+import { AddEventSchema } from "@/definitions";
 import { AddEventSchemaData, Event, PaginationResult } from "@/types";
 import {
   CREATE_EVENT_MUTATION,
   READ_EVENTS_QUERY,
   UPDATE_EVENT_MUTATION,
 } from "@/queries";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Tooltip } from "@heroui/tooltip";
 
 interface EventFormProps {
   edit?: boolean;
