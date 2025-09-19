@@ -57,448 +57,458 @@ import SemesterSubmissions from "@/pages/admin/semester-docs/list";
 import StudentSemesterFiles from "@/pages/admin/semester-docs/scholar/info";
 import DisqualifyPage from "@/pages/disqualify";
 import ScholarAllowances from "@/pages/admin/scholars/allowances";
+import Transactions from "@/pages/admin/transactions/list";
 
 function App() {
-	const manageScholarRoutes = {
-		element: (
-			<ProtectedRoute
-				allowedRoles={[
-					"SUPER_ADMIN",
-					"ADMIN_MANAGE_SCHOLAR",
-					"ADMIN_VIEWER",
-					"ADMIN_MANAGE_DOCUMENTS",
-				]}
-			/>
-		),
-		path: "admin",
-		children: [
-			{
-				element: <AdminLayout />,
-				children: [
-					{
-						path: "scholars",
-						children: [
-							{
-								element: <Scholars />,
-								index: true,
-							},
-							{
-								element: <AddScholar />,
-								path: "add",
-							},
-							{
-								path: ":id",
-								element: <ScholarInfo />,
-							},
+  const manageScholarRoutes = {
+    element: (
+      <ProtectedRoute
+        allowedRoles={[
+          "SUPER_ADMIN",
+          "ADMIN_MANAGE_SCHOLAR",
+          "ADMIN_VIEWER",
+          "ADMIN_MANAGE_DOCUMENTS",
+        ]}
+      />
+    ),
+    path: "admin",
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: "scholars",
+            children: [
+              {
+                element: <Scholars />,
+                index: true,
+              },
+              {
+                element: <AddScholar />,
+                path: "add",
+              },
+              {
+                path: ":id",
+                element: <ScholarInfo />,
+              },
 
-							{
-								path: ":scholarId",
-								children: [
-									{
-										path: "monthly-docs",
-										element: <StudentFiles />,
-									},
-									{
-										path: "semester-docs",
-										element: <StudentSemesterFiles />,
-									},
-									{
-										path: "allowance-history",
-										element: <ScholarAllowances />,
-									},
-								],
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+              {
+                path: ":scholarId",
+                children: [
+                  {
+                    path: "monthly-docs",
+                    element: <StudentFiles />,
+                  },
+                  {
+                    path: "semester-docs",
+                    element: <StudentSemesterFiles />,
+                  },
+                  {
+                    path: "allowance-history",
+                    element: <ScholarAllowances />,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-	const manageGatheringsRoutes = {
-		element: (
-			<ProtectedRoute
-				allowedRoles={[
-					"SUPER_ADMIN",
-					"ADMIN_MANAGE_GATHERINGS",
-					"ADMIN_MANAGE_DOCUMENTS",
-					"ADMIN_MANAGE_SCHOLAR",
-					"ADMIN_VIEWER",
-				]}
-			/>
-		),
-		path: "admin",
-		children: [
-			{
-				element: <AdminLayout />,
-				children: [
-					{
-						path: "events",
-						children: [
-							{
-								element: <EventLists />,
-								index: true,
-							},
-							{
-								element: <AddEvent />,
-								path: "add",
-							},
-							{
-								path: ":id",
-								children: [
-									{
-										element: <EventInfo />,
-										index: true,
-									},
-									{
-										element: <EditEvent />,
-										path: "edit",
-									},
-								],
-							},
-						],
-					},
-					{
-						path: "meetings",
-						children: [
-							{
-								element: <Meetings />,
-								index: true,
-							},
-							{
-								element: <AddMeeting />,
-								path: "add",
-							},
-							{
-								path: ":id",
-								children: [
-									{
-										element: <MeetingInfo />,
-										index: true,
-									},
-									{
-										element: <EditMeeting />,
-										path: "edit",
-									},
-								],
-							},
-						],
-					},
-					{
-						path: "announcements",
-						children: [
-							{
-								element: <Announcements />,
-								index: true,
-							},
-							{
-								element: <AddAnnouncement />,
-								path: "add",
-							},
-							{
-								path: ":id",
-								children: [
-									{
-										index: true,
-										element: <AnnouncementInfo />,
-									},
+  const manageGatheringsRoutes = {
+    element: (
+      <ProtectedRoute
+        allowedRoles={[
+          "SUPER_ADMIN",
+          "ADMIN_MANAGE_GATHERINGS",
+          "ADMIN_MANAGE_DOCUMENTS",
+          "ADMIN_MANAGE_SCHOLAR",
+          "ADMIN_VIEWER",
+        ]}
+      />
+    ),
+    path: "admin",
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: "events",
+            children: [
+              {
+                element: <EventLists />,
+                index: true,
+              },
+              {
+                element: <AddEvent />,
+                path: "add",
+              },
+              {
+                path: ":id",
+                children: [
+                  {
+                    element: <EventInfo />,
+                    index: true,
+                  },
+                  {
+                    element: <EditEvent />,
+                    path: "edit",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "meetings",
+            children: [
+              {
+                element: <Meetings />,
+                index: true,
+              },
+              {
+                element: <AddMeeting />,
+                path: "add",
+              },
+              {
+                path: ":id",
+                children: [
+                  {
+                    element: <MeetingInfo />,
+                    index: true,
+                  },
+                  {
+                    element: <EditMeeting />,
+                    path: "edit",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "announcements",
+            children: [
+              {
+                element: <Announcements />,
+                index: true,
+              },
+              {
+                element: <AddAnnouncement />,
+                path: "add",
+              },
+              {
+                path: ":id",
+                children: [
+                  {
+                    index: true,
+                    element: <AnnouncementInfo />,
+                  },
 
-									{
-										element: <EditAnnouncement />,
-										path: "edit",
-									},
-								],
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+                  {
+                    element: <EditAnnouncement />,
+                    path: "edit",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-	const manageDocumentsRoutes = {
-		element: (
-			<ProtectedRoute
-				allowedRoles={["SUPER_ADMIN", "ADMIN_MANAGE_DOCUMENTS", "ADMIN_VIEWER"]}
-			/>
-		),
-		path: "admin",
-		children: [
-			{
-				element: <AdminLayout />,
-				children: [
-					{
-						path: "monthly-submissions",
-						children: [
-							{
-								index: true,
-								element: <MonthlySubmission />,
-							},
-							{
-								path: ":scholarId",
-								// children:
-								element: <StudentFiles />,
-							},
-						],
-					},
-					{
-						path: "semester-submissions",
-						children: [
-							{
-								index: true,
-								element: <SemesterSubmissions />,
-							},
-							{
-								path: ":scholarId",
-								// children:
-								element: <StudentSemesterFiles />,
-							},
-						],
-					},
-					{
-						path: "allowances",
-						children: [
-							{
-								index: true,
-								element: <AllowanceList />,
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+  const manageDocumentsRoutes = {
+    element: (
+      <ProtectedRoute
+        allowedRoles={["SUPER_ADMIN", "ADMIN_MANAGE_DOCUMENTS", "ADMIN_VIEWER"]}
+      />
+    ),
+    path: "admin",
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: "monthly-submissions",
+            children: [
+              {
+                index: true,
+                element: <MonthlySubmission />,
+              },
+              {
+                path: ":scholarId",
+                // children:
+                element: <StudentFiles />,
+              },
+            ],
+          },
+          {
+            path: "semester-submissions",
+            children: [
+              {
+                index: true,
+                element: <SemesterSubmissions />,
+              },
+              {
+                path: ":scholarId",
+                // children:
+                element: <StudentSemesterFiles />,
+              },
+            ],
+          },
+          {
+            path: "allowances",
+            children: [
+              {
+                index: true,
+                element: <AllowanceList />,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-	const adminRoutes = {
-		element: (
-			<ProtectedRoute
-				allowedRoles={[
-					"SUPER_ADMIN",
-					"ADMIN_MANAGE_DOCUMENTS",
-					"ADMIN_VIEWER",
-					"ADMIN_MANAGE_GATHERINGS",
-					"ADMIN_MANAGE_SCHOLAR",
-				]}
-			/>
-		),
-		path: "admin",
-		children: [
-			{
-				element: <AdminLayout />,
-				children: [
-					{
-						path: "dashboard",
-						element: <Dashboard />,
-					},
-					{
-						element: <AdminAccountLayout />,
-						path: "account",
-						children: [
-							{
-								index: true,
-								element: <AdminAccount />,
-							},
-							{
-								path: "security",
-								element: <AdminSecurity />,
-							},
-						],
-					},
-					{
-						element: <AdminNotifications />,
-						path: "notifications",
-					},
-				],
-			},
-		],
-	};
+  const adminRoutes = {
+    element: (
+      <ProtectedRoute
+        allowedRoles={[
+          "SUPER_ADMIN",
+          "ADMIN_MANAGE_DOCUMENTS",
+          "ADMIN_VIEWER",
+          "ADMIN_MANAGE_GATHERINGS",
+          "ADMIN_MANAGE_SCHOLAR",
+        ]}
+      />
+    ),
+    path: "admin",
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            element: <AdminAccountLayout />,
+            path: "account",
+            children: [
+              {
+                index: true,
+                element: <AdminAccount />,
+              },
+              {
+                path: "security",
+                element: <AdminSecurity />,
+              },
+            ],
+          },
+          {
+            element: <AdminNotifications />,
+            path: "notifications",
+          },
+        ],
+      },
+    ],
+  };
 
-	const superAdminRoutes = {
-		element: <ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />,
-		path: "admin",
-		children: [
-			{
-				element: <AdminLayout />,
-				children: [
-					{
-						path: "system-users",
-						children: [
-							{
-								element: <SystemUsers />,
-								index: true,
-							},
-							{
-								path: "add",
-								element: <AddSystemUser />,
-							},
-							{
-								element: <SystemUser />,
-								path: ":id",
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+  const superAdminRoutes = {
+    element: <ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />,
+    path: "admin",
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: "system-users",
+            children: [
+              {
+                element: <SystemUsers />,
+                index: true,
+              },
+              {
+                path: "add",
+                element: <AddSystemUser />,
+              },
+              {
+                element: <SystemUser />,
+                path: ":id",
+              },
+            ],
+          },
+          {
+            path: "transactions",
+            children: [
+              {
+                index: true,
+                element: <Transactions />,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-	const publicRoutes = [
-		{
-			path: "/",
-			element: <Home />,
-		},
-		{
-			element: <Unauthorized />,
-			path: "unauthorized",
-		},
-		{
-			element: <DisqualifyPage />,
-			path: "disqualify",
-		},
-		{
-			element: <NotFound />,
-			path: "*",
-		},
-	];
+  const publicRoutes = [
+    {
+      path: "/",
+      element: <Home />,
+    },
+    {
+      element: <Unauthorized />,
+      path: "unauthorized",
+    },
+    {
+      element: <DisqualifyPage />,
+      path: "disqualify",
+    },
+    {
+      element: <NotFound />,
+      path: "*",
+    },
+  ];
 
-	const userRoutes = {
-		element: <ProtectedRoute allowedRoles={["STUDENT"]} />,
-		children: [
-			{
-				element: <UserLayout />,
-				children: [
-					{
-						element: <TimelineLayout />,
-						children: [
-							{
-								path: "timeline",
-								children: [
-									{
-										index: true,
-										element: <TimelinePage />,
-									},
-									{
-										element: <EventFeed />,
-										path: "events",
-									},
-									{
-										element: <AnnouncementFeed />,
-										path: "announcements",
-									},
-									{
-										element: <MeetingFeed />,
-										path: "meetings",
-									},
-								],
-							},
-						],
-					},
-					{
-						path: "account",
-						element: <AccountLayout />,
-						children: [
-							{
-								index: true,
-								element: <StudentProfile />,
-							},
-							{
-								element: <Security />,
-								path: "security",
-							},
-						],
-					},
-					{
-						path: "my-documents",
-						element: <DocumentsLayout />,
-						children: [
-							{
-								index: true,
-								element: <Documents />,
-							},
-							{
-								path: "monthly",
-								children: [
-									{
-										index: true,
-										element: <Monthly />,
-									},
-									{
-										path: "upload",
-										element: <AddMonthlyDocument />,
-									},
-									{
-										path: ":id/edit",
-										element: <EditMonthlyDocument />,
-									},
-								],
-							},
-							{
-								path: "semester",
-								children: [
-									{
-										index: true,
-										element: <Semester />,
-									},
-									{
-										path: "upload",
-										element: <AddSemesterDocument />,
-									},
-								],
-							},
-						],
-					},
-					{
-						path: "my-allowance",
-						children: [
-							{
-								index: true,
-								element: <MyAllowanceList />,
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+  const userRoutes = {
+    element: <ProtectedRoute allowedRoles={["STUDENT"]} />,
+    children: [
+      {
+        element: <UserLayout />,
+        children: [
+          {
+            element: <TimelineLayout />,
+            children: [
+              {
+                path: "timeline",
+                children: [
+                  {
+                    index: true,
+                    element: <TimelinePage />,
+                  },
+                  {
+                    element: <EventFeed />,
+                    path: "events",
+                  },
+                  {
+                    element: <AnnouncementFeed />,
+                    path: "announcements",
+                  },
+                  {
+                    element: <MeetingFeed />,
+                    path: "meetings",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "account",
+            element: <AccountLayout />,
+            children: [
+              {
+                index: true,
+                element: <StudentProfile />,
+              },
+              {
+                element: <Security />,
+                path: "security",
+              },
+            ],
+          },
+          {
+            path: "my-documents",
+            element: <DocumentsLayout />,
+            children: [
+              {
+                index: true,
+                element: <Documents />,
+              },
+              {
+                path: "monthly",
+                children: [
+                  {
+                    index: true,
+                    element: <Monthly />,
+                  },
+                  {
+                    path: "upload",
+                    element: <AddMonthlyDocument />,
+                  },
+                  {
+                    path: ":id/edit",
+                    element: <EditMonthlyDocument />,
+                  },
+                ],
+              },
+              {
+                path: "semester",
+                children: [
+                  {
+                    index: true,
+                    element: <Semester />,
+                  },
+                  {
+                    path: "upload",
+                    element: <AddSemesterDocument />,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "my-allowance",
+            children: [
+              {
+                index: true,
+                element: <MyAllowanceList />,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-	const authRoutes = {
-		element: <AuthLayout />,
-		children: [
-			{
-				path: "admin/login",
-				children: [
-					{ index: true, element: <Login /> },
-					{
-						path: "forgot-password",
-						element: <ForgotPassword />,
-					},
-				],
-			},
-			{
-				path: "login",
-				element: <StudentLogin />,
-			},
-			{
-				path: "forgot-password",
-				element: <StudentForgotPassword />,
-			},
-			{
-				path: "forgot-password",
-				element: <StudentForgotPassword />,
-			},
-		],
-	};
+  const authRoutes = {
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "admin/login",
+        children: [
+          { index: true, element: <Login /> },
+          {
+            path: "forgot-password",
+            element: <ForgotPassword />,
+          },
+        ],
+      },
+      {
+        path: "login",
+        element: <StudentLogin />,
+      },
+      {
+        path: "forgot-password",
+        element: <StudentForgotPassword />,
+      },
+      {
+        path: "forgot-password",
+        element: <StudentForgotPassword />,
+      },
+    ],
+  };
 
-	return useRoutes([
-		manageScholarRoutes,
-		manageGatheringsRoutes,
-		manageDocumentsRoutes,
-		adminRoutes,
-		superAdminRoutes,
-		authRoutes,
-		userRoutes,
-		...publicRoutes,
-	]);
+  return useRoutes([
+    manageScholarRoutes,
+    manageGatheringsRoutes,
+    manageDocumentsRoutes,
+    adminRoutes,
+    superAdminRoutes,
+    authRoutes,
+    userRoutes,
+    ...publicRoutes,
+  ]);
 }
 
 export default App;
