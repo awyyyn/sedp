@@ -7,6 +7,7 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
@@ -26,7 +27,6 @@ import {
 } from "@/lib/constant";
 import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
-import { Tooltip } from "@heroui/tooltip";
 
 const getYears = (yearStarted: number) => {
   const years = [];
