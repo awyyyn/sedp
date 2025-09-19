@@ -34,7 +34,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
     return <Icon icon="lucide:file" className="text-default-400" width={16} />;
   };
 
-  const renderItem = (item: FileTreeItem, index: number) => {
+  const renderItem = (item: FileTreeItem) => {
     const isActive = activeFileId === item.id;
 
     if (item.type === "file") {
@@ -91,9 +91,5 @@ export const FileTree: React.FC<FileTreeProps> = ({
     );
   };
 
-  return (
-    <div className="w-full">
-      {items.map((item, index) => renderItem(item, index))}
-    </div>
-  );
+  return <div className="w-full">{items.map((item) => renderItem(item))}</div>;
 };
