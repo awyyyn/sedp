@@ -24,7 +24,7 @@ model SystemUser {
   status      SystemUserStatus @default(UNVERIFIED)
   verifiedAt  DateTime?
 
-  transactions  Transactions[]
+  transactions  Transaction[]
   announcements Announcement[]
 
   // TimeStamps
@@ -163,7 +163,7 @@ model Meeting {
   @@map("meetings")
 }
 
-model Transactions {
+model Transaction {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   action   TransactionAction
