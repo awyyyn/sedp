@@ -38,10 +38,13 @@ export const createAllowanceResolver = async (
       data.monthlyAllowance +
       data.thesisAllowance;
 
-    const allowance = await createAllowance({
-      ...data,
-      totalAmount,
-    });
+    const allowance = await createAllowance(
+      {
+        ...data,
+        totalAmount,
+      },
+      app.id,
+    );
 
     const scholarNotification = await createStudentNotification({
       link: `/my-allowance?month=${allowance.month}&year=${allowance.year}`,
@@ -76,7 +79,7 @@ export const updateAllowanceStatusResolver = async (
       throw new GraphQLError("UnAuthorized!");
     }
 
-    return await updateAllowanceStatus(data.id, data.claimed);
+    return await updateAllowanceStatus(data.id, data.claimed, app.id);
 
     // return announcement;
   } catch (err) {
