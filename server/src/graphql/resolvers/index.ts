@@ -9,3 +9,4 @@ export * from "./allowance.js";
 export * from "./notifications.js";
 export * from "./notification-subscription.js";
 export * from "./dashboard.js";
+export * from "./transaction.js";
