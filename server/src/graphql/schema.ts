@@ -254,6 +254,11 @@ export const typeDefs = gql`
     description: String!
     transactedBy: SystemUser!
     transactedById: String!
+    student: Student
+    allowance: Allowance
+    meeting: Meeting
+    event: Event
+    announcement: Announcement
 
     createdAt: String!
   }
