@@ -1,4 +1,12 @@
-import { Transaction, Prisma } from "@prisma/client";
+import {
+  Transaction,
+  Prisma,
+  Student,
+  Allowance,
+  Meeting,
+  Announcement,
+  Events,
+} from "@prisma/client";
 import { prisma } from "../services/prisma.js";
 import { PaginationResult, TransactionPaginationArgs } from "../types/index.js";
 
@@ -27,7 +35,9 @@ export const readTransactions = async ({
   entity,
   pagination,
   transactedById,
-}: TransactionPaginationArgs = {}): Promise<PaginationResult<Transaction>> => {
+}: TransactionPaginationArgs = {}): Promise<
+  PaginationResult<Omit<Transaction, "createdAt"> & { createdAt: string }>
+> => {
   let where: Prisma.TransactionWhereInput = {};
 
   if (action) where.action = action;
@@ -40,12 +50,101 @@ export const readTransactions = async ({
     where,
     take: pagination ? pagination.take : undefined,
     skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
+    include: {
+      transactedBy: true,
+    },
   });
 
   const count = await prisma.transaction.count({ where });
 
+  const transactionsWithEntity = await Promise.all(
+    transactions.map(async (transaction) => {
+      let student: Student | null = null;
+      let allowance: Allowance | null = null;
+      let event: Events | null = null;
+      let meeting: Meeting | null = null;
+      let announcement: Announcement | null = null;
+
+      switch (transaction.entity) {
+        case "ALLOWANCE": {
+          allowance = await prisma.allowance.findFirst({
+            where: {
+              id: transaction.entityId,
+            },
+          });
+          break;
+        }
+
+        case "ANNOUNCEMENT": {
+          announcement = await prisma.announcement.findFirst({
+            where: { id: transaction.entityId },
+          });
+          break;
+        }
+        case "GATHERING": {
+          event = await prisma.events.findFirst({
+            where: { id: transaction.entityId },
+          });
+          break;
+        }
+        case "MEETING": {
+          meeting = await prisma.meeting.findFirst({
+            where: { id: transaction.entityId },
+          });
+          break;
+        }
+        case "STUDENT": {
+          student = await prisma.student.findFirst({
+            where: { id: transaction.entityId },
+          });
+
+          if (student) {
+            student = {
+              ...student,
+            };
+          }
+          break;
+        }
+        default:
+      }
+
+      return {
+        ...transaction,
+        student: student && {
+          ...student,
+          createdAt: student.createdAt.toISOString(),
+          updatedAt: student.updatedAt.toISOString(),
+          birthDate: student.birthDate.toISOString(),
+        },
+        allowance: allowance && {
+          ...allowance,
+          claimedAt: allowance.claimedAt && allowance.claimedAt.toISOString(),
+          createdAt: allowance.createdAt.toISOString(),
+          updatedAt: allowance.updatedAt.toISOString(),
+        },
+        event: event && {
+          ...event,
+          createdAt: event.createdAt.toISOString(),
+        },
+        meeting: meeting && {
+          ...meeting,
+          createdAt: meeting.createdAt.toISOString(),
+        },
+        announcement: announcement && {
+          ...announcement,
+          createdAt: announcement.createdAt.toISOString(),
+        },
+        transactedBy: {
+          ...transaction.transactedBy,
+          birthDate: transaction.transactedBy.birthDate.toISOString(),
+        },
+        createdAt: transaction.createdAt.toISOString(),
+      };
+    }),
+  );
+
   return {
-    data: transactions,
+    data: transactionsWithEntity,
     hasMore: pagination ? pagination.page * pagination.take < count : false,
     count,
   };
