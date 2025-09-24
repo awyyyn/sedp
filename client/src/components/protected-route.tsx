@@ -13,8 +13,7 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
 
   if (loading) return <Loader />;
 
-  if (!isAuthenticated)
-    return <Navigate to={role === "STUDENT" ? "/login" : "/admin/login"} />;
+  if (!isAuthenticated) return <Navigate to={"/login"} />;
 
   if (role !== null && !allowedRoles.includes(role)) {
     return <Navigate to="/unauthorized" />;

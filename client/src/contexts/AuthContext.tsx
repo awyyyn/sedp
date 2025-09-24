@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     localStorage.clear();
-    // setRole(null);
+    setRole(null);
     setIsAuthenticated(false);
     setLoading(false);
   };

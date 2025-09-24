@@ -76,6 +76,7 @@ export const loginController = async (req: Request, res: Response) => {
         accessToken,
         refreshToken,
         user: { ...userData, notifications: notifications || [] },
+        role: "STUDENT",
       },
       error: null,
     });
@@ -113,9 +114,18 @@ export const loginController = async (req: Request, res: Response) => {
         accessToken,
         refreshToken,
         user: { ...userData, notifications: notifications || [] },
+        role: adminUser.role,
       },
       error: null,
     });
+  } else {
+    res.status(404).json({
+      error: {
+        code: 404,
+        message: "User is not registered!",
+      },
+    });
+    return;
   }
 };
 
@@ -373,7 +383,7 @@ export const studentVerifyTokenController = async (
       return;
     }
 
-    const passwordAccessToken = await generateAccessToken({
+    const passwordAccessToken = generateAccessToken({
       email: user.email,
       role: "STUDENT",
       id: user.id,
