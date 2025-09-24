@@ -167,3 +167,53 @@ export const schools = [
   "San Jose Community College",
   "Rapu-Rapu Community College",
 ];
+
+export const schoolOptions = schools.map((school) => ({
+  key: school,
+  label: school,
+  description: school,
+}));
+
+export const offices = {
+  Albay: [
+    "Tiwi",
+    "Malinao",
+    "Tabaco",
+    "Malilipot",
+    "Bacacay I",
+    "Bacacay II",
+    "Rapu-Rapu",
+    "LegazpiPort",
+    "Albay District",
+    "Manito",
+    "Anislag (Daraga area)",
+    "Daraga",
+    "Camalig",
+    "Ligao",
+    "Pioduran",
+    "Polangui",
+    "Libon",
+  ],
+  "Camarines Sur": [
+    "Nabua",
+    "Baao",
+    "Pili",
+    "Goa",
+    "Pasacao",
+    "Libmanan",
+    "Sipocot",
+  ],
+  Sorsogon: ["Pilar", "Castilla", "Sorsogon City", "Irosin", "Bulan"],
+  Masbate: ["Aroroy", "Masbate City"],
+  Catanduanes: ["Virac", "Batan"],
+  "Northern Samar": ["Catarman"],
+  "Cagayan (Region II)": ["Claveria"],
+  "Other Offices": ["Diocesan Subsidy", "Pre-Diaconal"],
+};
+
+export const officesOptions = Object.entries(offices).map(
+  ([province, locations]) => ({
+    province,
+    offices: locations,
+  }),
+);
