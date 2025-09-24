@@ -129,7 +129,10 @@ export async function readAllStudents({
   filter,
   pagination,
   status,
-}: PaginationArgs<StudentStatus> = {}): Promise<PaginationResult<Student>> {
+  includeDocs,
+}: PaginationArgs<StudentStatus> & { includeDocs?: boolean } = {}): Promise<
+  PaginationResult<Student>
+> {
   let where: Prisma.StudentWhereInput = {};
 
   if (filter) {
@@ -152,6 +155,9 @@ export async function readAllStudents({
     where,
     skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
     take: pagination ? pagination.take : undefined,
+    include: {
+      documents: includeDocs,
+    },
   });
 
   const count = await prisma.student.count({
@@ -162,6 +168,18 @@ export async function readAllStudents({
     data: users.map((user) => ({
       ...user,
       birthDate: user.birthDate.toISOString(),
+      documents: (user.documents || [])
+        .filter(
+          (doc) =>
+            doc.createdAt.getFullYear() === new Date().getFullYear() &&
+            doc.createdAt.getMonth() === new Date().getMonth() &&
+            doc.monthlyDocument,
+        )
+        .map((doc) => ({
+          ...doc,
+          createdAt: doc.createdAt.toISOString(),
+          updatedAt: doc.updatedAt.toISOString(),
+        })),
     })),
     hasMore: pagination ? pagination.page * pagination.take < count : false,
     count,

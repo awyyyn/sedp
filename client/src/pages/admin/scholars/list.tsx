@@ -13,6 +13,7 @@ import { Spinner } from "@heroui/spinner";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Pagination } from "@heroui/pagination";
 import { Tooltip } from "@heroui/tooltip";
+import { formatDate } from "date-fns";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
@@ -29,17 +30,25 @@ import { useReactToPrint } from "react-to-print";
 import { Helmet } from "react-helmet";
 
 import UpdateStatusModal from "./__components/update-status";
+import { SendNotifModal } from "./__components/send-notif-modal";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
 import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { Scholars as AllowedRoles } from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
+import { useAtomValue } from "jotai";
+import { scholarsSentNotificationsAtom } from "@/states";
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },
   { name: "ALLOWANCES", uid: "email", sortable: true },
   { name: "MONTHLY DOCS", uid: "phoneNumber", sortable: true },
+  {
+    name: `${formatDate(Date.now(), "MMMM").toUpperCase()} DOCS`,
+    uid: "documents",
+    sortable: true,
+  },
   { name: "SEMESTER DOCS", uid: "address" },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -53,6 +62,7 @@ const columnsWithoutDocs = [
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
   "email",
+  "documents",
   "phoneNumber",
   "address",
   "actions",
@@ -75,7 +85,10 @@ export default function Scholars() {
   const { data: allUsers } = useQuery<{
     students: PaginationResult<Student>;
   }>(READ_STUDENTS_QUERY);
-
+  const [sendNotifToStudent, setSendNotifToStudent] = useState<Student | null>(
+    null,
+  );
+  const alreadySentNotif = useAtomValue(scholarsSentNotificationsAtom);
   const [openModal, setOpenModal] = useState(false);
 
   const [toUpdateScholar] = useState<Student | null>(null);
@@ -98,7 +111,11 @@ export default function Scholars() {
 
   const { loading, data } = useQuery<{
     students: PaginationResult<Student>;
-  }>(READ_STUDENTS_QUERY);
+  }>(READ_STUDENTS_QUERY, {
+    variables: {
+      includeDocs: true,
+    },
+  });
 
   const headerColumns = useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -116,65 +133,103 @@ export default function Scholars() {
 
   const loadingState = loading ? "loading" : "idle";
 
-  const renderCell = useCallback((user: Student, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof Student];
+  const renderCell = useCallback(
+    (user: Student, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof Student];
 
-    switch (columnKey) {
-      case "name":
-        const middleName = user.middleName
-          ? ` ${user.middleName[0].toUpperCase()}.`
-          : "";
+      switch (columnKey) {
+        case "name":
+          const middleName = user.middleName
+            ? ` ${user.middleName[0].toUpperCase()}.`
+            : "";
 
-        return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
+          return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
 
-      case "email":
-        return (
-          <Button
-            size="sm"
-            as={Link}
-            variant="light"
-            state={{ scholar: user }}
-            to={`/admin/scholars/${user.id}/allowance-history`}
-          >
-            Allowances
-          </Button>
-        );
+        case "documents":
+          return (
+            <p
+              className={`${user.documents?.length ? "" : "italic text-gray-500"}`}
+            >
+              {user.documents?.length
+                ? `${user.documents.length} doc(s)`
+                : "No Data"}
+              {alreadySentNotif.includes(user.id)}
+            </p>
+          );
 
-      case "phoneNumber":
-        return role !== "ADMIN_MANAGE_SCHOLAR" ? (
-          <Button
-            size="sm"
-            variant="light"
-            as={Link}
-            state={{ scholar: user }}
-            to={`/admin/scholars/${user.id}/monthly-docs`}
-          >
-            Monthly Docs
-          </Button>
-        ) : null;
-      case "address":
-        return role !== "ADMIN_MANAGE_SCHOLAR" ? (
-          <Button
-            size="sm"
-            as={Link}
-            variant="light"
-            state={{ scholar: user }}
-            to={`/admin/scholars/${user.id}/semester-docs`}
-          >
-            Semester Docs
-          </Button>
-        ) : null;
-      case "actions":
-        return (
-          <div className="relative flex justify-center items-center gap-2">
-            <Tooltip content="Details">
-              <Link to={`/admin/scholars/${user.id}`}>
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <Icon icon="solar:info-square-bold" color="gray" />
-                </span>
-              </Link>
-            </Tooltip>
-            {/* {!user.statusUpdatedAt && (
+        case "email":
+          return (
+            <Button
+              size="sm"
+              as={Link}
+              variant="light"
+              state={{ scholar: user }}
+              to={`/admin/scholars/${user.id}/allowance-history`}
+            >
+              Allowances
+            </Button>
+          );
+
+        case "phoneNumber":
+          return role !== "ADMIN_MANAGE_SCHOLAR" ? (
+            <Button
+              size="sm"
+              variant="light"
+              as={Link}
+              state={{ scholar: user }}
+              to={`/admin/scholars/${user.id}/monthly-docs`}
+            >
+              Monthly Docs
+            </Button>
+          ) : null;
+        case "address":
+          return role !== "ADMIN_MANAGE_SCHOLAR" ? (
+            <Button
+              size="sm"
+              as={Link}
+              variant="light"
+              state={{ scholar: user }}
+              to={`/admin/scholars/${user.id}/semester-docs`}
+            >
+              Semester Docs
+            </Button>
+          ) : null;
+        case "actions":
+          return (
+            <div className="relative flex justify-center items-center gap-2">
+              <Tooltip content="Details">
+                <Link to={`/admin/scholars/${user.id}`}>
+                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <Icon icon="solar:info-square-bold" color="gray" />
+                  </span>
+                </Link>
+              </Tooltip>
+              <Tooltip content="Send Notification for Document Submission">
+                <Button
+                  type="button"
+                  size="sm"
+                  onPress={() => {
+                    setSendNotifToStudent(user);
+                  }}
+                  isIconOnly
+                  isDisabled={
+                    !!user.documents?.length ||
+                    alreadySentNotif.includes(user.id)
+                  }
+                  variant="ghost"
+                  className="border hover:!bg-none border-none"
+                >
+                  {/*<span className="text-lg text-default-400 cursor-pointer active:opacity-50">*/}
+                  <Icon
+                    icon="streamline-flex:mail-send-email-message-circle-solid"
+                    color="green"
+                    height={16}
+                    width={16}
+                  />
+                  {/*</span>*/}
+                </Button>
+              </Tooltip>
+              {/* {!user.statusUpdatedAt && (
 							<Tooltip content="Update Status">
 								<Button
 									size="sm"
@@ -190,19 +245,23 @@ export default function Scholars() {
 								</Button>
 							</Tooltip>
 						)} */}
-            {/* <Tooltip color="danger" content="Delete announcement">
+              {/* <Tooltip color="danger" content="Delete announcement">
 							<span className="text-lg text-danger cursor-pointer active:opacity-50">
 								<Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
 							</span>
 						</Tooltip> */}
-          </div>
-        );
-      case "status":
-        return <p className="capitalize">{user.status.toLocaleLowerCase()}</p>;
-      default:
-        return cellValue?.toString();
-    }
-  }, []);
+            </div>
+          );
+        case "status":
+          return (
+            <p className="capitalize">{user.status.toLocaleLowerCase()}</p>
+          );
+        default:
+          return cellValue?.toString();
+      }
+    },
+    [alreadySentNotif],
+  );
 
   const filteredItems = useMemo(() => {
     let filteredUsers = [...(data?.students.data ?? [])];
@@ -474,6 +533,14 @@ export default function Scholars() {
             isOpen={openModal}
             setIsOpen={setOpenModal}
             data={toUpdateScholar}
+          />
+        )}
+
+        {sendNotifToStudent && (
+          <SendNotifModal
+            isOpen={!!sendNotifToStudent}
+            handleClose={() => setSendNotifToStudent(null)}
+            student={sendNotifToStudent}
           />
         )}
 

@@ -1,6 +1,6 @@
 import { SystemUserAddress } from "./system-user.js";
 
-import { Gender } from "./index.js";
+import { Document, Gender } from "./index.js";
 
 export interface Student {
   readonly id: string;
@@ -18,6 +18,7 @@ export interface Student {
   mfaEnabled: boolean;
   status: StudentStatus;
   phoneNumber: string;
+  documents?: Document[];
 
   yearLevel: number;
   schoolName: string;

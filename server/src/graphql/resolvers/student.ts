@@ -45,13 +45,19 @@ export const updateStudentResolver = async (
 
 export const studentsResolver = async (
   _: never,
-  { filter, pagination, status }: PaginationArgs<StudentStatus>,
+  {
+    filter,
+    pagination,
+    status,
+    includeDocs = false,
+  }: PaginationArgs<StudentStatus> & { includeDocs?: boolean },
 ) => {
   try {
     return await readAllStudents({
       filter: filter ?? undefined,
       pagination: pagination ? pagination : undefined,
       status,
+      includeDocs,
     });
   } catch (err) {
     console.log(err);

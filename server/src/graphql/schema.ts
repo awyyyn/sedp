@@ -18,6 +18,7 @@ export const typeDefs = gql`
       filter: String
       pagination: PaginationInput
       status: String
+      includeDocs: Boolean
     ): StudentsResult
     student(id: String!): Student
     announcements(
@@ -378,6 +379,7 @@ export const typeDefs = gql`
     schoolName: String
     statusUpdatedAt: String
     course: String
+    documents: [Document]
     createdAt: String
     updatedAt: String
   }
