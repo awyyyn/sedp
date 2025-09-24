@@ -10,6 +10,7 @@ export const systemUsersFragment = gql`
     gender
     password
     mfaSecret
+    office
     phoneNumber
     birthDate
     mfaEnabled
@@ -33,6 +34,7 @@ export const studentsFragment = gql`
     firstName
     lastName
     gender
+    office
     middleName
     address {
       city
