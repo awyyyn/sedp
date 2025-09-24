@@ -4,9 +4,9 @@ import { Form, Formik } from "formik";
 import { Suspense, useMemo, useState } from "react";
 import { RadioGroup, Radio } from "@heroui/radio";
 import {
-	Autocomplete,
-	AutocompleteItem,
-	AutocompleteSection,
+  Autocomplete,
+  AutocompleteItem,
+  AutocompleteSection,
 } from "@heroui/autocomplete";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
@@ -26,61 +26,63 @@ import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
 import { generatePassword } from "@/lib/utils";
 import { semester } from "@/lib/constant";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export default function AddScholar() {
-	const [streets, setStreet] = useState<string[]>([]);
-	const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
-	const navigate = useNavigate();
+  const [streets, setStreet] = useState<string[]>([]);
+  const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
+  const navigate = useNavigate();
+  const [showPass, setShowPass] = useState(false);
 
-	const citiesMunicipalities = useMemo(
-		() => places.map((place) => place.name),
-		[]
-	);
+  const citiesMunicipalities = useMemo(
+    () => places.map((place) => place.name),
+    [],
+  );
 
-	return (
-		<>
-			<Helmet>
-				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<title>Create Scholar | Admin</title>
-				<meta
-					name="description"
-					content="Create a new scholar account with secure credentials and send them via email."
-				/>
-			</Helmet>
-			<Card className="rounded-md shadow-md mb-10  z-[10]">
-				<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-					<h1 className="text-2xl">Create new Scholar</h1>
-					<p>
-						Generate secure credentials for a new scholar and send them via
-						email.
-					</p>
-				</CardHeader>
-				<CardBody className="bg-[#A6F3B235]">
-					<div className="lg:max-w-[80%] w-full mx-auto my-5">
-						<Formik
-							validationSchema={addScholarSchema}
-							initialValues={{} as AddScholarSchemaData}
-							onSubmit={async (values: AddScholarSchemaData, helpers) => {
-								try {
-									const { street, city, ...data } = values;
+  return (
+    <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Create Scholar | Admin</title>
+        <meta
+          name="description"
+          content="Create a new scholar account with secure credentials and send them via email."
+        />
+      </Helmet>
+      <Card className="rounded-md shadow-md mb-10  z-[10]">
+        <CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
+          <h1 className="text-2xl">Create new Scholar</h1>
+          <p>
+            Generate secure credentials for a new scholar and send them via
+            email.
+          </p>
+        </CardHeader>
+        <CardBody className="bg-[#A6F3B235]">
+          <div className="lg:max-w-[80%] w-full mx-auto my-5">
+            <Formik
+              validationSchema={addScholarSchema}
+              initialValues={{} as AddScholarSchemaData}
+              onSubmit={async (values: AddScholarSchemaData, helpers) => {
+                try {
+                  const { street, city, ...data } = values;
 
-									await createStudent({
-										variables: {
-											...data,
-											yearLevel: Number(data.yearLevel),
-											address: {
-												city,
-												street,
-											},
-											semester: Number(data.semester),
-										},
-										refetchQueries: [READ_STUDENTS_QUERY],
-									});
+                  await createStudent({
+                    variables: {
+                      ...data,
+                      yearLevel: Number(data.yearLevel),
+                      address: {
+                        city,
+                        street,
+                      },
+                      semester: Number(data.semester),
+                    },
+                    refetchQueries: [READ_STUDENTS_QUERY],
+                  });
 
 									helpers.resetForm();
 
-									navigate("/admin/scholars");
+                  navigate("/admin/scholars");
 
 									toast.success("Scholar account created successfully", {
 										description:
@@ -191,237 +193,286 @@ export default function AddScholar() {
 													day: number;
 												} = e;
 
-												const jsDate = dateValue
-													? new Date(
-															dateValue.year,
-															dateValue.month - 1,
-															dateValue.day
-														)
-													: null;
+                        const jsDate = dateValue
+                          ? new Date(
+                              dateValue.year,
+                              dateValue.month - 1,
+                              dateValue.day,
+                            )
+                          : null;
 
-												setFieldValue("birthDate", jsDate);
-											}}
-											className="lg:col-span-3"
-											label="Birth Date"
-											maxValue={today(getLocalTimeZone()).subtract({
-												years: 18,
-											})}
-										/>
+                        setFieldValue("birthDate", jsDate);
+                      }}
+                      className="lg:col-span-3"
+                      label="Birth Date"
+                      maxValue={today(getLocalTimeZone()).subtract({
+                        years: 18,
+                      })}
+                    />
 
-										<div className="lg:col-span-6 mt-4">
-											Address Information
-										</div>
+                    <div className="lg:col-span-6 mt-4">
+                      Address Information
+                    </div>
 
-										<div className="lg:col-span-3">
-											<Suspense
-												fallback={
-													<Input
-														fullWidth
-														readOnly
-														label="Select City / Municipality"
-													/>
-												}>
-												<Autocomplete
-													as="ul"
-													isReadOnly={isSubmitting}
-													name="city"
-													label="Select City / Municipality"
-													isInvalid={!!touched.city && !!errors.city}
-													onSelectionChange={(value) => {
-														setFieldValue("city", value);
-														const streets =
-															places
-																.find((place) => place.name === value)
-																?.barangays.flat() ?? [];
+                    <div className="lg:col-span-3">
+                      <Suspense
+                        fallback={
+                          <Input
+                            fullWidth
+                            readOnly
+                            label="Select City / Municipality"
+                          />
+                        }
+                      >
+                        <Autocomplete
+                          as="ul"
+                          isReadOnly={isSubmitting}
+                          name="city"
+                          label="Select City / Municipality"
+                          isInvalid={!!touched.city && !!errors.city}
+                          onSelectionChange={(value) => {
+                            setFieldValue("city", value);
+                            const streets =
+                              places
+                                .find((place) => place.name === value)
+                                ?.barangays.flat() ?? [];
 
-														setFieldValue("street", "");
-														setStreet(streets);
-													}}
-													size="md"
-													onBlur={handleBlur}
-													errorMessage={touched.city && errors.city}
-													fullWidth>
-													{citiesMunicipalities.map((ci) => (
-														<AutocompleteItem
-															as="li"
-															key={ci}
-															value={ci}
-															className="capitalize">
-															{ci}
-														</AutocompleteItem>
-													))}
-												</Autocomplete>
-											</Suspense>
-										</div>
-										<div className="lg:col-span-3   ">
-											<Suspense
-												fallback={
-													<Input
-														fullWidth
-														readOnly
-														label="Select City / Municipality"
-													/>
-												}>
-												<Autocomplete
-													isReadOnly={isSubmitting}
-													name="street"
-													label="Select Barangay"
-													errorMessage={touched.street && errors.street}
-													onBlur={handleBlur}
-													onSelectionChange={(value) => {
-														setFieldValue("street", value);
-													}}
-													isDisabled={!values.city}
-													fullWidth
-													isInvalid={
-														(touched.street && !values.city) ||
-														(!!touched.street && !!errors.street)
-													}
-													value={values.street}>
-													{streets.map((brgy) => (
-														<AutocompleteItem
-															key={brgy}
-															value={brgy}
-															className="capitalize">
-															{brgy}
-														</AutocompleteItem>
-													))}
-												</Autocomplete>
-											</Suspense>
-										</div>
-										<div className="lg:col-span-6  mt-4">
-											School Information
-										</div>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.schoolName && !!errors.schoolName}
-											errorMessage={errors.schoolName}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											name="schoolName"
-											className="lg:col-span-6"
-											label="School Name"
-										/>
+                            setFieldValue("street", "");
+                            setStreet(streets);
+                          }}
+                          size="md"
+                          onBlur={handleBlur}
+                          errorMessage={touched.city && errors.city}
+                          fullWidth
+                        >
+                          {citiesMunicipalities.map((ci) => (
+                            <AutocompleteItem
+                              as="li"
+                              key={ci}
+                              value={ci}
+                              className="capitalize"
+                            >
+                              {ci}
+                            </AutocompleteItem>
+                          ))}
+                        </Autocomplete>
+                      </Suspense>
+                    </div>
+                    <div className="lg:col-span-3   ">
+                      <Suspense
+                        fallback={
+                          <Input
+                            fullWidth
+                            readOnly
+                            label="Select City / Municipality"
+                          />
+                        }
+                      >
+                        <Autocomplete
+                          isReadOnly={isSubmitting}
+                          name="street"
+                          label="Select Barangay"
+                          errorMessage={touched.street && errors.street}
+                          onBlur={handleBlur}
+                          onSelectionChange={(value) => {
+                            setFieldValue("street", value);
+                          }}
+                          isDisabled={!values.city}
+                          fullWidth
+                          isInvalid={
+                            (touched.street && !values.city) ||
+                            (!!touched.street && !!errors.street)
+                          }
+                          value={values.street}
+                        >
+                          {streets.map((brgy) => (
+                            <AutocompleteItem
+                              key={brgy}
+                              value={brgy}
+                              className="capitalize"
+                            >
+                              {brgy}
+                            </AutocompleteItem>
+                          ))}
+                        </Autocomplete>
+                      </Suspense>
+                    </div>
+                    <div className="lg:col-span-6  mt-4">
+                      School Information
+                    </div>
 
-										<Select
-											className="lg:col-span-3"
-											label="Year Level"
-											name="yearLevel"
-											isInvalid={touched.yearLevel && !!errors.yearLevel}
-											errorMessage={errors.yearLevel}
-											disallowEmptySelection
-											selectionMode="single"
-											value={values.yearLevel}
-											onBlur={handleBlur}
-											onChange={handleChange}>
-											{years.map((year) => (
-												<SelectItem
-													className="w-full"
-													value={year.value.toString()}
-													key={year.value.toString()}
-													textValue={year.label}>
-													{year.label}{" "}
-													{year.optional && "(If Applicable to your program)"}
-												</SelectItem>
-											))}
-										</Select>
-										<Select
-											className="lg:col-span-3"
-											label="Semester"
-											name="semester"
-											isInvalid={touched.semester && !!errors.semester}
-											errorMessage={errors.semester}
-											disallowEmptySelection
-											selectionMode="single"
-											value={values.semester}
-											onBlur={handleBlur}
-											onChange={handleChange}>
-											{[1, 2, 3].map((value) => (
-												<SelectItem
-													className="w-full"
-													value={value.toString()}
-													key={value.toString()}
-													textValue={semester[value - 1]}>
-													{semester[value - 1]}
-												</SelectItem>
-											))}
-										</Select>
-										<Suspense
-											fallback={<Input fullWidth readOnly label="Course" />}>
-											<Autocomplete
-												name="course"
-												className="lg:col-span-6"
-												label="Course"
-												onSelectionChange={(value) => {
-													setFieldValue("course", value?.toString());
-												}}
-												onBlur={handleBlur}
-												errorMessage={errors.course}
-												fullWidth
-												isInvalid={touched.course && !!errors.course}
-												value={values.course}>
-												{degrees.map((degree, indx) => (
-													<AutocompleteSection
-														showDivider
-														title={degree.category}
-														key={indx}>
-														{degree.programs.map((program) => (
-															<AutocompleteItem
-																key={program}
-																value={program}
-																className="capitalize">
-																{program}
-															</AutocompleteItem>
-														))}
-													</AutocompleteSection>
-												))}
-											</Autocomplete>
-										</Suspense>
+                    <Select
+                      className="lg:col-span-6"
+                      label="School Name"
+                      name="schoolName"
+                      isInvalid={touched.schoolName && !!errors.schoolName}
+                      errorMessage={errors.schoolName}
+                      disallowEmptySelection
+                      selectionMode="single"
+                      value={values.schoolName}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                    >
+                      <SelectItem
+                        className="w-full"
+                        value={"year.value.toString()"}
+                        key={"year.value.toString()"}
+                        textValue={"year.label"}
+                      >
+                        Scjpp;
+                      </SelectItem>
+                    </Select>
 
-										<div className="lg:col-span-6 mt-4">
-											<div className="flex justify-between py-0.5">
-												<p>Security</p>
-												<Button
-													type="button"
-													className=""
-													variant="light"
-													size="sm"
-													onPress={() => {
-														setFieldValue("password", generatePassword());
-													}}>
-													Generate password
-												</Button>
-											</div>
-											<Input
-												isReadOnly={isSubmitting}
-												readOnly={isSubmitting}
-												value={values.password}
-												isInvalid={touched.password && !!errors.password}
-												errorMessage={errors.password}
-												onBlur={handleBlur}
-												onChange={handleChange}
-												name="password"
-												label="Password"
-											/>
-										</div>
-										<div className="lg:col-span-6 flex justify-center mt-5">
-											<Button
-												type="submit"
-												isDisabled={!isValid || isSubmitting}
-												isLoading={isSubmitting}
-												className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
-												Register Scholar
-											</Button>
-										</div>
-									</Form>
-								);
-							}}
-						</Formik>
-					</div>
-				</CardBody>
-			</Card>
-		</>
-	);
+                    <Select
+                      className="lg:col-span-3"
+                      label="Year Level"
+                      name="yearLevel"
+                      isInvalid={touched.yearLevel && !!errors.yearLevel}
+                      errorMessage={errors.yearLevel}
+                      disallowEmptySelection
+                      selectionMode="single"
+                      value={values.yearLevel}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                    >
+                      {years.map((year) => (
+                        <SelectItem
+                          className="w-full"
+                          value={year.value.toString()}
+                          key={year.value.toString()}
+                          textValue={year.label}
+                        >
+                          {year.label}{" "}
+                          {year.optional && "(If Applicable to your program)"}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Select
+                      className="lg:col-span-3"
+                      label="Semester"
+                      name="semester"
+                      isInvalid={touched.semester && !!errors.semester}
+                      errorMessage={errors.semester}
+                      disallowEmptySelection
+                      selectionMode="single"
+                      value={values.semester}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                    >
+                      {[1, 2, 3].map((value) => (
+                        <SelectItem
+                          className="w-full"
+                          value={value.toString()}
+                          key={value.toString()}
+                          textValue={semester[value - 1]}
+                        >
+                          {semester[value - 1]}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Suspense
+                      fallback={<Input fullWidth readOnly label="Course" />}
+                    >
+                      <Autocomplete
+                        name="course"
+                        className="lg:col-span-6"
+                        label="Course"
+                        onSelectionChange={(value) => {
+                          setFieldValue("course", value?.toString());
+                        }}
+                        onBlur={handleBlur}
+                        errorMessage={errors.course}
+                        fullWidth
+                        isInvalid={touched.course && !!errors.course}
+                        value={values.course}
+                      >
+                        {degrees.map((degree, indx) => (
+                          <AutocompleteSection
+                            showDivider
+                            title={degree.category}
+                            key={indx}
+                          >
+                            {degree.programs.map((program) => (
+                              <AutocompleteItem
+                                key={program}
+                                value={program}
+                                className="capitalize"
+                              >
+                                {program}
+                              </AutocompleteItem>
+                            ))}
+                          </AutocompleteSection>
+                        ))}
+                      </Autocomplete>
+                    </Suspense>
+
+                    <div className="lg:col-span-6 mt-4">
+                      <div className="flex justify-between py-0.5">
+                        <p>Security</p>
+                        <Button
+                          type="button"
+                          className=""
+                          variant="light"
+                          size="sm"
+                          onPress={() => {
+                            setFieldValue("password", generatePassword());
+                          }}
+                        >
+                          Generate password
+                        </Button>
+                      </div>
+                      <Input
+                        type={showPass ? "text" : "password"}
+                        isReadOnly={isSubmitting}
+                        readOnly={isSubmitting}
+                        value={values.password}
+                        isInvalid={touched.password && !!errors.password}
+                        errorMessage={errors.password}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        name="password"
+                        label="Password"
+                        endContent={
+                          <Button
+                            size="sm"
+                            isIconOnly
+                            variant="ghost"
+                            onPress={() => setShowPass((show) => !show)}
+                            className="border-none p-0.5 hover:bg-transparent"
+                          >
+                            <Icon
+                              icon={
+                                showPass
+                                  ? "fluent:eye-48-regular"
+                                  : "fluent:eye-off-16-filled"
+                              }
+                              width="96"
+                              height="96"
+                              style={{ color: "#888" }}
+                            />
+                          </Button>
+                        }
+                      />
+                    </div>
+                    <div className="lg:col-span-6 flex justify-center mt-5">
+                      <Button
+                        type="submit"
+                        isDisabled={!isValid || isSubmitting}
+                        isLoading={isSubmitting}
+                        className="min-w-full md:min-w-[60%] bg-[#A6F3B2]"
+                      >
+                        Register Scholar
+                      </Button>
+                    </div>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </div>
+        </CardBody>
+      </Card>
+    </>
+  );
 }
 
 // "note": "This list is not exhaustive. Philippine universities and colleges regularly update their program offerings based on industry demands and educational trends."
