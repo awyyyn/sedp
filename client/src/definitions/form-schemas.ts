@@ -53,6 +53,7 @@ export const addAdminSchema = yup.object({
       "Contact number must start with 9 and be 10 digits long, containing only digits",
     )
     .required("Contact number is required."),
+  office: yup.string().required("Office is required."),
 });
 
 export const AddAnnouncementSchema = yup.object({
