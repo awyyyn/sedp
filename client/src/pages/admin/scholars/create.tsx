@@ -2,13 +2,14 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Form, Formik } from "formik";
 import { Suspense, useMemo, useState } from "react";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { RadioGroup, Radio } from "@heroui/radio";
 import {
   Autocomplete,
   AutocompleteItem,
   AutocompleteSection,
 } from "@heroui/autocomplete";
-import { Select, SelectItem } from "@heroui/select";
+import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { Button } from "@heroui/button";
 import { DatePicker } from "@heroui/date-picker";
 import { getLocalTimeZone, today } from "@internationalized/date";
@@ -25,12 +26,16 @@ import { CREATE_STUDENT_MUTATION, READ_STUDENTS_QUERY } from "@/queries";
 import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
 import { generatePassword } from "@/lib/utils";
-import { semester } from "@/lib/constant";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { officesOptions, schoolOptions, semester } from "@/lib/constant";
+import { useAuth } from "@/contexts";
+
+const headingClasses =
+  "flex w-full sticky top-1 z-20 py-1.5 px-2 bg-default-100 shadow-small rounded-small";
 
 export default function AddScholar() {
   const [streets, setStreet] = useState<string[]>([]);
   const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
+  const { role } = useAuth();
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
 
@@ -64,6 +69,12 @@ export default function AddScholar() {
               validationSchema={addScholarSchema}
               initialValues={{} as AddScholarSchemaData}
               onSubmit={async (values: AddScholarSchemaData, helpers) => {
+                if (role === "SUPER_ADMIN" && !values.office) {
+                  helpers.setFieldError("office", "Office is required");
+
+                  return;
+                }
+
                 try {
                   const { street, city, ...data } = values;
 
@@ -80,118 +91,125 @@ export default function AddScholar() {
                     refetchQueries: [READ_STUDENTS_QUERY],
                   });
 
-									helpers.resetForm();
+                  helpers.resetForm();
 
                   navigate("/admin/scholars");
 
-									toast.success("Scholar account created successfully", {
-										description:
-											"The new admin account has been created and the registration link has been sent to the provided email address.",
-										richColors: true,
-										position: "top-center",
-									});
-								} catch (err) {
-									toast.error("Failed to create scholar account", {
-										description:
-											"There was an error creating the scholar account. Please try again.",
-										richColors: true,
-										position: "top-center",
-									});
-								}
-							}}>
-							{({
-								handleSubmit,
-								handleBlur,
-								handleChange,
-								setFieldValue,
-								values,
-								touched,
-								errors,
-								isValid,
-								isSubmitting,
-							}) => {
-								return (
-									<Form
-										className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
-										onSubmit={handleSubmit}>
-										<div className="lg:col-span-6">Personal Information</div>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.firstName && !!errors.firstName}
-											errorMessage={errors.firstName}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											className="lg:col-span-2"
-											name="firstName"
-											label="First Name"
-										/>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.middleName && !!errors.middleName}
-											errorMessage={errors.middleName}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											name="middleName"
-											className="lg:col-span-2"
-											label="Middle Name"
-										/>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.lastName && !!errors.lastName}
-											errorMessage={errors.lastName}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											className="lg:col-span-2"
-											name="lastName"
-											label="Last Name"
-										/>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.email && !!errors.email}
-											errorMessage={errors.email}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											className="lg:col-span-3"
-											label="Email Address"
-											name="email"
-										/>
-										<Input
-											isReadOnly={isSubmitting}
-											isInvalid={touched.phoneNumber && !!errors.phoneNumber}
-											errorMessage={errors.phoneNumber}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											name="phoneNumber"
-											className="lg:col-span-3"
-											label="Phone Number"
-											startContent={<p className="text-sm">+63</p>}
-										/>
-										<RadioGroup
-											label="Gender"
-											className="lg:col-span-3 "
-											name="gender"
-											isReadOnly={isSubmitting}
-											isInvalid={touched.gender && !!errors.gender}
-											errorMessage={String(errors.gender) || "asd"}
-											onBlur={handleBlur}
-											onChange={handleChange}
-											orientation="horizontal">
-											<Radio value="MALE">Male</Radio>
-											<Radio value="FEMALE">Female</Radio>
-										</RadioGroup>
-										<DatePicker
-											showMonthAndYearPickers
-											isReadOnly={isSubmitting}
-											isInvalid={touched.birthDate && !!errors.birthDate}
-											errorMessage={String(errors.birthDate)}
-											onBlur={handleBlur}
-											onChange={(e) => {
-												if (e === null) return;
-												const dateValue: {
-													year: number;
-													month: number;
-													day: number;
-												} = e;
+                  toast.success("Scholar account created successfully", {
+                    description:
+                      "The new admin account has been created and the registration link has been sent to the provided email address.",
+                    richColors: true,
+                    position: "top-center",
+                  });
+                } catch (err) {
+                  toast.error("Failed to create scholar account", {
+                    description:
+                      (err as Error).message ||
+                      "There was an error creating the scholar account. Please try again.",
+                    richColors: true,
+                    position: "top-center",
+                  });
+                }
+              }}
+            >
+              {({
+                handleSubmit,
+                handleBlur,
+                handleChange,
+                setFieldValue,
+                values,
+                touched,
+                errors,
+                isValid,
+                isSubmitting,
+              }) => {
+                console.log(errors, "qqq errors");
+
+                return (
+                  <Form
+                    className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
+                    onSubmit={handleSubmit}
+                  >
+                    <div className="lg:col-span-6">Personal Information</div>
+                    <Input
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.firstName && !!errors.firstName}
+                      errorMessage={errors.firstName}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      className="lg:col-span-2"
+                      name="firstName"
+                      label="First Name"
+                    />
+                    <Input
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.middleName && !!errors.middleName}
+                      errorMessage={errors.middleName}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      name="middleName"
+                      className="lg:col-span-2"
+                      label="Middle Name"
+                    />
+                    <Input
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.lastName && !!errors.lastName}
+                      errorMessage={errors.lastName}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      className="lg:col-span-2"
+                      name="lastName"
+                      label="Last Name"
+                    />
+                    <Input
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.email && !!errors.email}
+                      errorMessage={errors.email}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      className="lg:col-span-3"
+                      label="Email Address"
+                      name="email"
+                    />
+                    <Input
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.phoneNumber && !!errors.phoneNumber}
+                      errorMessage={errors.phoneNumber}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      name="phoneNumber"
+                      className="lg:col-span-3"
+                      label="Phone Number"
+                      maxLength={10}
+                      startContent={<p className="text-sm">+63</p>}
+                    />
+                    <RadioGroup
+                      label="Gender"
+                      className="lg:col-span-3 "
+                      name="gender"
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.gender && !!errors.gender}
+                      errorMessage={String(errors.gender) || "asd"}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      orientation="horizontal"
+                    >
+                      <Radio value="MALE">Male</Radio>
+                      <Radio value="FEMALE">Female</Radio>
+                    </RadioGroup>
+                    <DatePicker
+                      showMonthAndYearPickers
+                      isReadOnly={isSubmitting}
+                      isInvalid={touched.birthDate && !!errors.birthDate}
+                      errorMessage={String(errors.birthDate)}
+                      onBlur={handleBlur}
+                      onChange={(e) => {
+                        if (e === null) return;
+                        const dateValue: {
+                          year: number;
+                          month: number;
+                          day: number;
+                        } = e;
 
                         const jsDate = dateValue
                           ? new Date(
@@ -297,31 +315,32 @@ export default function AddScholar() {
                         </Autocomplete>
                       </Suspense>
                     </div>
+
                     <div className="lg:col-span-6  mt-4">
                       School Information
                     </div>
 
-                    <Select
-                      className="lg:col-span-6"
+                    <Autocomplete
                       label="School Name"
-                      name="schoolName"
+                      defaultItems={schoolOptions}
                       isInvalid={touched.schoolName && !!errors.schoolName}
                       errorMessage={errors.schoolName}
-                      disallowEmptySelection
-                      selectionMode="single"
-                      value={values.schoolName}
+                      name="schoolName"
+                      selectedKey={values.schoolName}
                       onBlur={handleBlur}
-                      onChange={handleChange}
+                      onSelectionChange={(v) => {
+                        setFieldValue("schoolName", v);
+                        // setFieldError("schoolName", undefined);
+                      }}
+                      allowsEmptyCollection={false}
+                      className="lg:col-span-6"
                     >
-                      <SelectItem
-                        className="w-full"
-                        value={"year.value.toString()"}
-                        key={"year.value.toString()"}
-                        textValue={"year.label"}
-                      >
-                        Scjpp;
-                      </SelectItem>
-                    </Select>
+                      {(item) => (
+                        <AutocompleteItem key={item.key}>
+                          {item.label}
+                        </AutocompleteItem>
+                      )}
+                    </Autocomplete>
 
                     <Select
                       className="lg:col-span-3"
@@ -454,10 +473,60 @@ export default function AddScholar() {
                         }
                       />
                     </div>
+
+                    <div className="lg:col-span-6 mt-4">
+                      <div className="flex justify-between py-0.5">
+                        <p>Office</p>
+                      </div>
+
+                      <Select
+                        isDisabled={role !== "SUPER_ADMIN"}
+                        className="lg:col-span-3"
+                        label="Office"
+                        name="office"
+                        isRequired={!!errors.office}
+                        isInvalid={touched.office && !!errors.office}
+                        errorMessage={errors.office}
+                        disallowEmptySelection
+                        selectionMode="single"
+                        value={values.office}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        scrollShadowProps={{
+                          isEnabled: false,
+                        }}
+                      >
+                        {officesOptions.map((option) => {
+                          const offices = option.offices;
+
+                          return (
+                            <SelectSection
+                              title={option.province}
+                              key={option.province}
+                              classNames={{
+                                heading: headingClasses,
+                              }}
+                            >
+                              {offices.map((office) => (
+                                <SelectItem
+                                  className="w-full"
+                                  value={office}
+                                  key={office}
+                                  textValue={office}
+                                >
+                                  {office}
+                                </SelectItem>
+                              ))}
+                            </SelectSection>
+                          );
+                        })}
+                      </Select>
+                    </div>
+
                     <div className="lg:col-span-6 flex justify-center mt-5">
                       <Button
                         type="submit"
-                        isDisabled={!isValid || isSubmitting}
+                        // isDisabled={!isValid || isSubmitting}
                         isLoading={isSubmitting}
                         className="min-w-full md:min-w-[60%] bg-[#A6F3B2]"
                       >
