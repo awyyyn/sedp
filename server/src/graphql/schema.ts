@@ -97,6 +97,7 @@ export const typeDefs = gql`
       role: SystemUserRole!
       birthDate: String!
       phoneNumber: String!
+      office: String!
     ): SystemUser
     createStudent(
       firstName: String!
@@ -112,6 +113,7 @@ export const typeDefs = gql`
       password: String!
       birthDate: String!
       phoneNumber: String!
+      office: String!
     ): Student
     createAnnouncement(title: String!, content: String!): Announcement
     updateAnnouncement(id: ID!, title: String!, content: String!): Announcement
@@ -349,6 +351,7 @@ export const typeDefs = gql`
     mfaEnabled: Boolean
     address: Address
     role: SystemUserRole
+    office: String
     status: SystemUserStatus
     verifiedAt: String
     createdAt: String
@@ -362,6 +365,7 @@ export const typeDefs = gql`
     lastName: String
     middleName: String
     address: Address
+    office: String
     phoneNumber: String
     status: StudentStatus
     yearLevelJoined: Int
