@@ -183,7 +183,7 @@ export const offices = {
     "Bacacay I",
     "Bacacay II",
     "Rapu-Rapu",
-    "LegazpiPort",
+    "Legazpi Port",
     "Albay District",
     "Manito",
     "Anislag (Daraga area)",
@@ -217,3 +217,6 @@ export const officesOptions = Object.entries(offices).map(
     offices: locations,
   }),
 );
+
+export const headingClasses =
+  "flex w-full sticky top-1 z-20 py-1.5 px-2 bg-default-100 shadow-small rounded-small";

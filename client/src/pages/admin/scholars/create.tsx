@@ -26,11 +26,13 @@ import { CREATE_STUDENT_MUTATION, READ_STUDENTS_QUERY } from "@/queries";
 import { AddScholarSchemaData } from "@/types";
 import { years } from "@/constants";
 import { generatePassword } from "@/lib/utils";
-import { officesOptions, schoolOptions, semester } from "@/lib/constant";
+import {
+  headingClasses,
+  officesOptions,
+  schoolOptions,
+  semester,
+} from "@/lib/constant";
 import { useAuth } from "@/contexts";
-
-const headingClasses =
-  "flex w-full sticky top-1 z-20 py-1.5 px-2 bg-default-100 shadow-small rounded-small";
 
 export default function AddScholar() {
   const [streets, setStreet] = useState<string[]>([]);
