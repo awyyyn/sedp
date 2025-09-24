@@ -43,10 +43,24 @@ export const systemUserQuery = gql`
 
 export const READ_STUDENTS_QUERY = gql`
   ${studentsFragment}
-  query ($status: String, $pagination: PaginationInput, $filter: String) {
-    students(status: $status, pagination: $pagination, filter: $filter) {
+  ${documentFragment}
+  query (
+    $status: String
+    $pagination: PaginationInput
+    $filter: String
+    $includeDocs: Boolean
+  ) {
+    students(
+      status: $status
+      pagination: $pagination
+      filter: $filter
+      includeDocs: $includeDocs
+    ) {
       data {
         ...StudentFragment
+        documents {
+          ...DocumentFragment
+        }
       }
       count
       hasMore
