@@ -63,10 +63,12 @@ export const loginController = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken({
       ...payload,
       role: "STUDENT",
+      office: scholarUser.office,
     });
     const refreshToken = generateRefreshToken({
       ...payload,
       role: "STUDENT",
+      office: scholarUser.office,
     });
     const { password: removePassword, ...userData } = scholarUser;
     const notifications = await readStudentNotification(scholarUser.id);
@@ -101,10 +103,12 @@ export const loginController = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken({
       ...payload,
       role: adminUser.role,
+      office: adminUser.office,
     });
     const refreshToken = generateRefreshToken({
       ...payload,
       role: adminUser.role,
+      office: adminUser.office,
     });
     const { password: removePassword, ...userData } = adminUser;
     const notifications = await readAdminNotification(adminUser.role);
@@ -175,10 +179,12 @@ export const studentLoginController = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken({
       ...payload,
       role: "STUDENT",
+      office: student.office,
     });
     const refreshToken = generateRefreshToken({
       ...payload,
       role: "STUDENT",
+      office: student.office,
     });
     const { password: removePassword, ...userData } = student;
     const notifications = await readStudentNotification(student.id);
@@ -223,6 +229,7 @@ export const studentRegisterController = async (
     gender,
     mfaEnabled,
     semester,
+    office,
     statusUpdatedAt,
   } = req.body;
 
@@ -237,6 +244,7 @@ export const studentRegisterController = async (
         city: city,
         street: street,
       },
+      office,
       birthDate,
       semester,
       middleName,
@@ -387,6 +395,7 @@ export const studentVerifyTokenController = async (
       email: user.email,
       role: "STUDENT",
       id: user.id,
+      office: user.office,
     });
     res.status(200).json({
       data: {

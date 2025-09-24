@@ -12,6 +12,8 @@ export * from "./system-user.js";
 export * from "./student.js";
 export * from "./token.js";
 
+export type ROLE = "STUDENT" | SystemUserRole;
+
 export type DocumentInput = Omit<Document, "id" | "createdAt" | "updatedAt">;
 
 export type CreateSystemUserInput = Omit<
@@ -53,7 +55,8 @@ export interface AnnouncementWithRelation extends Announcement {
 export type AppContext = {
   id: string;
   email: string;
-  role: SystemUserRole | "STUDENT";
+  role: ROLE;
+  office: string;
   prisma: typeof prisma;
 };
 

@@ -70,10 +70,11 @@ export const adminLoginController = async (req: Request, res: Response) => {
       return;
     }
 
-    const payload = {
+    const payload: PayloadArgs = {
       email: user.email,
       role: user.role,
       id: user.id,
+      office: user.office,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -113,6 +114,7 @@ export const adminRegisterController = async (req: Request, res: Response) => {
     middleName,
     birthDate,
     role,
+    office,
   } = req.body;
 
   try {
@@ -126,6 +128,7 @@ export const adminRegisterController = async (req: Request, res: Response) => {
         city: city,
         street: street,
       },
+      office,
       birthDate,
       mfaEnabled: !!mfaSecret,
       middleName,
@@ -269,6 +272,7 @@ export const adminVerifyTokenController = async (
       email: user.email,
       role: user.role,
       id: user.id,
+      office: user.office,
     });
 
     res.status(200).json({
@@ -369,12 +373,14 @@ export const userProfileController = async (req: Request, res: Response) => {
       email: user.email,
       id: user.id,
       role: userRole,
+      office: user.office,
     });
 
     const refreshToken = generateRefreshToken({
       email: user.email,
       id: user.id,
       role: userRole,
+      office: user.office,
     });
 
     res.status(200).json({

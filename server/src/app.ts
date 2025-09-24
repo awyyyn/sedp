@@ -85,41 +85,42 @@ app.use("/api", routes);
 
 // Ensure we wait for our server to start
 (async () => {
-	await server.start();
+  await server.start();
 
-	// GraphQL endpoint
-	app.use(
-		"/graphql",
-		// @ts-ignore
-		expressMiddleware(server, {
-			context: async ({ req }): Promise<AppContext> => {
-				const token = req.headers.authorization?.split(" ")[1];
+  // GraphQL endpoint
+  app.use(
+    "/graphql",
+    // @ts-ignore
+    expressMiddleware(server, {
+      context: async ({ req }): Promise<AppContext> => {
+        const token = req.headers.authorization?.split(" ")[1];
 
-				if (!token) {
-					throw new GraphQLError("UnAuthorized");
-				}
+        if (!token) {
+          throw new GraphQLError("UnAuthorized");
+        }
 
-				const data = verifyToken(token);
+        const data = verifyToken(token);
 
-				if (!data) {
-					throw new GraphQLError("UnAuthorized");
-				}
+        if (!data) {
+          throw new GraphQLError("UnAuthorized");
+        }
 
-				return {
-					id: data.id,
-					email: data.email,
-					role: data.role,
-					prisma: prisma,
-				};
-			},
-		})
-	);
+        return {
+          id: data.id,
+          email: data.email,
+          role: data.role,
+          office: data.office,
+          prisma: prisma,
+        };
+      },
+    }),
+  );
 
-	// Modified server startup
-	// await new Promise<void>((resolve) =>
-	// 	httpServer.listen({ port: environment.PORT }, resolve)
-	// );
-	// console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
+  // Modified server startup
+  // await new Promise<void>((resolve) =>
+  // 	httpServer.listen({ port: environment.PORT }, resolve)
+  // );
+  // console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
 })();
 
 httpServer.listen({ port: Number(environment.PORT) }, () => {
