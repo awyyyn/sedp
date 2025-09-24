@@ -26,11 +26,12 @@ import { useReactToPrint } from "react-to-print";
 import { Helmet } from "react-helmet";
 import { format } from "date-fns";
 
-import { READ_TRANSACTIONS_QUERY } from "@/queries";
-import logo from "@/assets/sedp-mfi.e31049f.webp";
-import { PaginationResult, SystemUser, Transaction } from "@/types";
-import { getTransactionMessage } from "@/lib/utils";
 import { SystemUserModal } from "../__components";
+
+// import logo from "@/assets/sedp-mfi.e31049f.webp";
+import { getTransactionMessage } from "@/lib/utils";
+import { READ_TRANSACTIONS_QUERY } from "@/queries";
+import { PaginationResult, SystemUser, Transaction } from "@/types";
 
 export const columns = [
   { name: "ACTION", uid: "action", sortable: false },
