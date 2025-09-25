@@ -129,7 +129,7 @@ export function AppSidebar() {
         }}
         toggled={width ? isSidebarOpen : true}
         // onBackdropClick={() => alert("asd")}
-        backgroundColor={width ? "white" : "#A6F3B235"}
+        backgroundColor={width ? "#edfdef" : "#A6F3B235"}
         breakPoint="md"
       >
         {/* <h1 className="p-5">SEDP</h1> */}
