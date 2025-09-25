@@ -163,10 +163,15 @@ export const readAllowances = async ({
   year,
   yearLevel,
   includeStudent,
+  office,
 }: GetAllowanceArgs) => {
   let where: Prisma.AllowanceWhereInput = {};
 
-  console.log(where, "qqq");
+  if (office) {
+    where.student = {
+      office: office,
+    };
+  }
 
   if (studentId) {
     where.studentId = studentId;
