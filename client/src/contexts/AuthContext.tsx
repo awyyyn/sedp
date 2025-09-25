@@ -22,8 +22,10 @@ export type ROLE = "STUDENT" | SystemUserRole;
 
 interface AuthContextProps {
   role: ROLE | null;
+  office: string;
   studentUser: Student | null;
   setStudentUser: Dispatch<SetStateAction<Student | null>>;
+  setOffice: Dispatch<SetStateAction<string>>;
   loading: boolean;
   login: (token: string, isAuthenticated?: boolean) => void;
   logout: () => void;
@@ -44,6 +46,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<ROLE | null>(null);
+  const [office, setOffice] = useState<string>("");
   const setSystemUser = useSetAtom(systemUserAtom);
   const setAdminNotifications = useSetAtom(adminNotificationAtom);
   const setScholarNotifications = useSetAtom(scholarNotificationAtom);
@@ -69,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(false);
         setLoading(false);
         setRole(null);
+        setOffice("");
 
         return;
       }
@@ -100,6 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSystemUser(userData);
           setAdminNotifications(notifications || []);
         }
+        setOffice(userData.office);
         setRole(data.data.user.role as ROLE);
         localStorage.setItem("accessToken", data.data.accessToken);
       } catch (err) {
@@ -118,15 +123,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (token: string, isAuthenticated = true) => {
     localStorage.setItem("accessToken", token);
 
-    const decoded = jwtDecode<{ role: string; exp: number } & JwtPayload>(
-      token,
-    );
+    const decoded = jwtDecode<
+      { role: string; exp: number; office: string } & JwtPayload
+    >(token);
 
     if (decoded.exp * 1000 > Date.now()) {
       setRole(decoded.role as ROLE);
       // createHttpLink(token);
       setIsAuthenticated(isAuthenticated);
+      setOffice(decoded.office);
     } else {
+      setOffice("");
       localStorage.removeItem("accessToken");
       setRole(null);
       setIsAuthenticated(false);
@@ -138,11 +145,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRole(null);
     setIsAuthenticated(false);
     setLoading(false);
+    setOffice("");
   };
 
   return (
     <AuthContext.Provider
       value={{
+        office,
+        setOffice,
         role,
         loading,
         login,
