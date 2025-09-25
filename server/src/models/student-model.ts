@@ -130,6 +130,7 @@ export async function readAllStudents({
   pagination,
   status,
   includeDocs,
+  office,
 }: PaginationArgs<StudentStatus> & { includeDocs?: boolean } = {}): Promise<
   PaginationResult<Student>
 > {
@@ -145,7 +146,9 @@ export async function readAllStudents({
     };
   }
 
-  console.log(status);
+  if (office) {
+    where.office = office;
+  }
 
   if (status) {
     where.status = status;
