@@ -59,7 +59,7 @@ export default function AddScholar() {
       </Helmet>
       <Card className="rounded-md shadow-md mb-10  z-[10]">
         <CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-          <h1 className="text-2xl">Create new Scholar</h1>
+          <h1 className="text-2xl">Create new Scholar </h1>
           <p>
             Generate secure credentials for a new scholar and send them via
             email.
@@ -69,6 +69,7 @@ export default function AddScholar() {
           <div className="lg:max-w-[80%] w-full mx-auto my-5">
             <Formik
               validationSchema={addScholarSchema}
+              enableReinitialize
               initialValues={{ office } as AddScholarSchemaData}
               onSubmit={async (values: AddScholarSchemaData, helpers) => {
                 if (role === "SUPER_ADMIN" && !values.office) {
@@ -481,48 +482,57 @@ export default function AddScholar() {
                         <p>Office</p>
                       </div>
 
-                      <Select
-                        isDisabled={role !== "SUPER_ADMIN"}
-                        className="lg:col-span-3"
-                        label="Office"
-                        name="office"
-                        isRequired={!!errors.office}
-                        isInvalid={touched.office && !!errors.office}
-                        errorMessage={errors.office}
-                        disallowEmptySelection
-                        selectionMode="single"
-                        value={values.office}
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        scrollShadowProps={{
-                          isEnabled: false,
-                        }}
-                      >
-                        {officesOptions.map((option) => {
-                          const offices = option.offices;
+                      {role === "SUPER_ADMIN" ? (
+                        <Select
+                          isDisabled={role !== "SUPER_ADMIN"}
+                          className="lg:col-span-3"
+                          label={`Office ${office}`}
+                          name="office"
+                          isRequired={!!errors.office}
+                          isInvalid={touched.office && !!errors.office}
+                          errorMessage={errors.office}
+                          disallowEmptySelection
+                          selectionMode="single"
+                          value={values.office}
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          scrollShadowProps={{
+                            isEnabled: false,
+                          }}
+                        >
+                          {officesOptions.map((option) => {
+                            const offices = option.offices;
 
-                          return (
-                            <SelectSection
-                              title={option.province}
-                              key={option.province}
-                              classNames={{
-                                heading: headingClasses,
-                              }}
-                            >
-                              {offices.map((office) => (
-                                <SelectItem
-                                  className="w-full"
-                                  value={office}
-                                  key={office}
-                                  textValue={office}
-                                >
-                                  {office}
-                                </SelectItem>
-                              ))}
-                            </SelectSection>
-                          );
-                        })}
-                      </Select>
+                            return (
+                              <SelectSection
+                                title={option.province}
+                                key={option.province}
+                                classNames={{
+                                  heading: headingClasses,
+                                }}
+                              >
+                                {offices.map((office) => (
+                                  <SelectItem
+                                    className="w-full"
+                                    value={office}
+                                    key={office}
+                                    textValue={office}
+                                  >
+                                    {office}
+                                  </SelectItem>
+                                ))}
+                              </SelectSection>
+                            );
+                          })}
+                        </Select>
+                      ) : (
+                        <Input
+                          isReadOnly={true}
+                          name="office"
+                          label="Office"
+                          value={values.office}
+                        />
+                      )}
                     </div>
 
                     <div className="lg:col-span-6 flex justify-center mt-5">
