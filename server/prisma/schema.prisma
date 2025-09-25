@@ -7,18 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model monthlyLateSubmitter {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+model MonthlyLateSubmitter {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   month        Int
   year         Int
   reason       String?
-  studentId    String     @db.ObjectId
-  student      Student    @relation(references: [id], fields: [studentId])
-  approvedById String     @db.ObjectId
-  approvedBy   SystemUser @relation(fields: [approvedById], references: [id])
+  studentId    String      @db.ObjectId
+  student      Student     @relation(references: [id], fields: [studentId])
+  approvedById String?     @db.ObjectId
+  approvedBy   SystemUser? @relation(fields: [approvedById], references: [id])
   approvedOn   DateTime?
   openUntil    DateTime?
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime    @default(now())
 }
 
 model SystemUser {
@@ -45,7 +45,7 @@ model SystemUser {
   // TimeStamps
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
-  monthlyLateSubmitter monthlyLateSubmitter[]
+  monthlyLateSubmitter MonthlyLateSubmitter[]
 
   @@map("system_users")
 }
@@ -99,7 +99,7 @@ model Student {
   // TimeStamps
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
-  monthlyLateSubmitter monthlyLateSubmitter[]
+  monthlyLateSubmitter MonthlyLateSubmitter[]
 
   @@map("students")
 }
@@ -202,15 +202,19 @@ enum TransactionAction {
   CREATE
   UPDATE
   DELETE
-  GENERATE
+  APPROVE
+  DISAPPROVE
+  BLOCK
+  UNBLOCK
 }
 
 enum TransactionEntity {
   STUDENT
   ALLOWANCE
   MEETING
-  GATHERING
+  EVENT
   ANNOUNCEMENT
+  LATE_SUBMISSION
 }
 
 model Document {
