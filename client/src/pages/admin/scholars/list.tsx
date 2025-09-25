@@ -28,6 +28,7 @@ import {
 import { Card, CardBody } from "@heroui/card";
 import { useReactToPrint } from "react-to-print";
 import { Helmet } from "react-helmet";
+import { useAtomValue } from "jotai";
 
 import UpdateStatusModal from "./__components/update-status";
 import { SendNotifModal } from "./__components/send-notif-modal";
@@ -37,7 +38,6 @@ import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { Scholars as AllowedRoles } from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
-import { useAtomValue } from "jotai";
 import { scholarsSentNotificationsAtom } from "@/states";
 
 export const columns = [
@@ -204,31 +204,33 @@ export default function Scholars() {
                   </span>
                 </Link>
               </Tooltip>
-              <Tooltip content="Send Notification for Document Submission">
-                <Button
-                  type="button"
-                  size="sm"
-                  onPress={() => {
-                    setSendNotifToStudent(user);
-                  }}
-                  isIconOnly
-                  isDisabled={
-                    !!user.documents?.length ||
-                    alreadySentNotif.includes(user.id)
-                  }
-                  variant="ghost"
-                  className="border hover:!bg-none border-none"
-                >
-                  {/*<span className="text-lg text-default-400 cursor-pointer active:opacity-50">*/}
-                  <Icon
-                    icon="streamline-flex:mail-send-email-message-circle-solid"
-                    color="green"
-                    height={16}
-                    width={16}
-                  />
-                  {/*</span>*/}
-                </Button>
-              </Tooltip>
+              {role !== "ADMIN_MANAGE_SCHOLAR" && (
+                <Tooltip content="Send Notification for Document Submission">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onPress={() => {
+                      setSendNotifToStudent(user);
+                    }}
+                    isIconOnly
+                    isDisabled={
+                      !!user.documents?.length ||
+                      alreadySentNotif.includes(user.id)
+                    }
+                    variant="ghost"
+                    className="border hover:!bg-none border-none"
+                  >
+                    {/*<span className="text-lg text-default-400 cursor-pointer active:opacity-50">*/}
+                    <Icon
+                      icon="streamline-flex:mail-send-email-message-circle-solid"
+                      color="green"
+                      height={16}
+                      width={16}
+                    />
+                    {/*</span>*/}
+                  </Button>
+                </Tooltip>
+              )}
               {/* {!user.statusUpdatedAt && (
 							<Tooltip content="Update Status">
 								<Button
