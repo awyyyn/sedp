@@ -4,104 +4,104 @@ import { PaginationArgs } from "../types/system-user.js";
 import { AnnouncementWithRelation, PaginationResult } from "../types/index.js";
 
 export const createAnnouncement = async ({
-	content,
-	createdById,
-	title,
+  content,
+  createdById,
+  title,
 }: Pick<Announcement, "content" | "createdById" | "title">) => {
-	const newAnnouncement = await prisma.announcement.create({
-		data: {
-			content,
-			createdBy: {
-				connect: {
-					id: createdById,
-				},
-			},
-			title,
-		},
-	});
+  const newAnnouncement = await prisma.announcement.create({
+    data: {
+      content,
+      createdBy: {
+        connect: {
+          id: createdById,
+        },
+      },
+      title,
+    },
+  });
 
-	return newAnnouncement;
+  return newAnnouncement;
 };
 
 export const readAnnouncements = async ({
-	filter,
-	pagination,
+  filter,
+  pagination,
 }: PaginationArgs<never> = {}): Promise<
-	PaginationResult<AnnouncementWithRelation>
+  PaginationResult<AnnouncementWithRelation>
 > => {
-	let where: Prisma.AnnouncementWhereInput = {};
+  let where: Prisma.AnnouncementWhereInput = {};
 
-	if (filter) {
-		where = {
-			title: { contains: filter },
-		};
-	}
+  if (filter) {
+    where = {
+      title: { contains: filter },
+    };
+  }
 
-	const announcements = await prisma.announcement.findMany({
-		where,
-		include: {
-			createdBy: true,
-		},
-		take: pagination ? pagination.take : undefined,
-		orderBy: {
-			createdAt: "desc",
-		},
-		skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
-	});
+  const announcements = await prisma.announcement.findMany({
+    where,
+    include: {
+      createdBy: true,
+    },
+    take: pagination ? pagination.take : undefined,
+    orderBy: {
+      createdAt: "desc",
+    },
+    skip: pagination ? (pagination.page - 1) * pagination.take : undefined,
+  });
 
-	const count = await prisma.announcement.count({
-		where,
-	});
+  const count = await prisma.announcement.count({
+    where,
+  });
 
-	const hasMore = pagination
-		? pagination.page * pagination.take < count
-		: false;
+  const hasMore = pagination
+    ? pagination.page * pagination.take < count
+    : false;
 
-	return {
-		data: announcements,
-		count: count,
-		hasMore: hasMore,
-	};
+  return {
+    data: announcements,
+    count: count,
+    hasMore: hasMore,
+  };
 };
 
 export const readAnnouncement = async (
-	id: string
+  id: string,
 ): Promise<AnnouncementWithRelation | null> => {
-	return await prisma.announcement.findUnique({
-		where: {
-			id,
-		},
-		include: {
-			createdBy: true,
-		},
-	});
+  return await prisma.announcement.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      createdBy: true,
+    },
+  });
 };
 
 export const editAnnouncement = async ({
-	content,
-	title,
-	id,
+  content,
+  title,
+  id,
 }: Pick<Announcement, "content" | "id" | "title">) => {
-	const newAnnouncement = await prisma.announcement.update({
-		data: {
-			content,
-			title,
-		},
-		where: {
-			id,
-		},
-	});
+  const newAnnouncement = await prisma.announcement.update({
+    data: {
+      content,
+      title,
+    },
+    where: {
+      id,
+    },
+  });
 
-	return {
-		...newAnnouncement,
-		createdAt: newAnnouncement.createdAt.toISOString(),
-	};
+  return {
+    ...newAnnouncement,
+    createdAt: newAnnouncement.createdAt.toISOString(),
+  };
 };
 
 export const deleteAnnouncement = async (id: string) => {
-	return await prisma.announcement.delete({
-		where: {
-			id,
-		},
-	});
+  return await prisma.announcement.delete({
+    where: {
+      id,
+    },
+  });
 };
