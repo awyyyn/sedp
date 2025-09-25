@@ -1,5 +1,10 @@
 import { SystemUserRole } from "../types/system-user.js";
-import { TransactionAction, TransactionEntity } from "@prisma/client";
+import {
+  SystemUser,
+  Transaction,
+  TransactionAction,
+  TransactionEntity,
+} from "@prisma/client";
 
 export function getRoleDescription(role: SystemUserRole): string {
   switch (role) {
@@ -17,43 +22,62 @@ export function getRoleDescription(role: SystemUserRole): string {
       return "Unknown Role";
   }
 }
+// Transaction descriptions
+const descriptions: Record<string, string> = {
+  // CREATE
+  CREATE_ALLOWANCE: "generated a new allowance for scholar disbursement",
+  CREATE_STUDENT: "added a new scholar to the system",
+  CREATE_MEETING: "scheduled a new meeting",
+  CREATE_EVENT: "created a new event",
+  CREATE_ANNOUNCEMENT: "published a new announcement",
 
-interface GenerateTransactionDescriptionOptions {
-  action: TransactionAction;
-  entity: TransactionEntity;
-  performedBy: string; // name or email of the user
-  targetName?: string; // e.g. student name, meeting title
-  extra?: string; // e.g. "March 2025", "ID: 1234"
+  // UPDATE
+  UPDATE_STUDENT: "updated scholar academic information",
+  UPDATE_MEETING: "updated meeting details",
+  UPDATE_EVENT: "updated event information",
+  UPDATE_ANNOUNCEMENT: "updated announcement content",
+  UPDATE_ALLOWANCE: "marked allowance as claimed",
+
+  // DELETE
+  DELETE_EVENT: "deleted an event",
+  DELETE_MEETING: "deleted a meeting",
+  DELETE_ANNOUNCEMENT: "deleted an announcement",
+
+  // APPROVE
+  APPROVE_LATE_SUBMISSION: "approved late submission request",
+
+  // DISAPPROVE
+  DISAPPROVE_LATE_SUBMISSION: "rejected late submission request",
+
+  // BLOCK
+  BLOCK_STUDENT: "blocked scholar account",
+
+  // UNBLOCK
+  UNBLOCK_STUDENT: "unblocked scholar account",
+};
+
+/**
+ * Generate transaction description for database storage
+ */
+export function generateTransactionDescription(
+  action: TransactionAction,
+  entity: TransactionEntity,
+  user: SystemUser,
+): string {
+  const key = `${action}_${entity}`;
+  const description = descriptions[key];
+
+  if (!description) {
+    return `${getUserName(user)} performed ${action.toLowerCase()} on ${entity.toLowerCase()}`;
+  }
+
+  return `${getUserName(user)} ${description}`;
 }
 
-export function generateTransactionDescription({
-  action,
-  entity,
-  performedBy,
-  targetName,
-  extra,
-}: GenerateTransactionDescriptionOptions): string {
-  const actionMap: Record<TransactionAction, string> = {
-    CREATE: "created",
-    UPDATE: "updated",
-    DELETE: "deleted",
-    GENERATE: "generated",
-  };
-
-  const entityMap: Record<TransactionEntity, string> = {
-    STUDENT: "scholar",
-    ALLOWANCE: "allowance",
-    MEETING: "meeting",
-    GATHERING: "gathering",
-    ANNOUNCEMENT: "announcement",
-  };
-
-  const actionText = actionMap[action];
-  const entityText = entityMap[entity];
-
-  let description = `${performedBy} ${actionText} ${entityText}`;
-  if (targetName) description += `: ${targetName}`;
-  if (extra) description += ` (${extra})`;
-
-  return description;
+function getUserName(user: SystemUser): string {
+  return (
+    `${user.firstName} ${user.lastName}` ||
+    user.email ||
+    `User ${user.id.slice(-4)}`
+  );
 }
