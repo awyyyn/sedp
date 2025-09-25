@@ -51,6 +51,7 @@ export interface PaginationArgs<TStatus> {
     page: number;
     take: number;
   };
+  office?: string;
 }
 
 export type SystemUserUpdateArgs = Partial<

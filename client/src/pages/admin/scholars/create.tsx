@@ -37,7 +37,7 @@ import { useAuth } from "@/contexts";
 export default function AddScholar() {
   const [streets, setStreet] = useState<string[]>([]);
   const [createStudent] = useMutation(CREATE_STUDENT_MUTATION);
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
 
@@ -69,7 +69,7 @@ export default function AddScholar() {
           <div className="lg:max-w-[80%] w-full mx-auto my-5">
             <Formik
               validationSchema={addScholarSchema}
-              initialValues={{} as AddScholarSchemaData}
+              initialValues={{ office } as AddScholarSchemaData}
               onSubmit={async (values: AddScholarSchemaData, helpers) => {
                 if (role === "SUPER_ADMIN" && !values.office) {
                   helpers.setFieldError("office", "Office is required");

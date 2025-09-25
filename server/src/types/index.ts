@@ -35,6 +35,7 @@ export interface PaginationResult<T> {
 }
 
 export interface GetAllowanceArgs {
+  office?: string;
   studentId?: string;
   year?: number;
   semester?: number;
