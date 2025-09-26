@@ -47,6 +47,7 @@ export const documentsResolver = async (
       schoolYear,
       semester,
       year,
+      office,
     });
   } catch (err) {
     console.log(err);

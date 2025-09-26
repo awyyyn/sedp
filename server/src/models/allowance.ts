@@ -1,8 +1,7 @@
-import { Allowance, Prisma } from "@prisma/client";
+import { Allowance, Prisma, TransactionAction } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
 import { GetAllowanceArgs } from "../types/index.js";
 import { generateTransactionDescription } from "../services/utils.js";
-import { format } from "date-fns";
 
 export const createAllowance = async (
   data: Omit<
@@ -35,22 +34,16 @@ export const createAllowance = async (
       },
     });
 
-    const student = await prsma.student.findUniqueOrThrow({
-      where: { id: data.studentId },
-    });
-
     const transaction = await prsma.transaction.create({
       data: {
-        action: "GENERATE",
+        action: "CREATE",
         entity: "ALLOWANCE",
         entityId: allwnce.id,
-        description: generateTransactionDescription({
-          action: "GENERATE",
-          entity: "ALLOWANCE",
-          performedBy: `${user.firstName} ${user.lastName}`,
-          targetName: `${student.firstName} ${student.lastName}`,
-          extra: `Amount: ${data.totalAmount}, Month/Year: ${format(new Date(new Date().getFullYear(), data.month - 1, 1), "MMMM")}/${data.year}`,
-        }),
+        description: generateTransactionDescription(
+          "CREATE",
+          "ALLOWANCE",
+          user,
+        ),
         transactedBy: {
           connect: {
             id: systemUserId,
@@ -105,13 +98,11 @@ export const updateAllowanceStatus = async (
         action: "UPDATE",
         entity: "ALLOWANCE",
         entityId: allowance.id,
-        description: generateTransactionDescription({
-          action: "UPDATE",
-          entity: "ALLOWANCE",
-          performedBy: `${user.firstName} ${user.lastName}`,
-          targetName: `${allowance.student.firstName} ${allowance.student.lastName}`,
-          extra: `Status: ${claimed ? "Claimed" : "Unclaimed"}`,
-        }),
+        description: generateTransactionDescription(
+          TransactionAction.UPDATE,
+          "ALLOWANCE",
+          user,
+        ),
         transactedBy: {
           connect: {
             id: transactedById,

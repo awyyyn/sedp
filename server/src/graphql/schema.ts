@@ -276,6 +276,7 @@ export const typeDefs = gql`
     student: Student
     allowance: Allowance
     meeting: Meeting
+    lateSubmission: MonthlyLateSubmitter
     event: Event
     announcement: Announcement
 

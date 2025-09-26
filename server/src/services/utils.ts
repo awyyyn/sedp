@@ -1,7 +1,6 @@
 import { SystemUserRole } from "../types/system-user.js";
 import {
   SystemUser,
-  Transaction,
   TransactionAction,
   TransactionEntity,
 } from "@prisma/client";

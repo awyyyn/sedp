@@ -9,7 +9,7 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { Select, SelectItem } from "@heroui/select";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useFormik } from "formik";
 import { Divider } from "@heroui/divider";
 import { useMutation } from "@apollo/client";

@@ -6,7 +6,6 @@ import {
   adminResetPasswordController,
   adminRegisterController,
   studentRegisterController,
-  studentLoginController,
   studentForgotPasswordController,
   studentVerifyTokenController,
   studentResetPasswordController,

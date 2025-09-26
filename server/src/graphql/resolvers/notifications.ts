@@ -1,7 +1,6 @@
 import {
   AdminNotification,
   ScholarNotification,
-  ScholarNotificationType,
   SystemUserRole,
 } from "@prisma/client";
 import {

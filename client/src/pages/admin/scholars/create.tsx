@@ -123,7 +123,6 @@ export default function AddScholar() {
                 values,
                 touched,
                 errors,
-                isValid,
                 isSubmitting,
               }) => {
                 console.log(errors, "qqq errors");

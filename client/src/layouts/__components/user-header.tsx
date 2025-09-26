@@ -23,7 +23,7 @@ import sedpLogo from "@/assets/sedp.png";
 import { useAuth } from "@/contexts";
 
 export default function UserHeader() {
-  const { isAuthenticated, role, studentUser, logout, office } = useAuth();
+  const { isAuthenticated, role, studentUser, logout } = useAuth();
   const [isOpen, onOpenChange] = useState(false);
   const navigate = useNavigate();
 

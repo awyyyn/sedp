@@ -1,4 +1,5 @@
 import { Avatar } from "@heroui/avatar";
+import { formatDate } from "date-fns";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -15,7 +16,6 @@ import {
   getSystemUserStatusColorMap,
 } from "@/lib/constant";
 import { SystemUser } from "@/types";
-import { formatDate } from "date-fns";
 
 interface SystemUserModalProps {
   user: SystemUser | null;
@@ -23,7 +23,7 @@ interface SystemUserModalProps {
 }
 
 export function SystemUserModal({ user, handleClose }: SystemUserModalProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure({
+  const { isOpen, onClose } = useDisclosure({
     isOpen: !!user,
     onClose: handleClose,
   });
