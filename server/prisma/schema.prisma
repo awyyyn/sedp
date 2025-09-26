@@ -8,17 +8,19 @@ datasource db {
 }
 
 model MonthlyLateSubmitter {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  month        Int
-  year         Int
-  reason       String?
-  studentId    String      @db.ObjectId
-  student      Student     @relation(references: [id], fields: [studentId])
-  approvedById String?     @db.ObjectId
-  approvedBy   SystemUser? @relation(fields: [approvedById], references: [id])
-  approvedOn   DateTime?
-  openUntil    DateTime?
-  createdAt    DateTime    @default(now())
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  month       Int
+  year        Int
+  reason      String?
+  studentId   String      @db.ObjectId
+  student     Student     @relation(references: [id], fields: [studentId])
+  updatedById String?     @db.ObjectId
+  updatedBy   SystemUser? @relation(fields: [updatedById], references: [id])
+  updateOn    DateTime?
+  isApproved  Boolean?
+
+  openUntil DateTime?
+  createdAt DateTime  @default(now())
 }
 
 model SystemUser {
