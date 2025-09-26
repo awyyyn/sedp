@@ -24,11 +24,12 @@ import { Helmet } from "react-helmet";
 
 import places from "../../../places.json";
 
+import { SecurityComponent } from "./__components/security";
+
 import { UPDATE_STUDENT_MUTATION } from "@/queries";
 import { years } from "@/constants";
 import { useAuth } from "@/contexts";
 import { semester } from "@/lib/constant";
-import { SecurityComponent } from "./__components/security";
 
 const formSchema = yup.object({
   firstName: yup.string().required(),
@@ -50,6 +51,10 @@ const formSchema = yup.object({
 export default function StudentProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const { studentUser, setStudentUser } = useAuth();
+  const [disabled, setDisabled] = useState({
+    profileInfo: false,
+    security: false,
+  });
 
   const [value, setValue] = useState<DateValue | null>(
     parseDate(
@@ -111,6 +116,8 @@ export default function StudentProfile() {
         richColors: true,
       });
       setIsEditing(false);
+
+      setDisabled((prev) => ({ ...prev, security: false }));
     } catch (error) {
       toast.error((error as Error).message, {
         richColors: true,
@@ -184,9 +191,15 @@ export default function StudentProfile() {
                     <Button
                       color={isEditing ? "danger" : "primary"}
                       className="w-full md:w-fit"
+                      isDisabled={disabled.profileInfo}
                       onPress={() => {
                         handleReset();
                         setIsEditing((prev) => !prev);
+                        if (isEditing) {
+                          setDisabled((prev) => ({ ...prev, security: false }));
+                        } else {
+                          setDisabled((prev) => ({ ...prev, security: true }));
+                        }
                       }}
                     >
                       {isEditing ? "Cancel" : "Edit Profile"}
@@ -589,7 +602,10 @@ export default function StudentProfile() {
                     <div className="flex justify-end gap-2">
                       <Button
                         color="danger"
-                        onPress={() => setIsEditing(false)}
+                        onPress={() => {
+                          setIsEditing(false);
+                          setDisabled((prev) => ({ ...prev, security: false }));
+                        }}
                       >
                         Cancel
                       </Button>
@@ -608,7 +624,7 @@ export default function StudentProfile() {
           }}
         </Formik>
 
-        <SecurityComponent />
+        <SecurityComponent disabled={disabled} setDisabled={setDisabled} />
       </div>
     </>
   );

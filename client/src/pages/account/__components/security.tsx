@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Input } from "@heroui/input";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { useMutation } from "@apollo/client";
 
@@ -30,9 +30,21 @@ const PasswordSchema = yup.object({
     .oneOf([yup.ref("password")], "Passwords must match"),
 });
 
-export const SecurityComponent = () => {
+interface SecurityComponentProps {
+  disabled: {
+    profileInfo: boolean;
+    security: boolean;
+  };
+  setDisabled: Dispatch<SetStateAction<SecurityComponentProps["disabled"]>>;
+}
+
+export const SecurityComponent = ({
+  disabled,
+  setDisabled,
+}: SecurityComponentProps) => {
   const { studentUser, setStudentUser } = useAuth();
   const [setUp2Fa, onSetUp2Fa] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [disableModal, setDisableModal] = useState(false);
   const [showPassword, onShowPassword] = useState(false);
@@ -71,12 +83,14 @@ export const SecurityComponent = () => {
         duration: 5000,
         icon: <Icon icon="bitcoin-icons:verify-filled" />,
       });
+    } finally {
+      setDisabled((d) => ({ ...d, profileInfo: false }));
     }
   };
 
   return (
     <div className="container mx-auto  max-w-3xl py-8 space-y-8">
-      <div className="flex items-center justify-between">
+      {/*<div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Security Settings
@@ -85,8 +99,8 @@ export const SecurityComponent = () => {
             Configure your security options and manage account protection
           </p>
         </div>
-        {/* <div className="space-y-2 md:space-y-0  md:space-x-2"></div> */}
-      </div>
+
+      </div>*/}
 
       <div className="space-y-6">
         <Formik
@@ -151,7 +165,11 @@ export const SecurityComponent = () => {
                         color="danger"
                         variant="ghost"
                         radius="sm"
-                        onPress={() => resetForm()}
+                        onPress={() => {
+                          resetForm();
+                          setChangingPassword(false);
+                          setDisabled((p) => ({ ...p, profileInfo: false }));
+                        }}
                       >
                         Cancel
                       </Button>
@@ -175,6 +193,10 @@ export const SecurityComponent = () => {
                   <Input
                     name="password"
                     label="Password"
+                    onClick={() => {
+                      setDisabled((p) => ({ ...p, profileInfo: true }));
+                      setChangingPassword(true);
+                    }}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.password}
@@ -182,6 +204,7 @@ export const SecurityComponent = () => {
                     isReadOnly={isSubmitting}
                     errorMessage={errors.password}
                     isInvalid={!!errors.password}
+                    isDisabled={disabled.security || setUp2Fa}
                     endContent={
                       <Icon
                         icon={
@@ -197,6 +220,10 @@ export const SecurityComponent = () => {
                   <Input
                     name="confirmPassword"
                     label="Confirm Password"
+                    onClick={() => {
+                      setDisabled((p) => ({ ...p, profileInfo: true }));
+                      setChangingPassword(true);
+                    }}
                     value={values.confirmPassword}
                     type={showPassword ? "text" : "password"}
                     onChange={handleChange}
@@ -204,6 +231,7 @@ export const SecurityComponent = () => {
                     isReadOnly={isSubmitting || !!errors.password}
                     isInvalid={!!errors.confirmPassword}
                     errorMessage={errors.confirmPassword}
+                    isDisabled={disabled.security || setUp2Fa}
                     endContent={
                       <Icon
                         icon={
@@ -231,7 +259,10 @@ export const SecurityComponent = () => {
             <div className="space-y-2 md:space-y-0  md:space-x-2">
               {setUp2Fa && (
                 <Button
-                  onPress={() => onSetUp2Fa(false)}
+                  onPress={() => {
+                    onSetUp2Fa(false);
+                    setDisabled((d) => ({ ...d, profileInfo: false }));
+                  }}
                   color="danger"
                   radius="sm"
                 >
@@ -248,12 +279,14 @@ export const SecurityComponent = () => {
                   className=""
                   color={!studentUser?.mfaEnabled ? "primary" : "danger"}
                   type="button"
+                  isDisabled={disabled.security || changingPassword}
                   onPress={() => {
                     if (studentUser?.mfaEnabled) {
                       setDisableModal(true);
                     } else {
                       onSetUp2Fa(true);
                     }
+                    setDisabled((d) => ({ ...d, profileInfo: true }));
                   }}
                 >
                   {studentUser?.mfaEnabled ? "Disable 2FA" : "Set up 2FA"}

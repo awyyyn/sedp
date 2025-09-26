@@ -278,7 +278,6 @@ export default function AdminSecurityComponent({
                   onPress={() => {
                     if (systemUser?.mfaEnabled) {
                       setDisableModal(true);
-                      // setDisabled((d) => ({ ...d, profileInfo: fa; }));
                     } else {
                       onSetUp2Fa(true);
                     }

@@ -1,12 +1,7 @@
-import { Button } from "@heroui/button";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 
 export default function AdminAccountLayout() {
-  const { pathname } = useLocation();
-
-  const links = ["/account", "/account/security"];
-
   return (
     <div className="max-h-screen  pt-2 overflow-hidden">
       {/*<div className="flex items-center justify-between px-5 md:px-0 container mx-auto  max-w-3xl">
