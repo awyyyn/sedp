@@ -1,5 +1,20 @@
 import { gql } from "@apollo/client";
 
+export const monthlyLateSubmitterFragment = gql`
+  fragment MonthlyLateSubmitter on MonthlyLateSubmitter {
+    id
+    month
+    year
+    reason
+    studentId
+    updatedById
+    updatedOn
+    isApproved
+    openUntil
+    createdAt
+  }
+`;
+
 export const systemUsersFragment = gql`
   fragment SystemUserFragment on SystemUser {
     id

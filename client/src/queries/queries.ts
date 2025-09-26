@@ -5,10 +5,45 @@ import {
   documentFragment,
   eventFragment,
   meetingFragment,
+  monthlyLateSubmitterFragment,
   studentsFragment,
   systemUsersFragment,
   transactionFragment,
 } from "./fragments";
+
+export const LATE_SUBMISSION_REQUESTS_QUERY = gql`
+  ${monthlyLateSubmitterFragment}
+  query Data(
+    $isApproved: Boolean
+    $pagination: PaginationInput
+    $year: Int
+    $month: Int
+  ) {
+    lateSubmissionRequests(
+      isApproved: $isApproved
+      pagination: $pagination
+      year: $year
+      month: $month
+    ) {
+      data {
+        ...MonthlyLateSubmitter
+        student {
+          id
+          firstName
+          lastName
+        }
+        updatedBy {
+          firstName
+          id
+          lastName
+          email
+        }
+      }
+      count
+      hasMore
+    }
+  }
+`;
 
 export const GENERATE_TOTP_QUERY = gql`
   query {

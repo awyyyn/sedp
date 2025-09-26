@@ -5,9 +5,54 @@ import {
   documentFragment,
   eventFragment,
   meetingFragment,
+  monthlyLateSubmitterFragment,
   studentsFragment,
   systemUsersFragment,
 } from "./fragments";
+
+export const LATE_SUBMISSION_REQUEST_MUTATION = gql`
+  ${monthlyLateSubmitterFragment}
+  mutation ($month: Int!, $year: Int!, $reason: String) {
+    requestLateSubmission(month: $month, year: $year, reason: $reason) {
+      ...MonthlyLateSubmitter
+      student {
+        id
+        firstName
+        lastName
+      }
+      updatedBy {
+        firstName
+        id
+        lastName
+        email
+      }
+    }
+  }
+`;
+
+export const APPROVE_LATE_SUBMISSION_REQUEST_MUTATION = gql`
+  ${monthlyLateSubmitterFragment}
+  mutation ($approve: Boolean!, $requestId: ID!, $openUntil: String) {
+    approveLateSubmissionRequest(
+      approve: $approve
+      requestId: $requestId
+      openUntil: $openUntil
+    ) {
+      ...MonthlyLateSubmitter
+      student {
+        id
+        firstName
+        lastName
+      }
+      updatedBy {
+        firstName
+        id
+        lastName
+        email
+      }
+    }
+  }
+`;
 
 export const verifyTOTPMutation = gql`
   mutation ($secret: String!, $token: String!) {
