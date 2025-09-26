@@ -6,6 +6,7 @@ import {
   Meeting,
   Announcement,
   Events,
+  MonthlyLateSubmitter,
 } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
 import { PaginationResult, TransactionPaginationArgs } from "../types/index.js";
@@ -64,6 +65,7 @@ export const readTransactions = async ({
       let event: Events | null = null;
       let meeting: Meeting | null = null;
       let announcement: Announcement | null = null;
+      let lateSubmission: MonthlyLateSubmitter | null = null;
 
       switch (transaction.entity) {
         case "ALLOWANCE": {
@@ -81,7 +83,7 @@ export const readTransactions = async ({
           });
           break;
         }
-        case "GATHERING": {
+        case "EVENT": {
           event = await prisma.events.findFirst({
             where: { id: transaction.entityId },
           });
@@ -103,6 +105,19 @@ export const readTransactions = async ({
               ...student,
             };
           }
+          break;
+        }
+        case "LATE_SUBMISSION": {
+          lateSubmission = await prisma.monthlyLateSubmitter.findFirst({
+            where: { id: transaction.entityId },
+          });
+
+          if (lateSubmission) {
+            lateSubmission = {
+              ...lateSubmission,
+            };
+          }
+
           break;
         }
         default:
@@ -133,6 +148,16 @@ export const readTransactions = async ({
         announcement: announcement && {
           ...announcement,
           createdAt: announcement.createdAt.toISOString(),
+        },
+        lateSubmission: lateSubmission && {
+          ...lateSubmission,
+          openUntil: lateSubmission?.openUntil
+            ? lateSubmission.openUntil.toISOString()
+            : null,
+          updatedOn: lateSubmission?.updatedOn
+            ? lateSubmission.updatedOn.toISOString()
+            : null,
+          createdAt: lateSubmission.createdAt.toISOString(),
         },
         transactedBy: {
           ...transaction.transactedBy,
