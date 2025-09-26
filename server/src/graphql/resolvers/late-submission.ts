@@ -6,30 +6,21 @@ import {
 } from "../../models/index.js";
 import { AppContext, TransactionPaginationArgs } from "../../types/index.js";
 import { MonthlyLateSubmitter } from "@prisma/client";
-import { setHours, setMinutes, setSeconds } from "date-fns";
 
 export const requestLateSubmissionResolver = async (
   _: never,
   {
-    isApproved,
     month,
     reason,
-    studentId,
     year,
-  }: Omit<
-    MonthlyLateSubmitter,
-    "createdAt" | "id" | "openUntil" | "updatedById" | "updatedOn"
-  >,
+  }: Pick<MonthlyLateSubmitter, "month" | "reason" | "year">,
   app: AppContext,
 ) => {
   try {
     return await requestLateSubmission({
-      updatedById: app.id,
-      studentId,
-      isApproved,
+      studentId: app.id,
       month,
       reason,
-      updateOn: new Date(),
       year,
     });
   } catch (error) {
@@ -49,6 +40,10 @@ export const approveLateSubmissionRequestResolver = async (
   app: AppContext,
 ) => {
   try {
+    if (app.role !== "SUPER_ADMIN" && app.role !== "ADMIN_MANAGE_DOCUMENTS") {
+      throw new GraphQLError("You are not authorized to perform this action");
+    }
+
     return await approveLateSubmissionRequest({
       approve,
       requestId,
@@ -56,6 +51,7 @@ export const approveLateSubmissionRequestResolver = async (
       updatedBy: app.id,
     });
   } catch (error) {
+    console.log(error);
     throw new GraphQLError(
       (error as GraphQLError).message || "Failed to approve late submission",
     );

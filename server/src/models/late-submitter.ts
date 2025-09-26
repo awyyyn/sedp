@@ -8,7 +8,10 @@ export const requestLateSubmission = async ({
   studentId,
   month,
   year,
-}: Omit<MonthlyLateSubmitter, "createdAt" | "id" | "openUntil">) => {
+}: Omit<
+  MonthlyLateSubmitter,
+  "createdAt" | "id" | "openUntil" | "updatedOn" | "isApproved" | "updatedById"
+>) => {
   return await prisma.$transaction(async (tx) => {
     const isLateSubmissionExists = await tx.monthlyLateSubmitter.count({
       where: {
@@ -63,7 +66,7 @@ export const approveLateSubmissionRequest = async ({
         updatedBy: {
           connect: { id: updatedBy },
         },
-        updateOn: new Date(),
+        updatedOn: new Date(),
         ...(openUntil && {
           openUntil: openUntil
             ? setSeconds(setMinutes(setHours(new Date(openUntil), 23), 59), 59)
@@ -127,7 +130,7 @@ export const getLateSubmissionRequests = async ({
   return {
     data: requests.map((req) => ({
       ...req,
-      updateOn: req.updateOn?.toISOString() || null,
+      updatedOn: req.updatedOn?.toISOString() || null,
       createdAt: req.createdAt.toISOString(),
       openUntil: req.openUntil?.toISOString() || null,
       student: {

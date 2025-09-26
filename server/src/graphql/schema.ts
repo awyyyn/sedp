@@ -6,6 +6,12 @@ export const typeDefs = gql`
     adminNotificationSent(role: SystemUserRole): AdminNotification
   }
   type Query {
+    lateSubmissionRequests(
+      isApproved: Boolean
+      pagination: PaginationInput
+      year: Int
+      month: Int
+    ): MonthlyLateSubmitterResult
     transactions(input: TransactionPaginationArgs): TransactionResult
     generateTOTPSecret: GeneratedOTPResult
     systemUsers(
@@ -59,6 +65,16 @@ export const typeDefs = gql`
   }
 
   type Mutation {
+    approveLateSubmissionRequest(
+      approve: Boolean!
+      openUntil: String
+      requestId: ID!
+    ): MonthlyLateSubmitter
+    requestLateSubmission(
+      month: Int!
+      year: Int!
+      reason: String
+    ): MonthlyLateSubmitter
     verifyTOTP(secret: String!, token: String!): Boolean
     updateSystemUser(values: updateSystemUserInput): SystemUser
     deleteSystemUser(id: String!): SystemUser
@@ -293,6 +309,12 @@ export const typeDefs = gql`
     page: Int!
   }
 
+  type MonthlyLateSubmitterResult {
+    data: [MonthlyLateSubmitter]
+    hasMore: Boolean
+    count: Int
+  }
+
   type TransactionResult {
     data: [Transaction]
     hasMore: Boolean
@@ -508,6 +530,22 @@ export const typeDefs = gql`
 
     createdAt: String!
     updatedAt: String!
+  }
+
+  type MonthlyLateSubmitter {
+    id: ID!
+    month: Int!
+    year: Int!
+    reason: String
+    studentId: String!
+    student: Student!
+    updatedById: String
+    updatedBy: SystemUser
+    updatedOn: String
+    isApproved: Boolean
+
+    openUntil: String
+    createdAt: String!
   }
 
   type Allowance {

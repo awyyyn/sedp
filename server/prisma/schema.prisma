@@ -16,7 +16,7 @@ model MonthlyLateSubmitter {
   student     Student     @relation(references: [id], fields: [studentId])
   updatedById String?     @db.ObjectId
   updatedBy   SystemUser? @relation(fields: [updatedById], references: [id])
-  updateOn    DateTime?
+  updatedOn   DateTime?
   isApproved  Boolean?
 
   openUntil DateTime?

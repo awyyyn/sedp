@@ -48,6 +48,9 @@ import {
   createStudentNotificationResolver,
   dashboardOverviewDataResolver,
   transactionsResolver,
+  lateSubmissionRequestsResolver,
+  requestLateSubmissionResolver,
+  approveLateSubmissionRequestResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -56,6 +59,7 @@ export const resolvers = {
     adminNotificationSent: adminNotificationSubscription,
   },
   Query: {
+    lateSubmissionRequests: lateSubmissionRequestsResolver,
     transactions: transactionsResolver,
     generateTOTPSecret: twoFactorAuthResolver,
     systemUsers: systemUsersResolver,
@@ -79,6 +83,8 @@ export const resolvers = {
     dashboardOverviewData: dashboardOverviewDataResolver,
   },
   Mutation: {
+    approveLateSubmissionRequest: approveLateSubmissionRequestResolver,
+    requestLateSubmission: requestLateSubmissionResolver,
     verifyTOTP: verifyTOTPResolver,
     updateSystemUser: updateSystemUserResolver,
     deleteSystemUser: deleteSystemUserResolver,
