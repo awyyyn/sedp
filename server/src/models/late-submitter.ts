@@ -1,5 +1,5 @@
 import { MonthlyLateSubmitter, Prisma } from "@prisma/client";
-import { setDay, setHours, setMinutes, setMonth, setSeconds } from "date-fns";
+import { addDays, addMonths, setHours, setMinutes, setSeconds } from "date-fns";
 
 import { prisma } from "../services/prisma.js";
 import { PaginationArgs } from "../types/system-user.js";
@@ -104,19 +104,19 @@ export const approveLateSubmissionRequest = async ({
 
     switch (openUntil) {
       case "7d": {
-        openUntilData = setDay(new Date(), 7);
+        openUntilData = addDays(new Date(), 7);
         break;
       }
       case "14d": {
-        openUntilData = setDay(new Date(), 14);
+        openUntilData = addDays(new Date(), 14);
         break;
       }
       case "21d": {
-        openUntilData = setDay(new Date(), 21);
+        openUntilData = addDays(new Date(), 21);
         break;
       }
       case "1m": {
-        openUntilData = setMonth(new Date(), 1);
+        openUntilData = addMonths(new Date(), 1);
         break;
       }
       default:
@@ -153,7 +153,19 @@ export const approveLateSubmissionRequest = async ({
       month: updatedRequest.month,
       year: updatedRequest.year,
       expiresIn: openUntil,
+      expiresInDate: openUntilData
+        ? setSeconds(
+            setMinutes(setHours(openUntilData, 23), 59),
+            59,
+          ).toISOString()
+        : undefined,
     });
+
+    let link = `/my-documents/monthly?active=${updatedRequest.year}-${updatedRequest.month}`;
+
+    if (approve) {
+      link += `/my-documents/monthly?token=${token}`;
+    }
 
     const notification = await tx.scholarNotification.create({
       data: {

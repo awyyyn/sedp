@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { formatDate } from "date-fns";
+import { useEffect, useState } from "react";
+import { formatDate, isFuture } from "date-fns";
 import { useQuery } from "@apollo/client";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 import ErrorFetching from "../__components/error-fetch";
 
@@ -71,8 +72,9 @@ export const generateFolders = (
 };
 
 export default function Monthly() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const defaultActiveField = searchParams.get("active") || "";
+  const token = searchParams.get("token") || "";
   const { studentUser } = useAuth();
   const [activeFileId, setActiveFileId] = useState<string>(defaultActiveField);
   const currentYear = new Date().getFullYear();
@@ -97,11 +99,14 @@ export default function Monthly() {
       },
     },
   );
+  const [allowLateSubmit, setAllowLateSubmit] = useState<string | null>(null);
   const [previewModal, onPreviewModalChange] = useState(false);
   const [toPreview, setToPreview] = useState<string | null>(null);
 
   const handleFileSelect = async (fileId: string) => {
     setActiveFileId(fileId);
+    setAllowLateSubmit(null);
+    setSearchParams({});
     // setIsLoading(true);
 
     // const { data } = await fetchDocuments({
@@ -122,6 +127,35 @@ export default function Monthly() {
       },
     });
   };
+
+  useEffect(() => {
+    const tokenData = localStorage.getItem("lateSubmissionToken") || token;
+
+    if (tokenData) {
+      if (!localStorage.getItem("lateSubmissionToken")) {
+        localStorage.setItem("lateSubmissionToken", token);
+      }
+
+      const decoded = jwtDecode<
+        {
+          id: string;
+          month: number;
+          year: number;
+          expiresIn?: string;
+          expiresInDate: string;
+        } & JwtPayload
+      >(tokenData);
+
+      if (decoded && isFuture(decoded.expiresInDate)) {
+        const field = `${decoded.year}-${decoded.month}`;
+
+        setActiveFileId(field);
+        setAllowLateSubmit(field);
+      } else {
+        setAllowLateSubmit(null);
+      }
+    }
+  }, [token]);
 
   return (
     <>
@@ -194,6 +228,7 @@ export default function Monthly() {
                       />
                     </Button>
                     {currentYear === activeFieldYear &&
+                      allowLateSubmit === null &&
                       activeFieldMonth < currentMonth && (
                         <Button
                           className=""
@@ -205,7 +240,8 @@ export default function Monthly() {
                         </Button>
                       )}
 
-                    {`${currentYear}-${currentMonth}` === activeFileId && (
+                    {(`${currentYear}-${currentMonth}` === activeFileId ||
+                      allowLateSubmit) && (
                       <Button
                         as={Link}
                         to={`/my-documents/monthly/upload`}

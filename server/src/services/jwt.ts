@@ -39,9 +39,11 @@ export const generateLateSubmissionToken = (payload: {
   month: number;
   year: number;
   expiresIn?: string;
+  expiresInDate?: string;
 }) => {
+  const { expiresIn, ...data } = payload;
   const secret = process.env.ACCESS_SECRET;
-  return jwt.sign(payload, secret!, {
+  return jwt.sign(data, secret!, {
     expiresIn: payload.expiresIn || "7d",
   });
 };
