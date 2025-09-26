@@ -33,3 +33,15 @@ export const verifyToken = (token: string): JWTPayload | null => {
     return null;
   }
 };
+
+export const generateLateSubmissionToken = (payload: {
+  id: string;
+  month: number;
+  year: number;
+  expiresIn?: string;
+}) => {
+  const secret = process.env.ACCESS_SECRET;
+  return jwt.sign(payload, secret!, {
+    expiresIn: payload.expiresIn || "7d",
+  });
+};
