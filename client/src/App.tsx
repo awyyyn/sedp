@@ -58,6 +58,7 @@ import StudentSemesterFiles from "@/pages/admin/semester-docs/scholar/info";
 import DisqualifyPage from "@/pages/disqualify";
 import ScholarAllowances from "@/pages/admin/scholars/allowances";
 import Transactions from "@/pages/admin/transactions/list";
+import LateSubmissionList from "@/pages/admin/late-submission/list";
 
 function App() {
   const manageScholarRoutes = {
@@ -228,6 +229,10 @@ function App() {
       {
         element: <AdminLayout />,
         children: [
+          {
+            path: "late-requests",
+            element: <LateSubmissionList />,
+          },
           {
             path: "monthly-submissions",
             children: [
