@@ -1,7 +1,10 @@
 import { MonthlyLateSubmitter, Prisma } from "@prisma/client";
+import { setDay, setHours, setMinutes, setMonth, setSeconds } from "date-fns";
+
 import { prisma } from "../services/prisma.js";
 import { PaginationArgs } from "../types/system-user.js";
-import { setHours, setMinutes, setSeconds } from "date-fns";
+import { generateLateSubmissionToken } from "../services/jwt.js";
+import { pubsub } from "../services/pubsub.js";
 
 export const requestLateSubmission = async ({
   reason,
@@ -13,17 +16,31 @@ export const requestLateSubmission = async ({
   "createdAt" | "id" | "openUntil" | "updatedOn" | "isApproved" | "updatedById"
 >) => {
   return await prisma.$transaction(async (tx) => {
+    const isRequestExceedsLimit = await tx.monthlyLateSubmitter.count({
+      where: {
+        studentId,
+        year,
+        month,
+      },
+    });
     const isLateSubmissionExists = await tx.monthlyLateSubmitter.count({
       where: {
         studentId,
         month,
         year,
+        updatedOn: {
+          equals: null,
+        },
       },
     });
 
     if (isLateSubmissionExists) {
       throw new Error(
         "You have already requested for late submission for this month.",
+      );
+    } else if (isRequestExceedsLimit >= 5) {
+      throw new Error(
+        "You have exceeded the maximum number of late submission requests for this month.",
       );
     }
 
@@ -36,6 +53,29 @@ export const requestLateSubmission = async ({
         month,
         year,
       },
+      include: {
+        student: true,
+        updatedBy: true,
+      },
+    });
+
+    const notification = await tx.adminNotification.create({
+      data: {
+        title: "New Late Submission Request",
+        message: `A new late submission request has been made by ${lateSubmission.student.firstName} ${lateSubmission.student.lastName} for ${new Date(
+          lateSubmission.year,
+          lateSubmission.month - 1,
+        ).toLocaleString("default", { month: "long" })}.`,
+        link: `/admin/late-submissions?active=${lateSubmission.id}`,
+        role: "ADMIN_MANAGE_DOCUMENTS",
+        type: "OTHER",
+      },
+    });
+
+    if (!notification) throw new Error("Something went wrong!");
+
+    pubsub.publish("ADMIN_NOTIFICATION_SENT", {
+      adminNotificationSent: notification,
     });
 
     return lateSubmission;
@@ -60,6 +100,29 @@ export const approveLateSubmissionRequest = async ({
 
     if (!isExists) throw new Error("Late submission request cannot found!");
 
+    let openUntilData: Date | null = null;
+
+    switch (openUntil) {
+      case "7d": {
+        openUntilData = setDay(new Date(), 7);
+        break;
+      }
+      case "14d": {
+        openUntilData = setDay(new Date(), 14);
+        break;
+      }
+      case "21d": {
+        openUntilData = setDay(new Date(), 21);
+        break;
+      }
+      case "1m": {
+        openUntilData = setMonth(new Date(), 1);
+        break;
+      }
+      default:
+        openUntilData = null;
+    }
+
     const updatedRequest = await tx.monthlyLateSubmitter.update({
       data: {
         isApproved: approve,
@@ -68,18 +131,56 @@ export const approveLateSubmissionRequest = async ({
         },
         updatedOn: new Date(),
         ...(openUntil && {
-          openUntil: openUntil
-            ? setSeconds(setMinutes(setHours(new Date(openUntil), 23), 59), 59)
+          openUntil: openUntilData
+            ? setSeconds(setMinutes(setHours(openUntilData, 23), 59), 59)
             : null,
         }),
       },
       where: {
         id: requestId,
       },
+      include: {
+        student: true,
+        updatedBy: true,
+      },
     });
 
     if (!updatedRequest)
       throw new Error("Failed to update late submission request!");
+
+    const token = generateLateSubmissionToken({
+      id: updatedRequest.studentId,
+      month: updatedRequest.month,
+      year: updatedRequest.year,
+      expiresIn: openUntil,
+    });
+
+    const notification = await tx.scholarNotification.create({
+      data: {
+        title: "Late Submission Request Update",
+        message: `Your late submission request for ${new Date(
+          updatedRequest.year,
+          updatedRequest.month - 1,
+        ).toLocaleString("default", { month: "long" })} has been ${
+          approve ? "approved" : "denied"
+        }.${
+          approve && updatedRequest.openUntil
+            ? ` You can submit your requirements until ${updatedRequest.openUntil.toLocaleDateString()}.`
+            : ""
+        }`,
+        type: "OTHER",
+        receiver: {
+          connect: { id: updatedRequest.studentId },
+        },
+        link: `/my-documents/monthly?token=${token}`,
+      },
+    });
+
+    if (!notification) throw new Error("Something went wrong!");
+
+    pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
+      scholarNotificationSent: notification,
+    });
 
     return updatedRequest;
   });
@@ -100,6 +201,10 @@ export const getLateSubmissionRequests = async ({
 
   if (typeof isApproved !== "undefined") {
     where.isApproved = isApproved;
+  } else {
+    where.isApproved = {
+      equals: null,
+    };
   }
 
   if (month) where.month = month;

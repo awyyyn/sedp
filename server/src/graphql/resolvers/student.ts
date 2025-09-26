@@ -51,13 +51,23 @@ export const studentsResolver = async (
     status,
     includeDocs = false,
   }: PaginationArgs<StudentStatus> & { includeDocs?: boolean },
+  app: AppContext,
 ) => {
+  let office: string | undefined = undefined;
+
+  if (app.role !== "SUPER_ADMIN") {
+    office = app.office;
+  }
+
+  console.log(office);
+
   try {
     return await readAllStudents({
       filter: filter ?? undefined,
       pagination: pagination ? pagination : undefined,
       status,
       includeDocs,
+      office,
     });
   } catch (err) {
     console.log(err);
