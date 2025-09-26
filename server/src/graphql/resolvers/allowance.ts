@@ -94,7 +94,7 @@ export const allowancesResolver = async (
   app: AppContext,
 ) => {
   let { studentId, ...filters } = data;
-
+  let office: string | undefined = undefined;
   try {
     if (
       !(
@@ -107,7 +107,11 @@ export const allowancesResolver = async (
       studentId = app.id;
     }
 
-    return await readAllowances({ ...filters, studentId });
+    if (app.role !== "SUPER_ADMIN") {
+      office = app.office;
+    }
+
+    return await readAllowances({ ...filters, studentId, office });
 
     // return announcement;
   } catch (err) {
