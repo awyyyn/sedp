@@ -40,6 +40,10 @@ const defaultLinks = [
   // 	icon: "wpf:books",
   // },
   {
+    path: "/late-requests",
+    icon: "material-symbols-light:assignment-late-outline-rounded",
+  },
+  {
     path: "/events",
     icon: "mdi:events",
   },
