@@ -66,7 +66,7 @@ export const requestLateSubmission = async ({
           lateSubmission.year,
           lateSubmission.month - 1,
         ).toLocaleString("default", { month: "long" })}.`,
-        link: `/admin/late-submissions?active=${lateSubmission.id}`,
+        link: `/admin/late-requests?active=${lateSubmission.id}`,
         role: "ADMIN_MANAGE_DOCUMENTS",
         type: "OTHER",
       },
@@ -213,10 +213,6 @@ export const getLateSubmissionRequests = async ({
 
   if (typeof isApproved !== "undefined") {
     where.isApproved = isApproved;
-  } else {
-    where.isApproved = {
-      equals: null,
-    };
   }
 
   if (month) where.month = month;
@@ -224,7 +220,12 @@ export const getLateSubmissionRequests = async ({
   if (year) where.year = year;
 
   const requests = await prisma.monthlyLateSubmitter.findMany({
-    where,
+    where: {
+      ...where,
+      updatedOn: {
+        isSet: false,
+      },
+    },
     include: {
       student: true,
       updatedBy: true,

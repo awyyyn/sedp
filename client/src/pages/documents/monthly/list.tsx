@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts";
 import { Document, FileTreeItem } from "@/types";
 import { PreviewModal, FileTree, DocumentTable } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
+import { RequestModal } from "./__components/request-modal";
 
 export const generateFolders = (
   date: string,
@@ -81,6 +82,7 @@ export default function Monthly() {
   const currentMonth = new Date().getMonth() + 1;
   const activeFieldMonth = Number(activeFileId.split("-")[1]);
   const activeFieldYear = Number(activeFileId.split("-")[0]);
+
   // const [data, setData] = useState<Document[]>([]);
   // const [fetchDocuments, { loading, error, refetch }] = useLazyQuery(
   // 	READ_DOCUMENTS_QUERY,
@@ -102,11 +104,25 @@ export default function Monthly() {
   const [allowLateSubmit, setAllowLateSubmit] = useState<string | null>(null);
   const [previewModal, onPreviewModalChange] = useState(false);
   const [toPreview, setToPreview] = useState<string | null>(null);
+  const [toOpenModal, setToOpenModal] = useState<null | {
+    year: number;
+    month: number;
+  }>(null);
+
+  const handleRequestLateSubmission = async ({
+    month,
+    year,
+  }: {
+    month: number;
+    year: number;
+  }) => {
+    setToOpenModal({ month, year });
+  };
 
   const handleFileSelect = async (fileId: string) => {
     setActiveFileId(fileId);
-    setAllowLateSubmit(null);
     setSearchParams({});
+
     // setIsLoading(true);
 
     // const { data } = await fetchDocuments({
@@ -129,7 +145,7 @@ export default function Monthly() {
   };
 
   useEffect(() => {
-    const tokenData = localStorage.getItem("lateSubmissionToken") || token;
+    const tokenData = token || localStorage.getItem("lateSubmissionToken");
 
     if (tokenData) {
       if (!localStorage.getItem("lateSubmissionToken")) {
@@ -148,7 +164,7 @@ export default function Monthly() {
 
       if (decoded && isFuture(decoded.expiresInDate)) {
         const field = `${decoded.year}-${decoded.month}`;
-
+        console.log(decoded, "qqq qwe");
         setActiveFileId(field);
         setAllowLateSubmit(field);
       } else {
@@ -156,6 +172,13 @@ export default function Monthly() {
       }
     }
   }, [token]);
+
+  console.log(
+    allowLateSubmit === activeFileId,
+    "qqqwe sdsd",
+    allowLateSubmit,
+    activeFileId,
+  );
 
   return (
     <>
@@ -228,20 +251,27 @@ export default function Monthly() {
                       />
                     </Button>
                     {currentYear === activeFieldYear &&
-                      allowLateSubmit === null &&
+                      (allowLateSubmit === null ||
+                        activeFileId !== allowLateSubmit) &&
                       activeFieldMonth < currentMonth && (
                         <Button
                           className=""
                           size="sm"
                           variant="flat"
                           color="primary"
+                          onPress={() =>
+                            handleRequestLateSubmission({
+                              month: activeFieldMonth,
+                              year: activeFieldYear,
+                            })
+                          }
                         >
                           Request Late Submission
                         </Button>
                       )}
 
                     {(`${currentYear}-${currentMonth}` === activeFileId ||
-                      allowLateSubmit) && (
+                      allowLateSubmit === activeFileId) && (
                       <Button
                         as={Link}
                         to={`/my-documents/monthly/upload`}
@@ -291,6 +321,10 @@ export default function Monthly() {
           isOpen={previewModal}
           onOpenChange={onPreviewModalChange}
         />
+      )}
+
+      {toOpenModal && (
+        <RequestModal data={toOpenModal} onClose={() => setToOpenModal(null)} />
       )}
     </>
   );
