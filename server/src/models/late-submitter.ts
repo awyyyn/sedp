@@ -1,14 +1,14 @@
 import { MonthlyLateSubmitter, Prisma } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
 import { PaginationArgs } from "../types/system-user.js";
+import { setHours, setMinutes, setSeconds } from "date-fns";
 
 export const requestLateSubmission = async ({
-  openUntil,
   reason,
   studentId,
   month,
   year,
-}: Omit<MonthlyLateSubmitter, "createdAt" | "id">) => {
+}: Omit<MonthlyLateSubmitter, "createdAt" | "id" | "openUntil">) => {
   return await prisma.$transaction(async (tx) => {
     const isLateSubmissionExists = await tx.monthlyLateSubmitter.count({
       where: {
@@ -26,7 +26,6 @@ export const requestLateSubmission = async ({
 
     const lateSubmission = await tx.monthlyLateSubmitter.create({
       data: {
-        openUntil,
         reason,
         student: {
           connect: { id: studentId },
@@ -49,7 +48,7 @@ export const approveLateSubmissionRequest = async ({
   updatedBy: string;
   requestId: string;
   approve: boolean;
-  openUntil?: Date;
+  openUntil?: string;
 }) => {
   return await prisma.$transaction(async (tx) => {
     const isExists = await tx.monthlyLateSubmitter.count({
@@ -65,7 +64,11 @@ export const approveLateSubmissionRequest = async ({
           connect: { id: updatedBy },
         },
         updateOn: new Date(),
-        ...(openUntil && { openUntil }),
+        ...(openUntil && {
+          openUntil: openUntil
+            ? setSeconds(setMinutes(setHours(new Date(openUntil), 23), 59), 59)
+            : null,
+        }),
       },
       where: {
         id: requestId,
