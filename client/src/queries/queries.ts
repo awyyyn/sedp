@@ -13,13 +13,13 @@ import {
 
 export const LATE_SUBMISSION_REQUESTS_QUERY = gql`
   ${monthlyLateSubmitterFragment}
-  query Data(
+  query (
     $isApproved: Boolean
     $pagination: PaginationInput
     $year: Int
     $month: Int
   ) {
-    lateSubmissionRequests(
+    requests: lateSubmissionRequests(
       isApproved: $isApproved
       pagination: $pagination
       year: $year

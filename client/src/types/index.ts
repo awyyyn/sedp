@@ -17,6 +17,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export * from "./late-submission";
 export * from "./system-user";
 export * from "./transaction";
 export * from "./student";
