@@ -122,7 +122,7 @@ export const createStudentResolver = async (
       throw new GraphQLError("UnAuthorized Access!");
     }
 
-    const newScholar = await createStudent(data);
+    const newScholar = await createStudent(data, app.id);
 
     if (!newScholar) return null;
     await sendCredentials({
