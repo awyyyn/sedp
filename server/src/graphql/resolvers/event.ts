@@ -39,6 +39,7 @@ export const createEventResolver = async (
         startDate,
         startTime,
         title,
+        systemUserId: app.id,
       },
       "67dfd118d8898db58de87455",
     );
@@ -82,6 +83,7 @@ export const updateEventResolver = async (
         startDate,
         startTime,
         title,
+        systemUserId: app.id,
       },
       id,
     );
@@ -125,9 +127,13 @@ export const eventResolver = async (_: never, { id }: { id: string }) => {
   }
 };
 
-export const deleteEventResolver = async (_: never, { id }: { id: string }) => {
+export const deleteEventResolver = async (
+  _: never,
+  { id }: { id: string },
+  app: AppContext,
+) => {
   try {
-    const event = await deleteEvent(id);
+    const event = await deleteEvent(id, app.id);
 
     if (!event) throw new GraphQLError("Failed to create event!");
 
