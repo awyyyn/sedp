@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
 import {
   approveLateSubmissionRequest,
+  getLateSubmissionByScholar,
   getLateSubmissionRequests,
   requestLateSubmission,
 } from "../../models/index.js";
@@ -69,6 +70,19 @@ export const lateSubmissionRequestsResolver = async (
 ) => {
   try {
     return await getLateSubmissionRequests(args);
+  } catch (error) {
+    throw new GraphQLError(
+      (error as GraphQLError).message || "Internal server error!",
+    );
+  }
+};
+
+export const lateSubmissionByScholarResolver = async (
+  _: never,
+  data: { id: string; year?: number; month?: number },
+) => {
+  try {
+    return await getLateSubmissionByScholar(data);
   } catch (error) {
     throw new GraphQLError(
       (error as GraphQLError).message || "Internal server error!",
