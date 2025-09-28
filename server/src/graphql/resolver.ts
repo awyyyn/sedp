@@ -51,6 +51,7 @@ import {
   lateSubmissionRequestsResolver,
   requestLateSubmissionResolver,
   approveLateSubmissionRequestResolver,
+  lateSubmissionByScholarResolver,
 } from "./resolvers/index.js";
 
 export const resolvers = {
@@ -59,6 +60,7 @@ export const resolvers = {
     adminNotificationSent: adminNotificationSubscription,
   },
   Query: {
+    lateSubmissionByScholar: lateSubmissionByScholarResolver,
     lateSubmissionRequests: lateSubmissionRequestsResolver,
     transactions: transactionsResolver,
     generateTOTPSecret: twoFactorAuthResolver,
