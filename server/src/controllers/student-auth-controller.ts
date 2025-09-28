@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createStudent,
   readStudent,
+  readSystemUser,
   readToken,
   sendForgotPasswordOTP,
 } from "../models/index.js";
@@ -283,6 +284,77 @@ export const studentRegisterController = async (
   }
 };
 
+/**
+ * Forgot Password Controller
+ * This will handle the forgot password functionality for both scholars and system users.
+ * It will generate a token and send it to the user's email.
+ * The token will be valid for 5 minutes.
+ */
+export const forgotPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({
+        error: {
+          code: 400,
+          message: "Email is required!",
+        },
+      });
+      return;
+    }
+
+    const user = await readStudent(email);
+
+    const admin = await readSystemUser(email);
+
+    if (!user && !admin) {
+      res.status(404).json({
+        error: {
+          code: 400,
+          message: "User is not registered!",
+        },
+      });
+      return;
+    }
+
+    const token = await readToken(email);
+
+    if (token !== null) {
+      const min = differenceInMinutes(new Date(), token.time);
+      const minutesLeft = 5 - min;
+      const seconds = differenceInSeconds(new Date(), token.time);
+
+      console.log(minutesLeft, seconds);
+      res.status(400).json({
+        error: {
+          code: 400,
+          message: `Token already sent. Please wait for ${
+            !minutesLeft ? seconds : minutesLeft
+          } ${!minutesLeft ? "second(s)" : "minute(s)"}`,
+        },
+      });
+      return;
+    }
+
+    await sendForgotPasswordOTP(email);
+
+    res.status(200).json({
+      data: {
+        message: "Reset password link is sent to your email.",
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: {
+        code: 500,
+        message: "Internal Server Error!",
+      },
+    });
+  }
+};
+
 export const studentForgotPasswordController = async (
   req: Request,
   res: Response,
@@ -350,16 +422,21 @@ export const studentForgotPasswordController = async (
   }
 };
 
-export const studentVerifyTokenController = async (
-  req: Request,
-  res: Response,
-) => {
+/**
+ * Verify Token Controller
+ * This will handle the verify token functionality for both scholars and system users.
+ * It will verify the token sent to the user's email.
+ * If the token is valid, it will return a password access token.
+ */
+export const verifyTokenController = async (req: Request, res: Response) => {
   try {
     const { token, email } = req.body;
 
     const user = await readStudent(email);
 
-    if (!user) {
+    const admin = await readSystemUser(email);
+
+    if (!user && !admin) {
       res.status(400).json({
         error: {
           code: 400,
@@ -390,16 +467,34 @@ export const studentVerifyTokenController = async (
       });
       return;
     }
+    let passAccessToken: string | null = null;
+    if (user) {
+      passAccessToken = generateAccessToken({
+        email: user.email,
+        role: "STUDENT",
+        id: user.id,
+        office: user.office,
+      });
+    } else if (admin) {
+      passAccessToken = generateAccessToken({
+        email: admin.email,
+        role: admin.role,
+        id: admin.id,
+        office: admin.office,
+      });
+    } else {
+      res.status(400).json({
+        error: {
+          code: 400,
+          message: "UnAuthorized!",
+        },
+      });
+      return;
+    }
 
-    const passwordAccessToken = generateAccessToken({
-      email: user.email,
-      role: "STUDENT",
-      id: user.id,
-      office: user.office,
-    });
     res.status(200).json({
       data: {
-        passwordAccessToken,
+        passwordAccessToken: passAccessToken,
       },
     });
   } catch (error) {
