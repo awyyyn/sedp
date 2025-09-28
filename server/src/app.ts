@@ -27,8 +27,8 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 // WebSocket server
 const wsServer = new WebSocketServer({
-	server: httpServer,
-	path: "/graphql",
+  server: httpServer,
+  path: "/graphql",
 });
 
 // Server Cleanup
@@ -38,45 +38,45 @@ const serverCleanup = useServer({ schema }, wsServer as any);
 // for our httpServer.
 // Set up ApolloServer.
 const server = new ApolloServer({
-	schema,
-	plugins: [
-		ApolloServerPluginDrainHttpServer({ httpServer }),
-		{
-			async serverWillStart() {
-				return {
-					async drainServer() {
-						await serverCleanup.dispose();
-					},
-				};
-			},
-		},
-	],
+  schema,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
 });
 
 // Health check endpoint
 app.get("/healthz", (_, res) => {
-	res.send("ok");
+  res.send("ok");
 });
 
 // Middlewares
 
 app.use(
-	cors<cors.CorsRequest>({
-		// origin: environment.CLIENT_URL,/
-		methods: ["GET", "POST", "PATCH", "PUT"],
-		origin: function (origin, callback) {
-			if (
-				origin === environment.CLIENT_URL ||
-				!origin ||
-				origin == "http://localhost:4444"
-			) {
-				callback(null, true);
-			} else {
-				callback(new Error("Not allowed by CORS"));
-			}
-		},
-		allowedHeaders: ["Content-Type", "Authorization"],
-	})
+  cors<cors.CorsRequest>({
+    // origin: environment.CLIENT_URL,/
+    methods: ["GET", "POST", "PATCH", "PUT"],
+    origin: function (origin, callback) {
+      if (
+        origin === environment.CLIENT_URL ||
+        !origin ||
+        origin == "http://localhost:4444"
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
 );
 app.use(express.json());
 
@@ -124,5 +124,5 @@ app.use("/api", routes);
 })();
 
 httpServer.listen({ port: Number(environment.PORT) }, () => {
-	console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
+  console.log(`🚀 Server ready at http://localhost:${environment.PORT}/`);
 });
