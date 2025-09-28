@@ -1,6 +1,7 @@
 import { environment } from "../environments/environment.js";
 
 import { prisma } from "../services/prisma.js";
+import { generateTransactionDescription } from "../services/utils.js";
 import {
   CreateScholarInput,
   PaginationArgs,
@@ -13,61 +14,91 @@ import { genSalt, hash } from "bcrypt";
 
 export const createStudent = async (
   values: CreateScholarInput,
+  systemUserId: string,
 ): Promise<Student> => {
-  const isStudentExist = await prisma.student.findUnique({
-    where: { email: values.email },
-  });
-
-  if (isStudentExist)
-    throw new Error(`Student with email ${values.email} already exists.`);
-
-  const {
-    address,
-    birthDate,
-    email,
-    firstName,
-    lastName,
-    gender,
-    mfaSecret,
-    middleName,
-    password,
-    course,
-    schoolName,
-    phoneNumber,
-    office,
-    semester,
-    yearLevel,
-  } = values;
-
-  const generateSalt = await genSalt(environment.SALT);
-  const hashedPassword = await hash(password, generateSalt);
-
-  const newStudentUser = await prisma.student.create({
-    data: {
-      password: hashedPassword,
-      office,
+  return await prisma.$transaction(async (tx) => {
+    const {
       address,
-      birthDate: new Date(birthDate).toISOString(),
+      birthDate,
       email,
       firstName,
-      course,
-      semester,
       lastName,
-      phoneNumber,
-      schoolName,
-      yearLevelJoined: yearLevel,
       gender,
-      yearLevel,
-      middleName,
-      status: "SCHOLAR",
-      mfaEnabled: !!mfaSecret,
       mfaSecret,
-    },
+      middleName,
+      password,
+      course,
+      schoolName,
+      phoneNumber,
+      office,
+      semester,
+      yearLevel,
+    } = values;
+
+    const isStudentExist = await tx.student.count({
+      where: { email: email },
+    });
+
+    const systemUser = await tx.systemUser.findUnique({
+      where: { id: systemUserId },
+    });
+
+    if (!systemUser) throw new Error("Unauthorized user");
+
+    if (isStudentExist)
+      throw new Error(`Student with email ${values.email} already exists.`);
+
+    const generateSalt = await genSalt(environment.SALT);
+    const hashedPassword = await hash(password, generateSalt);
+
+    const newStudentUser = await tx.student.create({
+      data: {
+        password: hashedPassword,
+        office,
+        address,
+        birthDate: new Date(birthDate).toISOString(),
+        email,
+        firstName,
+        course,
+        semester,
+        lastName,
+        phoneNumber,
+        schoolName,
+        yearLevelJoined: yearLevel,
+        gender,
+        yearLevel,
+        middleName,
+        status: "SCHOLAR",
+        mfaEnabled: !!mfaSecret,
+        mfaSecret,
+      },
+    });
+
+    if (!newStudentUser) throw new Error("Error creating scholar user");
+
+    const transaction = await tx.transaction.create({
+      data: {
+        action: "CREATE",
+        entity: "STUDENT",
+        description: generateTransactionDescription(
+          "CREATE",
+          "STUDENT",
+          systemUser,
+        ),
+        entityId: newStudentUser.id,
+        transactedBy: {
+          connect: { id: systemUser.id },
+        },
+      },
+    });
+
+    if (!transaction) throw new Error("Error creating transaction");
+
+    return {
+      ...newStudentUser,
+      birthDate: newStudentUser.birthDate.toISOString(),
+    };
   });
-  return {
-    ...newStudentUser,
-    birthDate: newStudentUser.birthDate.toISOString(),
-  };
 };
 
 export const updateStudent = async (
