@@ -45,7 +45,7 @@ export const typeDefs = gql`
       semester: Int
       type: DocumentType
       monthlyDocument: Boolean
-      scholarId: String
+      scholarId: ID
     ): [Document]
     allowances(
       claimed: Boolean
@@ -62,6 +62,11 @@ export const typeDefs = gql`
     notifications: [ScholarNotification]
     adminNotifications: [AdminNotification]
     dashboardOverviewData: DashboardOverviewData
+    lateSubmissionByScholar(
+      id: ID!
+      year: Int
+      month: Int
+    ): [MonthlyLateSubmitter]
   }
 
   type Mutation {
@@ -287,15 +292,19 @@ export const typeDefs = gql`
     CREATE
     UPDATE
     DELETE
-    GENERATE
+    APPROVE
+    DISAPPROVE
+    BLOCK
+    UNBLOCK
   }
 
   enum TransactionEntity {
     STUDENT
     ALLOWANCE
     MEETING
-    GATHERING
+    EVENT
     ANNOUNCEMENT
+    LATE_SUBMISSION
   }
 
   input TransactionPaginationArgs {
