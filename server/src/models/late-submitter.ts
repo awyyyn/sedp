@@ -3,8 +3,8 @@ import { addDays, addMonths, setHours, setMinutes, setSeconds } from "date-fns";
 
 import { prisma } from "../services/prisma.js";
 import { PaginationArgs } from "../types/system-user.js";
-import { generateLateSubmissionToken } from "../services/jwt.js";
 import { pubsub } from "../services/pubsub.js";
+import { generateTransactionDescription } from "../services/utils.js";
 
 export const requestLateSubmission = async ({
   reason,
@@ -100,7 +100,7 @@ export const approveLateSubmissionRequest = async ({
 
     if (!isExists) throw new Error("Late submission request cannot found!");
 
-    let openUntilData: Date | null = null;
+    let openUntilData: Date | undefined = undefined;
 
     switch (openUntil) {
       case "7d": {
@@ -120,7 +120,7 @@ export const approveLateSubmissionRequest = async ({
         break;
       }
       default:
-        openUntilData = null;
+        openUntilData = addMonths(new Date(), 1);
     }
 
     const updatedRequest = await tx.monthlyLateSubmitter.update({
@@ -130,11 +130,7 @@ export const approveLateSubmissionRequest = async ({
           connect: { id: updatedBy },
         },
         updatedOn: new Date(),
-        ...(openUntil && {
-          openUntil: openUntilData
-            ? setSeconds(setMinutes(setHours(openUntilData, 23), 59), 59)
-            : null,
-        }),
+        openUntil: setSeconds(setMinutes(setHours(openUntilData, 23), 59), 59),
       },
       where: {
         id: requestId,
@@ -145,27 +141,8 @@ export const approveLateSubmissionRequest = async ({
       },
     });
 
-    if (!updatedRequest)
+    if (!updatedRequest || !updatedRequest.updatedBy)
       throw new Error("Failed to update late submission request!");
-
-    const token = generateLateSubmissionToken({
-      id: updatedRequest.studentId,
-      month: updatedRequest.month,
-      year: updatedRequest.year,
-      expiresIn: openUntil,
-      expiresInDate: openUntilData
-        ? setSeconds(
-            setMinutes(setHours(openUntilData, 23), 59),
-            59,
-          ).toISOString()
-        : undefined,
-    });
-
-    let link = `/my-documents/monthly?active=${updatedRequest.year}-${updatedRequest.month}`;
-
-    if (approve) {
-      link += `/my-documents/monthly?token=${token}`;
-    }
 
     const notification = await tx.scholarNotification.create({
       data: {
@@ -184,11 +161,29 @@ export const approveLateSubmissionRequest = async ({
         receiver: {
           connect: { id: updatedRequest.studentId },
         },
-        link: `/my-documents/monthly?token=${token}`,
+        link: `/my-documents/monthly?active=${updatedRequest.year}-${updatedRequest.month}`,
       },
     });
 
     if (!notification) throw new Error("Something went wrong!");
+
+    const transaction = await tx.transaction.create({
+      data: {
+        action: approve ? "APPROVE" : "DISAPPROVE",
+        description: generateTransactionDescription(
+          approve ? "APPROVE" : "DISAPPROVE",
+          "LATE_SUBMISSION",
+          updatedRequest.updatedBy,
+        ),
+        entity: "LATE_SUBMISSION",
+        entityId: updatedRequest.id,
+        transactedBy: {
+          connect: { id: updatedRequest.updatedBy.id },
+        },
+      },
+    });
+
+    if (!transaction) throw new Error("Failed to create transaction");
 
     pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
       scholarNotificationSent: notification,
@@ -270,4 +265,58 @@ export const getLateSubmissionRequests = async ({
     count,
     hasMore,
   };
+};
+
+export const getLateSubmissionByScholar = async ({
+  id,
+  month,
+  year,
+}: {
+  id: string;
+  year?: number;
+  month?: number;
+}) => {
+  let where: Prisma.MonthlyLateSubmitterWhereInput = {
+    studentId: id,
+    isApproved: true,
+    openUntil: {
+      gte: new Date(),
+    },
+  };
+
+  if (year) where.year = year;
+  if (month) where.month = month;
+
+  const requests = await prisma.monthlyLateSubmitter.findMany({
+    where,
+    include: {
+      student: true,
+      updatedBy: true,
+    },
+    orderBy: {
+      month: "asc",
+    },
+  });
+
+  return requests.map((req) => ({
+    ...req,
+    updatedOn: req.updatedOn?.toISOString() || null,
+    createdAt: req.createdAt.toISOString(),
+    openUntil: req.openUntil?.toISOString() || null,
+    student: {
+      ...req.student,
+      password: null,
+      createdAt: req.student.createdAt.toISOString(),
+      birthDate: req.student.birthDate.toISOString(),
+      updatedAt: req.student.updatedAt.toISOString(),
+    },
+    updatedBy: {
+      ...req.updatedBy,
+      password: null,
+      verifiedAt: req.updatedBy?.verifiedAt?.toISOString() || null,
+      updatedAt: req.updatedBy?.updatedAt.toISOString() || null,
+      createdAt: req.updatedBy?.createdAt.toISOString() || null,
+      birthDate: req.updatedBy?.birthDate.toISOString() || null,
+    },
+  }));
 };
