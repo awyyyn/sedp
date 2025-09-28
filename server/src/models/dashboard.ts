@@ -38,10 +38,10 @@ export const studentsStatusOverview = async ({
     ).length;
 
     return {
-      yearLevel: Number(key),
-      disqualified,
-      graduated,
-      active,
+      yearLevel: Number(key || 0),
+      disqualified: disqualified || 0,
+      graduated: graduated || 0,
+      active: active || 0,
     };
   });
 };
