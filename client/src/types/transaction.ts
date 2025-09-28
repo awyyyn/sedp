@@ -1,6 +1,7 @@
 import { Allowance } from "./allowance";
 import { Announcement } from "./announcement";
 import { Event } from "./event";
+import { MonthlyLateSubmitter } from "./late-submission";
 import { Meeting } from "./meeting";
 import { Student } from "./student";
 import { SystemUser } from "./system-user";
@@ -18,7 +19,7 @@ export type Transaction = {
   meeting?: Meeting;
   event?: Event;
   announcement?: Announcement;
-
+  lateSubmission: MonthlyLateSubmitter;
   createdAt: string;
 };
 
@@ -26,7 +27,10 @@ export const TransactionAction = {
   CREATE: "CREATE",
   UPDATE: "UPDATE",
   DELETE: "DELETE",
-  GENERATE: "GENERATE",
+  APPROVE: "APPROVE",
+  DISAPPROVE: "DISAPPROVE",
+  BLOCK: "BLOCK",
+  UNBLOCK: "UNBLOCK",
 } as const;
 
 export type TransactionAction =
@@ -38,6 +42,7 @@ export const TransactionEntity = {
   MEETING: "MEETING",
   GATHERING: "GATHERING",
   ANNOUNCEMENT: "ANNOUNCEMENT",
+  LATE_SUBMISSION: "LATE_SUBMISSION",
 } as const;
 
 export type TransactionEntity =

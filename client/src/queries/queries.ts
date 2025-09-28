@@ -11,6 +11,49 @@ import {
   transactionFragment,
 } from "./fragments";
 
+export const READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY = gql`
+  ${monthlyLateSubmitterFragment}
+  ${documentFragment}
+  ${documentFragment}
+  ${allowanceFragment}
+  query (
+    $scholarId: ID!
+    $month: Int
+    $year: Int
+    $monthlyDocument: Boolean
+    $type: DocumentType
+    $semester: Int
+    $schoolYear: String
+    $allowanceYear2: Int!
+    $allowanceMonth2: Int!
+  ) {
+    requests: lateSubmissionByScholar(
+      id: $scholarId
+      month: $month
+      year: $year
+    ) {
+      ...MonthlyLateSubmitter
+    }
+    documents(
+      year: $year
+      scholarId: $scholarId
+      monthlyDocument: $monthlyDocument
+      type: $type
+      semester: $semester
+      schoolYear: $schoolYear
+      month: $month
+    ) {
+      ...DocumentFragment
+    }
+    allowance(
+      studentId: $scholarId
+      year: $allowanceYear2
+      month: $allowanceMonth2
+    ) {
+      ...AllowanceFragment
+    }
+  }
+`;
 export const LATE_SUBMISSION_REQUESTS_QUERY = gql`
   ${monthlyLateSubmitterFragment}
   query (
@@ -259,7 +302,7 @@ export const READ_DOCUMENTS_QUERY = gql`
     $semester: Int
     $type: DocumentType
     $monthlyDocument: Boolean
-    $scholarId: String
+    $scholarId: ID
   ) {
     documents(
       scholarId: $scholarId
@@ -271,6 +314,39 @@ export const READ_DOCUMENTS_QUERY = gql`
       monthlyDocument: $monthlyDocument
     ) {
       ...DocumentFragment
+    }
+  }
+`;
+
+export const READ_DOCUMENTS_WITH_LATE_REQUETSTS_QUERY = gql`
+  ${documentFragment}
+  ${monthlyLateSubmitterFragment}
+  query (
+    $year: Int
+    $month: Int
+    $schoolYear: String
+    $semester: Int
+    $type: DocumentType
+    $monthlyDocument: Boolean
+    $scholarId: ID!
+  ) {
+    documents(
+      scholarId: $scholarId
+      year: $year
+      month: $month
+      schoolYear: $schoolYear
+      semester: $semester
+      type: $type
+      monthlyDocument: $monthlyDocument
+    ) {
+      ...DocumentFragment
+    }
+    requests: lateSubmissionByScholar(
+      id: $scholarId
+      month: $month
+      year: $year
+    ) {
+      ...MonthlyLateSubmitter
     }
   }
 `;
