@@ -17,6 +17,7 @@ export const upsertMeeting = async (
   }: Omit<Meeting, "id" | "createdAt"> & { systemUserId: string },
   toUpdateId?: string,
 ) => {
+  const isToUpdate = toUpdateId !== "67dfd118d8898db58de87455";
   return await prisma.$transaction(async (tx) => {
     const user = await tx.systemUser.findUnique({
       where: { id: systemUserId },
@@ -48,11 +49,11 @@ export const upsertMeeting = async (
 
     const transaction = await tx.transaction.create({
       data: {
-        action: toUpdateId ? "UPDATE" : "CREATE",
+        action: isToUpdate ? "UPDATE" : "CREATE",
         entity: "MEETING",
         entityId: meeting.id,
         description: generateTransactionDescription(
-          toUpdateId ? "UPDATE" : "CREATE",
+          isToUpdate ? "UPDATE" : "CREATE",
           "MEETING",
           user,
         ),
@@ -131,6 +132,8 @@ export async function deleteMeeting(id: string, systemUserId: string) {
         description: generateTransactionDescription("DELETE", "MEETING", user),
       },
     });
+
+    if (!transaction) throw new Error("Transaction not created");
 
     return meeting;
   });
