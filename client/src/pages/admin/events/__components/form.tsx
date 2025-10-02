@@ -144,9 +144,36 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
             // initialTouched={{ startDate: true, endDate: true }}
             onSubmit={async (values: AddEventSchemaData, helpers) => {
               try {
+                // return console.log("qqqq", values.startDate, values.endDate);
+
+                if (!dateRange) {
+                  return helpers.setErrors({
+                    startDate: "Date must not be empty!",
+                  });
+                }
+
+                let startDate = values.startDate;
+                let endDate = values.endDate;
+
+                if (!!defaultValues?.id) {
+                  startDate = new Date(
+                    dateRange.start.year,
+                    dateRange.start.month - 1,
+                    dateRange.start.day,
+                  ).toISOString();
+
+                  endDate = new Date(
+                    dateRange.end.year,
+                    dateRange.end.month - 1,
+                    dateRange.end.day,
+                  ).toISOString();
+                }
+
                 const variables = {
                   ...values,
                   id: defaultValues ? defaultValues.id : "no-id",
+                  startDate,
+                  endDate,
                 };
 
                 if (

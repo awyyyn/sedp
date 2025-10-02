@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
+import { Helmet } from "react-helmet";
 
 import EventForm from "./__components/form";
 
 import { READ_EVENT_QUERY } from "@/queries";
 import { Event } from "@/types";
 import { Loader } from "@/components/loader";
-import { Helmet } from "react-helmet";
 
 export default function EditEvent() {
   const { id } = useParams();
