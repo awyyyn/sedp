@@ -19,6 +19,7 @@ export const upsertEvent = async (
   }: Omit<Events, "id" | "createdAt"> & { systemUserId: string },
   toUpdateId?: string,
 ) => {
+  const isToUpdate = toUpdateId !== "681234567890101112131415";
   return await prisma.$transaction(async (tx) => {
     const user = await tx.systemUser.findUnique({
       where: { id: systemUserId },
@@ -54,11 +55,11 @@ export const upsertEvent = async (
 
     const transaction = await tx.transaction.create({
       data: {
-        action: toUpdateId ? "UPDATE" : "CREATE",
+        action: isToUpdate ? "UPDATE" : "CREATE",
         entity: "EVENT",
         entityId: event.id,
         description: generateTransactionDescription(
-          toUpdateId ? "UPDATE" : "CREATE",
+          isToUpdate ? "UPDATE" : "CREATE",
           "EVENT",
           user,
         ),
