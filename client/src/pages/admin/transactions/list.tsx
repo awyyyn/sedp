@@ -28,24 +28,40 @@ import { format } from "date-fns";
 
 import { SystemUserModal } from "../__components";
 
+import { TransactionDataModal } from "./_components/transaction-data-modal";
+
 // import logo from "@/assets/sedp-mfi.e31049f.webp";
 import { getTransactionMessage } from "@/lib/utils";
 import { READ_TRANSACTIONS_QUERY } from "@/queries";
-import { PaginationResult, SystemUser, Transaction } from "@/types";
+import {
+  Allowance,
+  Announcement,
+  Event,
+  Meeting,
+  MonthlyLateSubmitter,
+  PaginationResult,
+  Student,
+  SystemUser,
+  Transaction,
+  TransactionEntity,
+} from "@/types";
 
 export const columns = [
   { name: "ACTION", uid: "action", sortable: false },
   { name: "DESCRIPTION", uid: "description", sortable: false },
+  { name: "DATA", uid: "entity", sortable: false },
   {
     name: "TRANSACTED BY",
     uid: "transactedBy",
     sortable: false,
   },
+
   { name: "Date", uid: "createdAt", sortable: true },
 ];
 
 const INITIAL_VISIBLE_COLUMNS = [
   "action",
+  "entity",
   "description",
   "id",
   "createdAt",
@@ -63,9 +79,11 @@ const rowsPerPageItems = [
 
 export default function Scholars() {
   const [rowsPerPage, setRowsPerPage] = useState<string>("25");
+  const [entity, setEntity] = useState<Selection>(new Set([]));
   const [page, setPage] = useState(1);
   const [user, setUser] = useState<SystemUser | null>(null);
   const toPrintRef = useRef<HTMLDivElement>(null);
+  const [modal, setModal] = useState<null | Transaction>(null);
   const printFn = useReactToPrint({
     contentRef: toPrintRef,
     documentTitle: "Allowance List",
@@ -126,6 +144,18 @@ export default function Scholars() {
             </Button>
           );
 
+        case "entity":
+          return (
+            <Button
+              onPress={() => setModal(transaction)}
+              size="sm"
+              variant="flat"
+              color="primary"
+            >
+              View Data
+            </Button>
+          );
+
         case "createdAt":
           return `${format(new Date(transaction.createdAt), "MMM dd, yyyy")} at ${format(new Date(transaction.createdAt), "h:mm a")}`;
 
@@ -139,8 +169,16 @@ export default function Scholars() {
   const filteredItems = useMemo(() => {
     let filteredTransactoins = [...(data?.transactions.data ?? [])];
 
+    const toFilterEntity = Array.from(entity)[0] || null;
+
+    if (entity !== "all" && toFilterEntity) {
+      filteredTransactoins = filteredTransactoins.filter(
+        (transaction) => transaction.entity === toFilterEntity,
+      );
+    }
+
     return filteredTransactoins;
-  }, [data?.transactions.data, statusFilter]);
+  }, [data?.transactions.data, statusFilter, entity]);
 
   const items = useMemo(() => {
     const start = (page - 1) * Number(rowsPerPage);
@@ -195,6 +233,43 @@ export default function Scholars() {
                   }
                   variant="flat"
                 >
+                  Entity
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={entity}
+                selectionMode="single"
+                disallowEmptySelection={false}
+                onSelectionChange={setEntity}
+              >
+                {Object.values(TransactionEntity).map((column) => (
+                  <DropdownItem
+                    className="data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white capitalize"
+                    key={column}
+                  >
+                    {column.toLowerCase().replace("_", " ")}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown
+              classNames={{
+                content: "bg-[#A6F3B2]",
+              }}
+            >
+              <DropdownTrigger className="hidden sm:flex bg-[#A6F3B2]">
+                <Button
+                  endContent={
+                    <Icon
+                      icon="mynaui:chevron-down-solid"
+                      width="24"
+                      height="24"
+                    />
+                  }
+                  variant="flat"
+                >
                   Columns
                 </Button>
               </DropdownTrigger>
@@ -220,11 +295,13 @@ export default function Scholars() {
         </div>
       </div>
     );
-  }, [visibleColumns, statusFilter]);
+  }, [visibleColumns, statusFilter, entity]);
 
   const handlePrint = () => {
     printFn();
   };
+
+  console.log(entity, "qqq");
 
   return (
     <>
@@ -436,6 +513,13 @@ export default function Scholars() {
           // )
         }
         <SystemUserModal user={user} handleClose={() => setUser(null)} />
+        {modal && (
+          <TransactionDataModal
+            transaction={modal}
+            handleClose={() => setModal(null)}
+            isOpen={!!modal}
+          />
+        )}
       </div>
     </>
   );
