@@ -125,8 +125,6 @@ export default function AddScholar() {
                 errors,
                 isSubmitting,
               }) => {
-                console.log(errors, "qqq errors");
-
                 return (
                   <Form
                     className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"

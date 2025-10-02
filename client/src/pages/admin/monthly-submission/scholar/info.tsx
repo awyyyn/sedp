@@ -17,8 +17,8 @@ import GenerateAllowance from "../../__components/generate-allowance";
 
 import { ViewAllowanceModal } from "@/components";
 import { DocumentTable, PreviewModal } from "@/components";
-import { Allowance, Document, Student } from "@/types";
-import { READ_SCHOLAR_DOCUMENTS_QUERY } from "@/queries";
+import { Allowance, Document, MonthlyLateSubmitter, Student } from "@/types";
+import { READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY } from "@/queries";
 import {
   Documents,
   getFileExtension,
@@ -27,6 +27,7 @@ import {
 } from "@/lib/constant";
 import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
+import { isFuture } from "date-fns";
 
 const getYears = (yearStarted: number) => {
   const years = [];
@@ -56,10 +57,10 @@ export default function StudentFiles() {
   const { loading, error, data, refetch } = useQuery<{
     documents: Document[];
     allowance: Allowance;
-  }>(READ_SCHOLAR_DOCUMENTS_QUERY, {
+    requests: MonthlyLateSubmitter[];
+  }>(READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY, {
     variables: {
       scholarId: scholarId,
-      studentId: scholarId,
       month: Number(Array.from(monthFilter)[0]),
       year: Number(Array.from(yearFilter)[0]),
       allowanceYear2: Number(Array.from(yearFilter)[0]),
@@ -90,6 +91,13 @@ export default function StudentFiles() {
 
   const selectedMonth = Number(Array.from(monthFilter)[0]);
   const selectedYear = Number(Array.from(yearFilter)[0]);
+
+  const isAllowedToLateGenerateAllowance =
+    data?.requests[0] &&
+    data.requests[0].isApproved &&
+    data.requests[0].openUntil &&
+    isFuture(new Date(data.requests[0].openUntil)) &&
+    (role === "SUPER_ADMIN" || role === "ADMIN_MANAGE_DOCUMENTS");
 
   return (
     <>
@@ -142,7 +150,8 @@ export default function StudentFiles() {
                 <span className="hidden md:block">Allowance</span>
               </Button>
             ) : (
-              checkIfPreviousMonth(selectedMonth, selectedYear) && (
+              (checkIfPreviousMonth(selectedMonth, selectedYear) ||
+                (!data?.allowance && isAllowedToLateGenerateAllowance)) && (
                 <>
                   <Button
                     color="primary"
