@@ -41,7 +41,7 @@ export const createEventResolver = async (
         title,
         systemUserId: app.id,
       },
-      "67dfd118d8898db58de87455",
+      "681234567890101112131415",
     );
 
     if (!newEvent) throw new GraphQLError("Failed to create event!");
