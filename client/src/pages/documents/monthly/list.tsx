@@ -9,12 +9,13 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 
 import ErrorFetching from "../__components/error-fetch";
 
-import { READ_DOCUMENTS_QUERY } from "@/queries";
+import { RequestModal } from "./__components/request-modal";
+
+import { READ_DOCUMENTS_WITH_LATE_REQUETSTS_QUERY } from "@/queries";
 import { useAuth } from "@/contexts";
-import { Document, FileTreeItem } from "@/types";
+import { Document, FileTreeItem, MonthlyLateSubmitter } from "@/types";
 import { PreviewModal, FileTree, DocumentTable } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
-import { RequestModal } from "./__components/request-modal";
 
 export const generateFolders = (
   date: string,
@@ -75,7 +76,6 @@ export const generateFolders = (
 export default function Monthly() {
   const [searchParams, setSearchParams] = useSearchParams();
   const defaultActiveField = searchParams.get("active") || "";
-  const token = searchParams.get("token") || "";
   const { studentUser } = useAuth();
   const [activeFileId, setActiveFileId] = useState<string>(defaultActiveField);
   const currentYear = new Date().getFullYear();
@@ -90,18 +90,39 @@ export default function Monthly() {
   // 		fetchPolicy: "no-cache",
   // 	}
   // );
-  const { data, loading, error, refetch } = useQuery<{ documents: Document[] }>(
-    READ_DOCUMENTS_QUERY,
-    {
-      fetchPolicy: "no-cache",
-
-      variables: {
-        month: Number(activeFileId.split("-")[1]),
-        year: Number(activeFileId.split("-")[0]),
-      },
-    },
-  );
   const [allowLateSubmit, setAllowLateSubmit] = useState<string | null>(null);
+  const { data, loading, error, refetch } = useQuery<{
+    documents: Document[];
+    requests: MonthlyLateSubmitter[];
+  }>(READ_DOCUMENTS_WITH_LATE_REQUETSTS_QUERY, {
+    fetchPolicy: "no-cache",
+    variables: {
+      month: Number(activeFileId.split("-")[1]),
+      year: Number(activeFileId.split("-")[0]),
+      scholarId: studentUser?.id,
+    },
+    skip:
+      !studentUser ||
+      !Number(activeFileId.split("-")[1]) ||
+      !Number(activeFileId.split("-")[0]),
+    onCompleted: (data) => {
+      const request = data.requests[0];
+
+      if (request) {
+        if (
+          request.isApproved &&
+          request.openUntil &&
+          isFuture(new Date(request.openUntil))
+        ) {
+          setAllowLateSubmit(`${request.year}-${request.month}`);
+        } else {
+          setAllowLateSubmit(null);
+        }
+      } else {
+        setAllowLateSubmit(null);
+      }
+    },
+  });
   const [previewModal, onPreviewModalChange] = useState(false);
   const [toPreview, setToPreview] = useState<string | null>(null);
   const [toOpenModal, setToOpenModal] = useState<null | {
@@ -144,41 +165,34 @@ export default function Monthly() {
     });
   };
 
-  useEffect(() => {
-    const tokenData = token || localStorage.getItem("lateSubmissionToken");
+  // useEffect(() => {
+  //   const tokenData = token || localStorage.getItem("lateSubmissionToken");
 
-    if (tokenData) {
-      if (!localStorage.getItem("lateSubmissionToken")) {
-        localStorage.setItem("lateSubmissionToken", token);
-      }
+  //   if (tokenData) {
+  //     if (!localStorage.getItem("lateSubmissionToken")) {
+  //       localStorage.setItem("lateSubmissionToken", token);
+  //     }
 
-      const decoded = jwtDecode<
-        {
-          id: string;
-          month: number;
-          year: number;
-          expiresIn?: string;
-          expiresInDate: string;
-        } & JwtPayload
-      >(tokenData);
+  //     const decoded = jwtDecode<
+  //       {
+  //         id: string;
+  //         month: number;
+  //         year: number;
+  //         expiresIn?: string;
+  //         expiresInDate: string;
+  //       } & JwtPayload
+  //     >(tokenData);
 
-      if (decoded && isFuture(decoded.expiresInDate)) {
-        const field = `${decoded.year}-${decoded.month}`;
-        console.log(decoded, "qqq qwe");
-        setActiveFileId(field);
-        setAllowLateSubmit(field);
-      } else {
-        setAllowLateSubmit(null);
-      }
-    }
-  }, [token]);
+  //     if (decoded && isFuture(decoded.expiresInDate)) {
+  //       const field = `${decoded.year}-${decoded.month}`;
 
-  console.log(
-    allowLateSubmit === activeFileId,
-    "qqqwe sdsd",
-    allowLateSubmit,
-    activeFileId,
-  );
+  //       setActiveFileId(field);
+  //       setAllowLateSubmit(field);
+  //     } else {
+  //       setAllowLateSubmit(null);
+  //     }
+  //   }
+  // }, [token]);
 
   return (
     <>
