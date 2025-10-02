@@ -19,7 +19,7 @@ export type Transaction = {
   meeting?: Meeting;
   event?: Event;
   announcement?: Announcement;
-  lateSubmission: MonthlyLateSubmitter;
+  lateSubmission?: MonthlyLateSubmitter;
   createdAt: string;
 };
 
@@ -40,7 +40,7 @@ export const TransactionEntity = {
   STUDENT: "STUDENT",
   ALLOWANCE: "ALLOWANCE",
   MEETING: "MEETING",
-  GATHERING: "GATHERING",
+  EVENT: "EVENT",
   ANNOUNCEMENT: "ANNOUNCEMENT",
   LATE_SUBMISSION: "LATE_SUBMISSION",
 } as const;
