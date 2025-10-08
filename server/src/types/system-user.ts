@@ -1,63 +1,65 @@
 import { Gender } from "./index.js";
 
 export interface SystemUser {
-	readonly id: string;
-	email: string;
-	password: string;
-	firstName: string;
-	lastName: string;
-	middleName: string | null;
-	role: SystemUserRole;
-	address: SystemUserAddress;
-	birthDate: string;
-	phoneNumber: string;
-	mfaEnabled: boolean;
-	gender: Gender;
-	mfaSecret: string;
-	status: SystemUserStatus;
-	verifiedAt: Date | null;
-	createdAt?: string;
-	updatedAt?: string;
+  readonly id: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  middleName: string | null;
+  role: SystemUserRole;
+  address: SystemUserAddress;
+  birthDate: string;
+  phoneNumber: string;
+  mfaEnabled: boolean;
+  gender: Gender;
+  mfaSecret: string;
+  status: SystemUserStatus;
+  verifiedAt: Date | null;
+  office: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SystemUserAddress {
-	city: string;
-	street: string;
+  city: string;
+  street: string;
 }
 
 export type SystemUserRole =
-	| "SUPER_ADMIN"
-	| "ADMIN_MANAGE_SCHOLAR"
-	| "ADMIN_MANAGE_GATHERINGS"
-	| "ADMIN_MANAGE_DOCUMENTS"
-	| "ADMIN_VIEWER";
+  | "SUPER_ADMIN"
+  | "ADMIN_MANAGE_SCHOLAR"
+  | "ADMIN_MANAGE_GATHERINGS"
+  | "ADMIN_MANAGE_DOCUMENTS"
+  | "ADMIN_VIEWER";
 
 export type SystemUserStatus =
-	| "VERIFIED"
-	| "UNVERIFIED"
-	| "DELETED"
-	| "PENDING";
+  | "VERIFIED"
+  | "UNVERIFIED"
+  | "DELETED"
+  | "PENDING";
 
 export interface Pagination {
-	skip: number;
-	take: number;
+  skip: number;
+  take: number;
 }
 
 export interface PaginationArgs<TStatus> {
-	filter?: string;
-	status?: TStatus;
-	pagination?: {
-		page: number;
-		take: number;
-	};
+  filter?: string;
+  status?: TStatus;
+  pagination?: {
+    page: number;
+    take: number;
+  };
+  office?: string;
 }
 
 export type SystemUserUpdateArgs = Partial<
-	Omit<SystemUser, "id" | "createdAt" | "updatedAt">
+  Omit<SystemUser, "id" | "createdAt" | "updatedAt">
 > & { id: string };
 
 export interface PaginationResult<T> {
-	data: T;
-	count: number;
-	hasMore: boolean;
+  data: T;
+  count: number;
+  hasMore: boolean;
 }

@@ -1,2 +1,5 @@
 server/dist/
 client/.env
+client/bun.lock
+
+**.DS_STORE

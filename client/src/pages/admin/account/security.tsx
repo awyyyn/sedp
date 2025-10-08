@@ -9,6 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation } from "@apollo/client";
 import { useAtom } from "jotai";
+import { Helmet } from "react-helmet";
 
 import SetUpTwoFactor from "../../../components/set-up-two-factor";
 import { DeleteModal } from "../__components";
@@ -78,209 +79,224 @@ export default function AdminSecurity() {
 	};
 
 	return (
-		<div className="container mx-auto  max-w-3xl py-8 space-y-8">
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-3xl font-bold tracking-tight">
-						Security Settings
-					</h1>
-					<p className="text-muted-foreground">
-						Configure your security options and manage account protection
-					</p>
-				</div>
-				{/* <div className="space-y-2 md:space-y-0  md:space-x-2"></div> */}
-			</div>
-
-			<div className="space-y-6">
-				<Formik
-					onSubmit={async (values, helpers) => {
-						try {
-							await handleUpdate({
-								variables: {
-									values: {
-										id: String(systemUser?.id),
-										password: values.confirmPassword,
-									},
-								},
-							});
-
-							toast.success("Password updated successfully!", {
-								description: "Your password has been changed.",
-								position: "top-center",
-								richColors: true,
-							});
-							helpers.resetForm();
-						} catch (error) {
-							toast.error((error as Error).message, {
-								richColors: true,
-								position: "top-center",
-								dismissible: true,
-								duration: 5000,
-								icon: <Icon icon="bitcoin-icons:verify-filled" />,
-							});
-						}
-					}}
-					validationSchema={PasswordSchema}
-					initialValues={{
-						password: "",
-						confirmPassword: "",
-					}}>
-					{({
-						handleBlur,
-						handleChange,
-						values,
-						errors,
-						isSubmitting,
-						isValid,
-						resetForm,
-						handleSubmit,
-					}) => (
-						<Card>
-							<CardHeader className="px-6 pt-4 flex justify-between">
-								<h1 className="flex items-center gap-2">
-									<Icon
-										icon="solar:password-minimalistic-outline"
-										width="24"
-										height="24"
-									/>
-									Password
-								</h1>
-
-								<div className="space-y-2 flex md:space-y-0  md:space-x-2">
-									{(values.password || !!errors.password) && (
-										<>
-											<Button
-												isDisabled={isSubmitting}
-												type="button"
-												color="danger"
-												variant="ghost"
-												radius="sm"
-												onPress={() => resetForm()}>
-												Cancel
-											</Button>
-											<Button
-												isLoading={isSubmitting}
-												isDisabled={!isValid}
-												type="submit"
-												onPress={() => handleSubmit()}
-												color="primary"
-												radius="sm">
-												Save
-											</Button>
-										</>
-									)}
-								</div>
-							</CardHeader>
-							<Divider />
-							<CardBody className="p-6 space-y-4">
-								<div className="grid grid-cols-1 gap-4  ">
-									<Input
-										name="password"
-										label="Password"
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.password}
-										type={showPassword ? "text" : "password"}
-										isReadOnly={isSubmitting}
-										errorMessage={errors.password}
-										isInvalid={!!errors.password}
-										endContent={
-											<Icon
-												icon={
-													showPassword
-														? "solar:eye-bold"
-														: "solar:eye-closed-bold"
-												}
-												onClick={() => onShowPassword((show) => !show)}
-												className="cursor-pointer"
-											/>
-										}
-									/>
-									<Input
-										name="confirmPassword"
-										label="Confirm Password"
-										value={values.confirmPassword}
-										type={showPassword ? "text" : "password"}
-										onChange={handleChange}
-										onBlur={handleBlur}
-										isReadOnly={isSubmitting || !!errors.password}
-										isInvalid={!!errors.confirmPassword}
-										errorMessage={errors.confirmPassword}
-										endContent={
-											<Icon
-												icon={
-													showPassword
-														? "solar:eye-bold"
-														: "solar:eye-closed-bold"
-												}
-												onClick={() => onShowPassword((show) => !show)}
-												className="cursor-pointer"
-											/>
-										}
-									/>
-								</div>
-							</CardBody>
-						</Card>
-					)}
-				</Formik>
-				<Card>
-					<CardHeader className="px-6 flex justify-between pt-4">
-						<h1 className="flex items-center gap-2">
-							<Icon icon="solar:shield-keyhole-linear" width="24" height="24" />
-							Two Factor Authentication
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<title>Security Settings | SEDP</title>
+				<meta
+					name="description"
+					content="Manage your security settings, including password changes and two-factor authentication."
+				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+			</Helmet>
+			<div className="container mx-auto  max-w-3xl py-8 space-y-8">
+				<div className="flex items-center justify-between">
+					<div>
+						<h1 className="text-3xl font-bold tracking-tight">
+							Security Settings
 						</h1>
+						<p className="text-muted-foreground">
+							Configure your security options and manage account protection
+						</p>
+					</div>
+					{/* <div className="space-y-2 md:space-y-0  md:space-x-2"></div> */}
+				</div>
 
-						<div className="space-y-2 md:space-y-0  md:space-x-2">
-							{setUp2Fa && (
-								<Button
-									onPress={() => onSetUp2Fa(false)}
-									color="danger"
-									radius="sm">
-									Cancel
-								</Button>
-							)}
-						</div>
-					</CardHeader>
-					<Divider />
-					<CardBody className="p-6 space-y-4">
-						<div className="grid grid-cols-1 gap-4  ">
-							{!setUp2Fa && (
-								<Button
-									className=""
-									color={!systemUser?.mfaEnabled ? "primary" : "danger"}
-									type="button"
-									onPress={() => {
-										if (systemUser?.mfaEnabled) {
-											setDisableModal(true);
-										} else {
-											onSetUp2Fa(true);
-										}
-									}}>
-									{systemUser?.mfaEnabled ? "Disable 2FA" : "Set up 2FA"}
-								</Button>
-							)}
-							{setUp2Fa && (
-								<SetUpTwoFactor
-									handleChangeOtp={(otp) => setOtp(otp)}
-									handleSaveSecret={handleSetUp2FA}
-									value={otp}
+				<div className="space-y-6">
+					<Formik
+						onSubmit={async (values, helpers) => {
+							try {
+								await handleUpdate({
+									variables: {
+										values: {
+											id: String(systemUser?.id),
+											password: values.confirmPassword,
+										},
+									},
+								});
+
+								toast.success("Password updated successfully!", {
+									description: "Your password has been changed.",
+									position: "top-center",
+									richColors: true,
+								});
+								helpers.resetForm();
+							} catch (error) {
+								toast.error((error as Error).message, {
+									richColors: true,
+									position: "top-center",
+									dismissible: true,
+									duration: 5000,
+									icon: <Icon icon="bitcoin-icons:verify-filled" />,
+								});
+							}
+						}}
+						validationSchema={PasswordSchema}
+						initialValues={{
+							password: "",
+							confirmPassword: "",
+						}}>
+						{({
+							handleBlur,
+							handleChange,
+							values,
+							errors,
+							isSubmitting,
+							isValid,
+							resetForm,
+							handleSubmit,
+						}) => (
+							<Card>
+								<CardHeader className="px-6 pt-4 flex justify-between">
+									<h1 className="flex items-center gap-2">
+										<Icon
+											icon="solar:password-minimalistic-outline"
+											width="24"
+											height="24"
+										/>
+										Password
+									</h1>
+
+									<div className="space-y-2 flex md:space-y-0  md:space-x-2">
+										{(values.password || !!errors.password) && (
+											<>
+												<Button
+													isDisabled={isSubmitting}
+													type="button"
+													color="danger"
+													variant="ghost"
+													radius="sm"
+													onPress={() => resetForm()}>
+													Cancel
+												</Button>
+												<Button
+													isLoading={isSubmitting}
+													isDisabled={!isValid}
+													type="submit"
+													onPress={() => handleSubmit()}
+													color="primary"
+													radius="sm">
+													Save
+												</Button>
+											</>
+										)}
+									</div>
+								</CardHeader>
+								<Divider />
+								<CardBody className="p-6 space-y-4">
+									<div className="grid grid-cols-1 gap-4  ">
+										<Input
+											name="password"
+											label="Password"
+											onChange={handleChange}
+											onBlur={handleBlur}
+											value={values.password}
+											type={showPassword ? "text" : "password"}
+											isReadOnly={isSubmitting}
+											errorMessage={errors.password}
+											isInvalid={!!errors.password}
+											endContent={
+												<Icon
+													icon={
+														showPassword
+															? "solar:eye-bold"
+															: "solar:eye-closed-bold"
+													}
+													onClick={() => onShowPassword((show) => !show)}
+													className="cursor-pointer"
+												/>
+											}
+										/>
+										<Input
+											name="confirmPassword"
+											label="Confirm Password"
+											value={values.confirmPassword}
+											type={showPassword ? "text" : "password"}
+											onChange={handleChange}
+											onBlur={handleBlur}
+											isReadOnly={isSubmitting || !!errors.password}
+											isInvalid={!!errors.confirmPassword}
+											errorMessage={errors.confirmPassword}
+											endContent={
+												<Icon
+													icon={
+														showPassword
+															? "solar:eye-bold"
+															: "solar:eye-closed-bold"
+													}
+													onClick={() => onShowPassword((show) => !show)}
+													className="cursor-pointer"
+												/>
+											}
+										/>
+									</div>
+								</CardBody>
+							</Card>
+						)}
+					</Formik>
+					<Card>
+						<CardHeader className="px-6 flex justify-between pt-4">
+							<h1 className="flex items-center gap-2">
+								<Icon
+									icon="solar:shield-keyhole-linear"
+									width="24"
+									height="24"
 								/>
-							)}
-						</div>
-					</CardBody>
-				</Card>
-			</div>
+								Two Factor Authentication
+							</h1>
 
-			<DeleteModal
-				handleDeletion={() => handleSetUp2FA("")}
-				hideNote
-				loading={false}
-				open={disableModal}
-				setOpen={setDisableModal}
-				title="Disable Two Factor Authentication"
-				description="Are you sure you want to disable Two Factor Authentication? This will remove an extra layer of security from your account."
-				deleteLabel="Disable"
-			/>
-		</div>
+							<div className="space-y-2 md:space-y-0  md:space-x-2">
+								{setUp2Fa && (
+									<Button
+										onPress={() => onSetUp2Fa(false)}
+										color="danger"
+										radius="sm">
+										Cancel
+									</Button>
+								)}
+							</div>
+						</CardHeader>
+						<Divider />
+						<CardBody className="p-6 space-y-4">
+							<div className="grid grid-cols-1 gap-4  ">
+								{!setUp2Fa && (
+									<Button
+										className=""
+										color={!systemUser?.mfaEnabled ? "primary" : "danger"}
+										type="button"
+										onPress={() => {
+											if (systemUser?.mfaEnabled) {
+												setDisableModal(true);
+											} else {
+												onSetUp2Fa(true);
+											}
+										}}>
+										{systemUser?.mfaEnabled ? "Disable 2FA" : "Set up 2FA"}
+									</Button>
+								)}
+								{setUp2Fa && (
+									<SetUpTwoFactor
+										handleChangeOtp={(otp) => setOtp(otp)}
+										handleSaveSecret={handleSetUp2FA}
+										value={otp}
+									/>
+								)}
+							</div>
+						</CardBody>
+					</Card>
+				</div>
+
+				<DeleteModal
+					handleDeletion={() => handleSetUp2FA("")}
+					hideNote
+					loading={false}
+					open={disableModal}
+					setOpen={setDisableModal}
+					title="Disable Two Factor Authentication"
+					description="Are you sure you want to disable Two Factor Authentication? This will remove an extra layer of security from your account."
+					deleteLabel="Disable"
+				/>
+			</div>
+		</>
 	);
 }

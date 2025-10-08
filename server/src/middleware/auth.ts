@@ -4,44 +4,50 @@ import { GraphQLError } from "graphql";
 import { AppContext } from "../types/index.js";
 
 export const authMiddleware = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-	const token = req.headers.authorization?.split(" ")[1];
-	if (!token) {
-		res.status(401).json({ error: { message: "Unauthorized" } });
-		return;
-	}
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ error: { message: "Unauthorized" } });
+    return;
+  }
 
-	const data = verifyToken(token);
+  const data = verifyToken(token);
 
-	if (!data) {
-		res.status(401).json({ error: { message: "Unauthorized" } });
-		return;
-	}
+  if (!data) {
+    res.status(401).json({ error: { message: "Unauthorized" } });
+    return;
+  }
 
-	req.body = { ...req.body, ...data };
+  req.body = { ...req.body, ...data };
 
-	next();
+  next();
 };
 
 export const contextMiddleware = async ({
-	req,
+  req,
 }: {
-	req: Request;
+  req: Request;
 }): Promise<AppContext> => {
-	const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
 
-	if (!token) {
-		throw new GraphQLError("UnAuthorized");
-	}
+  if (!token) {
+    throw new GraphQLError("UnAuthorized");
+  }
 
-	const data = verifyToken(token);
+  const data = verifyToken(token);
 
-	if (!data) {
-		throw new GraphQLError("UnAuthorized");
-	}
+  if (!data) {
+    throw new GraphQLError("UnAuthorized");
+  }
 
-	return { id: data.id, email: data.email, prisma, role: data.role };
+  return {
+    id: data.id,
+    email: data.email,
+    prisma,
+    role: data.role,
+    office: data.office,
+  };
 };

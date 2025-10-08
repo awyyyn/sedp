@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 import { useAuth } from "@/contexts";
+import { Loader } from "@/components/loader";
 
 export default function AuthLayout() {
 	const { isAuthenticated, role, loading } = useAuth();
 
-	if (loading) return;
+	if (loading) return <Loader />;
 
 	if (isAuthenticated)
 		return <Navigate to={role === "STUDENT" ? "/" : "/admin/dashboard"} />;

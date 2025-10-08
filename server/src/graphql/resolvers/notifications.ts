@@ -1,148 +1,148 @@
 import {
-	AdminNotification,
-	ScholarNotification,
-	SystemUserRole,
+  AdminNotification,
+  ScholarNotification,
+  SystemUserRole,
 } from "@prisma/client";
 import {
-	createAdminNotification,
-	createStudentNotification,
-	readAdminNotification,
-	readStudentNotification,
-	updateReadAdminNotification,
-	updateReadAllAdminNotification,
-	updateReadAllNotifications,
-	updateReadStudentNotification,
+  createAdminNotification,
+  createStudentNotification,
+  readAdminNotification,
+  readStudentNotification,
+  updateReadAdminNotification,
+  updateReadAllAdminNotification,
+  updateReadAllNotifications,
+  updateReadStudentNotification,
 } from "../../models/notification.js";
 import { GraphQLError } from "graphql";
 import { AppContext } from "../../types/index.js";
 import { pubsub } from "../../services/pubsub.js";
 
 export const createAdminNotificationResolver = async (
-	_: never,
-	data: Omit<AdminNotification, "id" | "createdAt" | "read" | "readerIds">
+  _: never,
+  data: Omit<AdminNotification, "id" | "createdAt" | "read" | "readerIds">,
 ) => {
-	try {
-		const notification = await createAdminNotification(data);
+  try {
+    const notification = await createAdminNotification(data);
 
-		pubsub.publish("ADMIN_NOTIFICATION_SENT", {
-			adminNotificationSent: notification,
-		});
+    pubsub.publish("ADMIN_NOTIFICATION_SENT", {
+      adminNotificationSent: notification,
+    });
 
-		return notification;
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+    return notification;
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const updateReadAdminNotificationResolver = async (
-	_: never,
-	data: { notificationId: string },
-	app: AppContext
+  _: never,
+  data: { notificationId: string },
+  app: AppContext,
 ) => {
-	try {
-		const notification = await updateReadAdminNotification(
-			app.id,
-			data.notificationId
-		);
+  try {
+    const notification = await updateReadAdminNotification(
+      app.id,
+      data.notificationId,
+    );
 
-		return notification;
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+    return notification;
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const updateReadAllAdminNotificationResolver = async (
-	_: never,
-	__: never,
-	app: AppContext
+  _: never,
+  __: never,
+  app: AppContext,
 ) => {
-	try {
-		const notification = await updateReadAllAdminNotification(
-			app.id,
-			app.role as SystemUserRole
-		);
+  try {
+    const notification = await updateReadAllAdminNotification(
+      app.id,
+      app.role as SystemUserRole,
+    );
 
-		return notification;
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+    return notification;
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const readAdminNotificationResolver = async (
-	_: never,
-	__: never,
-	app: AppContext
+  _: never,
+  __: never,
+  app: AppContext,
 ) => {
-	try {
-		return await readAdminNotification(app.role as SystemUserRole);
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+  try {
+    return await readAdminNotification(app.role as SystemUserRole);
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const createStudentNotificationResolver = async (
-	_: never,
-	data: Omit<ScholarNotification, "id" | "createdAt" | "read">
+  _: never,
+  data: Omit<ScholarNotification, "id" | "createdAt" | "read">,
 ) => {
-	try {
-		const notification = await createStudentNotification({
-			link: data.link,
-			message: data.message,
-			receiverId: data.receiverId,
-			title: data.title,
-			type: data.type,
-		});
+  try {
+    const notification = await createStudentNotification({
+      link: data.link,
+      message: data.message,
+      receiverId: data.receiverId,
+      title: data.title,
+      type: data.type,
+    });
 
-		pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
-			scholarNotificationSent: notification,
-		});
+    pubsub.publish("SCHOLAR_NOTIFICATION_SENT", {
+      scholarNotificationSent: notification,
+    });
 
-		return notification;
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+    return notification;
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const readStudentNotificationResolver = async (
-	_: never,
-	__: never,
-	app: AppContext
+  _: never,
+  __: never,
+  app: AppContext,
 ) => {
-	try {
-		return await readStudentNotification(app.id);
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+  try {
+    return await readStudentNotification(app.id);
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const updateReadStudentNotificationResolver = async (
-	_: never,
-	{ notificationId }: { notificationId?: string },
-	app: AppContext
+  _: never,
+  { notificationId }: { notificationId?: string },
+  app: AppContext,
 ) => {
-	try {
-		return await updateReadStudentNotification(app.id, notificationId);
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+  try {
+    return await updateReadStudentNotification(app.id, notificationId);
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };
 
 export const updateReadAllNotificationsResolver = async (
-	_: never,
-	__: never,
-	app: AppContext
+  _: never,
+  __: never,
+  app: AppContext,
 ) => {
-	try {
-		return await updateReadAllNotifications(app.id);
-	} catch (err) {
-		console.log(err);
-		throw new GraphQLError("Internal Server Error!");
-	}
+  try {
+    return await updateReadAllNotifications(app.id);
+  } catch (err) {
+    console.log(err);
+    throw new GraphQLError("Internal Server Error!");
+  }
 };

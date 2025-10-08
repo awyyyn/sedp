@@ -1,523 +1,653 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
-	type Subscription {
-		scholarNotificationSent(scholarId: ID!): ScholarNotification
-		adminNotificationSent(role: SystemUserRole): AdminNotification
-	}
-	type Query {
-		generateTOTPSecret: GeneratedOTPResult
-		systemUsers(
-			filter: String
-			pagination: PaginationInput
-			status: String
-		): SystemUsersResult
-		systemUser(id: String!): SystemUser
-		students(
-			filter: String
-			pagination: PaginationInput
-			status: String
-		): StudentsResult
-		student(id: String!): Student
-		announcements(
-			filter: String
-			pagination: PaginationInput
-		): AnnouncementsResult
-		announcement(id: String): Announcement
-		events(filter: String, pagination: PaginationInput): EventsResult
-		event(id: ID!): Event
-		meeting(id: ID!): Meeting
-		meetings(filter: String, pagination: PaginationInput): MeetingsResult
-		calendarEvents: [CalendarEvent]
-		calendarMeetingEvents: [CalendarEvent]
-		documents(
-			year: Int
-			month: Int
-			schoolYear: String
-			semester: Int
-			type: DocumentType
-			monthlyDocument: Boolean
-			scholarId: String
-		): [Document]
-		allowances(
-			claimed: Boolean
-			studentId: String
-			month: Int
-			pagination: PaginationInput
-			year: Int
-			semester: Int
-			yearLevel: Int
-			includeStudent: Boolean
-		): AllowanceResult
-		allowance(studentId: ID!, year: Int!, month: Int!): Allowance
-		monthlyEvents: [Event]
-		notifications: [ScholarNotification]
-		adminNotifications: [AdminNotification]
-		dashboardOverviewData: DashboardOverviewData
-	}
+  type Subscription {
+    scholarNotificationSent(scholarId: ID!): ScholarNotification
+    adminNotificationSent(role: SystemUserRole): AdminNotification
+  }
+  type Query {
+    reportsByOffice(office: String, schoolName: String): OfficeReportData
+    officesReports: [OfficesReportData]
+    lateSubmissionRequests(
+      isApproved: Boolean
+      pagination: PaginationInput
+      year: Int
+      month: Int
+    ): MonthlyLateSubmitterResult
+    transactions(input: TransactionPaginationArgs): TransactionResult
+    generateTOTPSecret: GeneratedOTPResult
+    systemUsers(
+      filter: String
+      pagination: PaginationInput
+      status: String
+    ): SystemUsersResult
+    systemUser(id: String!): SystemUser
+    students(
+      filter: String
+      pagination: PaginationInput
+      status: String
+      includeDocs: Boolean
+      school: String
+    ): StudentsResult
+    student(id: String!): Student
+    announcements(
+      filter: String
+      pagination: PaginationInput
+      office: String
+    ): AnnouncementsResult
+    announcement(id: String): Announcement
+    events(filter: String, pagination: PaginationInput): EventsResult
+    event(id: ID!): Event
+    meeting(id: ID!): Meeting
+    meetings(filter: String, pagination: PaginationInput): MeetingsResult
+    calendarEvents: [CalendarEvent]
+    calendarMeetingEvents: [CalendarEvent]
+    documents(
+      year: Int
+      month: Int
+      schoolYear: String
+      semester: Int
+      type: DocumentType
+      monthlyDocument: Boolean
+      scholarId: ID
+    ): [Document]
+    allowances(
+      claimed: Boolean
+      studentId: String
+      month: Int
+      pagination: PaginationInput
+      year: Int
+      semester: Int
+      yearLevel: Int
+      includeStudent: Boolean
+    ): AllowanceResult
+    allowance(studentId: ID!, year: Int!, month: Int!): Allowance
+    monthlyEvents: [Event]
+    notifications: [ScholarNotification]
+    adminNotifications: [AdminNotification]
+    dashboardOverviewData: DashboardOverviewData
+    lateSubmissionByScholar(
+      id: ID!
+      year: Int
+      month: Int
+    ): [MonthlyLateSubmitter]
+  }
 
-	type Mutation {
-		verifyTOTP(secret: String!, token: String!): Boolean
-		updateSystemUser(values: updateSystemUserInput): SystemUser
-		deleteSystemUser(id: String!): SystemUser
-		sendSystemUserRegistrationEmail(
-			email: String!
-			role: SystemUserRole!
-		): SendEmailResult
-		sendStudentRegistrationEmail(email: String!): SendEmailResult
-		updateStudent(
-			id: String!
-			firstName: String
-			lastName: String
-			middleName: String
-			# city: String
-			# street: String
-			address: AddressInput
-			gender: Gender
-			phoneNumber: String
-			birthDate: String
-			status: StudentStatus
-			mfaSecret: String
-			mfaEnabled: Boolean
-			password: String
-			yearLevel: Int
-			semester: Int
-			schoolName: String
-			course: String
-		): Student
-		createSystemUser(
-			firstName: String!
-			middleName: String
-			lastName: String!
-			address: AddressInput!
-			email: String!
-			gender: Gender!
-			password: String!
-			role: SystemUserRole!
-			birthDate: String!
-			phoneNumber: String!
-		): SystemUser
-		createStudent(
-			firstName: String!
-			middleName: String
-			lastName: String!
-			address: AddressInput!
-			email: String!
-			course: String!
-			yearLevel: Int!
-			semester: Int!
-			schoolName: String!
-			gender: Gender!
-			password: String!
-			birthDate: String!
-			phoneNumber: String!
-		): Student
-		createAnnouncement(title: String!, content: String!): Announcement
-		updateAnnouncement(id: ID!, title: String!, content: String!): Announcement
-		deleteAnnouncement(id: ID!): Announcement
-		createEvent(
-			description: String!
-			startTime: String!
-			endTime: String!
-			location: String!
-			startDate: String!
-			endDate: String!
-			title: String!
-		): Event
-		updateEvent(
-			description: String!
-			startTime: String!
-			endTime: String!
-			location: String!
-			startDate: String!
-			endDate: String!
-			title: String!
-			id: ID!
-		): Event
-		createMeeting(
-			description: String!
-			startTime: String!
-			endTime: String!
-			location: String!
-			date: String!
-			title: String!
-		): Meeting
-		updateMeeting(
-			description: String!
-			startTime: String!
-			endTime: String!
-			location: String!
-			date: String!
-			id: ID!
-			title: String!
-		): Meeting
-		deleteEvent(id: ID!): Event
-		deleteMeeting(id: ID!): Meeting
-		createDocument(input: DocumentInput!): Document
-		deleteDocument(id: ID!): Document
-		updateDocument(id: ID!, input: DocumentInput!): Document
-		createAllowance(
-			studentId: String!
-			month: Int!
-			year: Int!
-			semester: Int!
-			bookAllowance: Float
-			yearLevel: Int!
-			miscellaneousAllowance: Float
-			thesisAllowance: Float
-			monthlyAllowance: Float!
-		): Allowance
-		updateAllowanceStatus(id: String!, claimed: Boolean!): Allowance
-		createAdminNotification(
-			type: AdminNotificationType!
-			link: String!
-			message: String!
-			title: String!
-			role: SystemUserRole!
-		): AdminNotification
-		createScholarNotification(
-			type: ScholarNotificationType!
-			link: String!
-			message: String!
-			title: String!
-			receiverId: String!
-		): ScholarNotification
-		updateStudentNotification(notificationId: ID): Boolean
-		# updateAllStudentNotification: [ScholarNotification]
+  type Mutation {
+    approveLateSubmissionRequest(
+      approve: Boolean!
+      openUntil: String
+      requestId: ID!
+    ): MonthlyLateSubmitter
+    requestLateSubmission(
+      month: Int!
+      year: Int!
+      reason: String
+    ): MonthlyLateSubmitter
+    verifyTOTP(secret: String!, token: String!): Boolean
+    updateSystemUser(values: updateSystemUserInput): SystemUser
+    deleteSystemUser(id: String!): SystemUser
+    sendSystemUserRegistrationEmail(
+      email: String!
+      role: SystemUserRole!
+    ): SendEmailResult
+    sendStudentRegistrationEmail(email: String!): SendEmailResult
+    updateStudent(
+      id: String!
+      firstName: String
+      lastName: String
+      middleName: String
+      # city: String
+      # street: String
+      address: AddressInput
+      gender: Gender
+      phoneNumber: String
+      birthDate: String
+      status: StudentStatus
+      mfaSecret: String
+      mfaEnabled: Boolean
+      password: String
+      yearLevel: Int
+      semester: Int
+      schoolName: String
+      course: String
+    ): Student
+    createSystemUser(
+      firstName: String!
+      middleName: String
+      lastName: String!
+      address: AddressInput!
+      email: String!
+      gender: Gender!
+      password: String!
+      role: SystemUserRole!
+      birthDate: String!
+      phoneNumber: String!
+      office: String!
+    ): SystemUser
+    createStudent(
+      firstName: String!
+      middleName: String
+      lastName: String!
+      address: AddressInput!
+      email: String!
+      course: String!
+      yearLevel: Int!
+      semester: Int!
+      schoolName: String!
+      gender: Gender!
+      password: String!
+      birthDate: String!
+      phoneNumber: String!
+      office: String!
+    ): Student
+    createAnnouncement(title: String!, content: String!): Announcement
+    updateAnnouncement(id: ID!, title: String!, content: String!): Announcement
+    deleteAnnouncement(id: ID!): Announcement
+    createEvent(
+      description: String!
+      startTime: String!
+      endTime: String!
+      location: String!
+      startDate: String!
+      endDate: String!
+      title: String!
+    ): Event
+    updateEvent(
+      description: String!
+      startTime: String!
+      endTime: String!
+      location: String!
+      startDate: String!
+      endDate: String!
+      title: String!
+      id: ID!
+    ): Event
+    createMeeting(
+      description: String!
+      startTime: String!
+      endTime: String!
+      location: String!
+      date: String!
+      title: String!
+    ): Meeting
+    updateMeeting(
+      description: String!
+      startTime: String!
+      endTime: String!
+      location: String!
+      date: String!
+      id: ID!
+      title: String!
+    ): Meeting
+    deleteEvent(id: ID!): Event
+    deleteMeeting(id: ID!): Meeting
+    createDocument(input: DocumentInput!): Document
+    deleteDocument(id: ID!): Document
+    updateDocument(id: ID!, input: DocumentInput!): Document
+    createAllowance(
+      studentId: String!
+      month: Int!
+      year: Int!
+      semester: Int!
+      bookAllowance: Float
+      yearLevel: Int!
+      miscellaneousAllowance: Float
+      thesisAllowance: Float
+      monthlyAllowance: Float!
+    ): Allowance
+    updateAllowanceStatus(id: String!, claimed: Boolean!): Allowance
+    createAdminNotification(
+      type: AdminNotificationType!
+      link: String!
+      message: String!
+      title: String!
+      role: SystemUserRole!
+    ): AdminNotification
+    createScholarNotification(
+      type: ScholarNotificationType!
+      link: String!
+      message: String!
+      title: String!
+      receiverId: String!
+    ): ScholarNotification
+    updateStudentNotification(notificationId: ID): Boolean
+    # updateAllStudentNotification: [ScholarNotification]
 
-		# updateAllAdminNotification: [AdminNotification]
-		updateAdminNotification(notificationId: ID): AdminNotification
-	}
+    # updateAllAdminNotification: [AdminNotification]
+    updateAdminNotification(notificationId: ID): AdminNotification
+  }
 
-	input DocumentInput {
-		documentName: String!
-		documentType: DocumentType
-		docType: DocType!
-		otherType: String
-		documentUrl: String!
-		monthlyDocument: Boolean
-		month: Int!
-		year: Int!
-		schoolYear: String!
-		semester: Int!
-		amount: Float
-	}
+  input DocumentInput {
+    documentName: String!
+    documentType: DocumentType
+    docType: DocType!
+    otherType: String
+    documentUrl: String!
+    monthlyDocument: Boolean
+    month: Int!
+    year: Int!
+    schoolYear: String!
+    semester: Int!
+    amount: Float
+  }
 
-	enum DocType {
-		NARRATIVE_REPORT
-		RECEIPT
-		COR
-		COG
-		ACKNOWLEDGEMENT
-		MISCELLANEOUS
-		OTHER
-	}
+  enum DocType {
+    NARRATIVE_REPORT
+    RECEIPT
+    COR
+    COG
+    ACKNOWLEDGEMENT
+    MISCELLANEOUS
+    OTHER
+  }
 
-	type SendEmailResult {
-		message: String
-	}
+  type SendEmailResult {
+    message: String
+  }
 
-	input AddressInput {
-		street: String
-		city: String
-	}
+  input AddressInput {
+    street: String
+    city: String
+  }
 
-	type GeneratedOTPResult {
-		secret: String!
-		otpauthurl: String!
-	}
+  type GeneratedOTPResult {
+    secret: String!
+    otpauthurl: String!
+  }
 
-	input updateSystemUserInput {
-		id: String!
-		email: String
-		firstName: String
-		lastName: String
-		middleName: String
-		password: String
-		mfaSecret: String
-		phoneNumber: String
-		birthDate: String
-		mfaEnabled: Boolean
-		address: AddressInput
-		gender: Gender
-		role: SystemUserRole
-		status: SystemUserStatus
-	}
+  input updateSystemUserInput {
+    id: String!
+    email: String
+    firstName: String
+    lastName: String
+    middleName: String
+    password: String
+    mfaSecret: String
+    phoneNumber: String
+    birthDate: String
+    mfaEnabled: Boolean
+    address: AddressInput
+    gender: Gender
+    role: SystemUserRole
+    status: SystemUserStatus
+  }
 
-	input PaginationInput {
-		take: Int!
-		page: Int!
-	}
+  type Transaction {
+    id: ID!
 
-	type SystemUsersResult {
-		data: [SystemUser]
-		hasMore: Boolean
-		count: Int
-	}
+    action: TransactionAction!
+    entity: TransactionEntity!
+    entityId: String!
+    description: String!
+    transactedBy: SystemUser!
+    transactedById: String!
+    student: Student
+    allowance: Allowance
+    meeting: Meeting
+    lateSubmission: MonthlyLateSubmitter
+    event: Event
+    announcement: Announcement
 
-	type AllowanceResult {
-		data: [Allowance]
-		hasMore: Boolean
-		count: Int
-	}
-	type SystemUsersResult {
-		data: [SystemUser]
-		hasMore: Boolean
-		count: Int
-	}
+    createdAt: String!
+  }
 
-	type StudentsResult {
-		data: [Student]
-		hasMore: Boolean
-		count: Int
-	}
-	type AnnouncementsResult {
-		data: [Announcement]
-		hasMore: Boolean
-		count: Int
-	}
+  enum TransactionAction {
+    CREATE
+    UPDATE
+    DELETE
+    APPROVE
+    DISAPPROVE
+    BLOCK
+    UNBLOCK
+  }
 
-	type EventsResult {
-		data: [Event]
-		hasMore: Boolean
-		count: Int
-	}
-	type MeetingsResult {
-		data: [Meeting]
-		hasMore: Boolean
-		count: Int
-	}
+  enum TransactionEntity {
+    STUDENT
+    ALLOWANCE
+    MEETING
+    EVENT
+    ANNOUNCEMENT
+    LATE_SUBMISSION
+  }
 
-	type SystemUser {
-		id: String
-		email: String
-		firstName: String
-		lastName: String
-		middleName: String
-		password: String
-		mfaSecret: String
-		phoneNumber: String
-		birthDate: String
-		gender: Gender
-		mfaEnabled: Boolean
-		address: Address
-		role: SystemUserRole
-		status: SystemUserStatus
-		verifiedAt: String
-		createdAt: String
-		updatedAt: String
-	}
+  input TransactionPaginationArgs {
+    pagination: PaginationInput
+    office: String
+    enity: TransactionEntity
+    action: TransactionAction
+    transactedById: String
+  }
 
-	type Student {
-		id: String
-		email: String
-		firstName: String
-		lastName: String
-		middleName: String
-		address: Address
-		phoneNumber: String
-		status: StudentStatus
-		yearLevelJoined: Int
-		gender: Gender
-		mfaSecret: String
-		birthDate: String
-		mfaEnabled: Boolean
-		yearLevel: Int
-		semester: Int
-		schoolName: String
-		statusUpdatedAt: String
-		course: String
-		createdAt: String
-		updatedAt: String
-	}
+  input PaginationInput {
+    take: Int!
+    page: Int!
+  }
 
-	enum Gender {
-		MALE
-		FEMALE
-	}
+  type MonthlyLateSubmitterResult {
+    data: [MonthlyLateSubmitter]
+    hasMore: Boolean
+    count: Int
+  }
 
-	type OverviewData {
-		avg: Float
-		new: Int
-	}
+  type TransactionResult {
+    data: [Transaction]
+    hasMore: Boolean
+    count: Int
+  }
 
-	type BriefOverviewData {
-		activeScholars: OverviewData
-		totalScholars: OverviewData
-		graduated: OverviewData
-		events: OverviewData
-	}
+  type SystemUsersResult {
+    data: [SystemUser]
+    hasMore: Boolean
+    count: Int
+  }
 
-	type ChartData {
-		yearLevel: Int
-		disqualified: Int
-		active: Int
-		graduated: Int
-	}
+  type AllowanceResult {
+    data: [Allowance]
+    hasMore: Boolean
+    count: Int
+  }
+  type SystemUsersResult {
+    data: [SystemUser]
+    hasMore: Boolean
+    count: Int
+  }
 
-	type DashboardOverviewData {
-		briefOverview: BriefOverviewData
-		chart: [ChartData]
-		announcements: [Announcement]
-	}
+  type StudentsResult {
+    data: [Student]
+    hasMore: Boolean
+    count: Int
+  }
+  type AnnouncementsResult {
+    data: [Announcement]
+    hasMore: Boolean
+    count: Int
+  }
 
-	enum StudentStatus {
-		REQUESTING
-		SCHOLAR
-		GRADUATED
-		DISQUALIFIED
-		ARCHIVED
-	}
+  type EventsResult {
+    data: [Event]
+    hasMore: Boolean
+    count: Int
+  }
+  type MeetingsResult {
+    data: [Meeting]
+    hasMore: Boolean
+    count: Int
+  }
 
-	type Address {
-		street: String
-		city: String
-	}
+  type SystemUser {
+    id: String
+    email: String
+    firstName: String
+    lastName: String
+    middleName: String
+    password: String
+    mfaSecret: String
+    phoneNumber: String
+    birthDate: String
+    gender: Gender
+    mfaEnabled: Boolean
+    address: Address
+    role: SystemUserRole
+    office: String
+    status: SystemUserStatus
+    verifiedAt: String
+    createdAt: String
+    updatedAt: String
+  }
 
-	enum SystemUserRole {
-		SUPER_ADMIN
-		ADMIN_MANAGE_SCHOLAR
-		ADMIN_MANAGE_GATHERINGS
-		ADMIN_MANAGE_DOCUMENTS
-		ADMIN_VIEWER
-	}
+  type Student {
+    id: String
+    email: String
+    firstName: String
+    lastName: String
+    middleName: String
+    address: Address
+    office: String
+    phoneNumber: String
+    status: StudentStatus
+    yearLevelJoined: Int
+    gender: Gender
+    mfaSecret: String
+    birthDate: String
+    mfaEnabled: Boolean
+    yearLevel: Int
+    semester: Int
+    schoolName: String
+    statusUpdatedAt: String
+    course: String
+    documents: [Document]
+    createdAt: String
+    updatedAt: String
+  }
 
-	enum SystemUserStatus {
-		PENDING
-		VERIFIED
-		UNVERIFIED
-		DELETED
-	}
+  enum Gender {
+    MALE
+    FEMALE
+  }
 
-	type Announcement {
-		id: ID!
-		createdBy: SystemUser!
-		content: String!
-		title: String!
-		createdAt: String!
-	}
+  type OverviewData {
+    avg: Float
+    new: Int
+  }
 
-	type Meeting {
-		id: ID!
-		title: String!
-		description: String
-		startTime: String!
-		endTime: String!
-		location: String
-		date: String
-		createdAt: String
-	}
+  type BriefOverviewData {
+    activeScholars: OverviewData
+    totalScholars: OverviewData
+    graduated: OverviewData
+    events: OverviewData
+  }
 
-	type Event {
-		id: ID!
-		title: String!
-		description: String
-		startTime: String!
-		endTime: String!
-		location: String
-		startDate: String
-		endDate: String
+  type ChartData {
+    yearLevel: Int
+    disqualified: Int
+    active: Int
+    graduated: Int
+  }
 
-		createdAt: String
-	}
+  type DashboardOverviewData {
+    briefOverview: BriefOverviewData
+    chart: [ChartData]
+    announcements: [Announcement]
+  }
 
-	type CalendarEvent {
-		id: ID!
-		start: String!
-		end: String!
-		title: String!
-		location: String!
-		backgroundColor: String!
-		borderColor: String!
-	}
+  type OfficesReportData {
+    name: String!
+    office: String
+    totalAllowance: Float!
+    totalScholars: Int!
+    totalActiveScholars: Int!
 
-	enum DocumentType {
-		photo
-		document
-	}
+    totalGraduatesScholars: Int!
+    totalDisqualifiedScholars: Int!
+  }
 
-	type Document {
-		id: ID!
-		studentId: String!
-		student: Student!
-		documentName: String!
-		documentType: DocumentType!
-		documentUrl: String!
-		otherType: String
-		amount: Float!
-		docType: DocType!
+  type OfficeReportData {
+    office: String!
+    totalAllowance: Float!
+    totalScholars: Int!
+    totalActiveScholars: Int!
+    totalGraduatesScholars: Int!
+    totalDisqualifiedScholars: Int!
+    totalMiscellaneousAllowance: Float!
+    totalMonthlyAllowance: Float!
+    totalBookAllowance: Float!
+    totalThesisAllowance: Float!
+  }
 
-		monthlyDocument: Boolean!
-		month: Int!
-		year: Int!
-		schoolYear: String
-		semester: Int
+  enum StudentStatus {
+    REQUESTING
+    SCHOLAR
+    GRADUATED
+    DISQUALIFIED
+    ARCHIVED
+  }
 
-		createdAt: String!
-		updatedAt: String!
-	}
+  type Address {
+    street: String
+    city: String
+  }
 
-	type Allowance {
-		id: String
-		studentId: String
-		student: Student
+  enum SystemUserRole {
+    SUPER_ADMIN
+    ADMIN_MANAGE_SCHOLAR
+    ADMIN_MANAGE_GATHERINGS
+    ADMIN_MANAGE_DOCUMENTS
+    ADMIN_VIEWER
+  }
 
-		month: Int
-		year: Int
-		semester: Int
-		yearLevel: Int
+  enum SystemUserStatus {
+    PENDING
+    VERIFIED
+    UNVERIFIED
+    DELETED
+  }
 
-		bookAllowance: Float
-		miscellaneousAllowance: Float
-		thesisAllowance: Float
-		monthlyAllowance: Float
+  type Announcement {
+    id: ID!
+    createdBy: SystemUser!
+    content: String!
+    title: String!
+    createdAt: String!
+  }
 
-		claimedAt: String
-		totalAmount: Float
-		claimed: Boolean
+  type Meeting {
+    id: ID!
+    title: String!
+    description: String
+    startTime: String!
+    endTime: String!
+    location: String
+    date: String
+    createdAt: String
+  }
 
-		createdAt: String
-		updatedAt: String
-	}
+  type Event {
+    id: ID!
+    title: String!
+    description: String
+    startTime: String!
+    endTime: String!
+    location: String
+    startDate: String
+    endDate: String
 
-	enum AdminNotificationType {
-		SEMESTER_DOCUMENT
-		MONTHLY_DOCUMENT
-		OTHER
-	}
+    createdAt: String
+  }
 
-	type AdminNotification {
-		id: ID!
-		read: Boolean!
-		message: String!
-		title: String!
-		role: SystemUserRole!
-		type: AdminNotificationType!
-		readerIds: [String]
-		link: String
+  type CalendarEvent {
+    id: ID!
+    start: String!
+    end: String!
+    title: String!
+    location: String!
+    backgroundColor: String!
+    borderColor: String!
+  }
 
-		createdAt: String!
-	}
+  enum DocumentType {
+    photo
+    document
+  }
 
-	enum ScholarNotificationType {
-		MEETING
-		EVENT
-		ANNOUNCEMENT
-		ALLOWANCE
-		SYSTEM_UPDATE
-		OTHER
-	}
+  type Document {
+    id: ID!
+    studentId: String!
+    student: Student!
+    documentName: String!
+    documentType: DocumentType!
+    documentUrl: String!
+    otherType: String
+    amount: Float!
+    docType: DocType!
 
-	type ScholarNotification {
-		id: ID!
-		read: Boolean!
-		message: String!
-		title: String!
-		receiverId: String!
-		# receiver: Student!
-		type: ScholarNotificationType!
-		link: String
+    monthlyDocument: Boolean!
+    month: Int!
+    year: Int!
+    schoolYear: String
+    semester: Int
 
-		createdAt: String!
-	}
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type MonthlyLateSubmitter {
+    id: ID!
+    month: Int!
+    year: Int!
+    reason: String
+    studentId: String!
+    student: Student!
+    updatedById: String
+    updatedBy: SystemUser
+    updatedOn: String
+    isApproved: Boolean
+
+    openUntil: String
+    createdAt: String!
+  }
+
+  type Allowance {
+    id: String
+    studentId: String
+    student: Student
+
+    month: Int
+    year: Int
+    semester: Int
+    yearLevel: Int
+
+    bookAllowance: Float
+    miscellaneousAllowance: Float
+    thesisAllowance: Float
+    monthlyAllowance: Float
+
+    claimedAt: String
+    totalAmount: Float
+    claimed: Boolean
+
+    createdAt: String
+    updatedAt: String
+  }
+
+  enum AdminNotificationType {
+    SEMESTER_DOCUMENT
+    MONTHLY_DOCUMENT
+    OTHER
+  }
+
+  type AdminNotification {
+    id: ID!
+    read: Boolean!
+    message: String!
+    title: String!
+    role: SystemUserRole!
+    type: AdminNotificationType!
+    readerIds: [String]
+    link: String
+
+    createdAt: String!
+  }
+
+  enum ScholarNotificationType {
+    MEETING
+    EVENT
+    ANNOUNCEMENT
+    ALLOWANCE
+    SYSTEM_UPDATE
+    OTHER
+  }
+
+  type ScholarNotification {
+    id: ID!
+    read: Boolean!
+    message: String!
+    title: String!
+    receiverId: String!
+    # receiver: Student!
+    type: ScholarNotificationType!
+    link: String
+
+    createdAt: String!
+  }
 `;

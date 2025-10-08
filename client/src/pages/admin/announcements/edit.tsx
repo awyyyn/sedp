@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Helmet } from "react-helmet";
 
 import AnnouncementForm from "./__components/form";
 
@@ -34,28 +35,39 @@ export default function EditAnnouncement() {
 	if (!data?.announcement) return <h1>No announcement found.</h1>;
 
 	return (
-		<Card className="rounded-md shadow-md mb-10 ">
-			<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-				<Button
-					startContent={<Icon icon="ep:back" />}
-					size="sm"
-					as={Link}
-					to="/admin/announcements"
-					className="bg-transparent hover:bg-[#6d796f35]">
-					Back to list
-				</Button>
-				<h1 className="text-2xl">Update Announcement</h1>
-				<p>
-					Modify an existing announcement to inform scholars about important
-					updates.
-				</p>
-			</CardHeader>
-			<CardBody className="bg-[#A6F3B235]">
-				<div className="lg:max-w-[80%] w-full mx-auto my-5">
-					<AnnouncementForm edit announcement={data.announcement} />
-				</div>
-			</CardBody>
-		</Card>
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Edit Announcement | Admin</title>
+				<meta
+					name="description"
+					content="Modify an existing announcement to inform scholars about important updates."
+				/>
+			</Helmet>
+			<Card className="rounded-md shadow-md mb-10 ">
+				<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
+					<Button
+						startContent={<Icon icon="ep:back" />}
+						size="sm"
+						as={Link}
+						to="/admin/announcements"
+						className="bg-transparent hover:bg-[#6d796f35]">
+						Back to list
+					</Button>
+					<h1 className="text-2xl">Update Announcement</h1>
+					<p>
+						Modify an existing announcement to inform scholars about important
+						updates.
+					</p>
+				</CardHeader>
+				<CardBody className="bg-[#A6F3B235]">
+					<div className="lg:max-w-[80%] w-full mx-auto my-5">
+						<AnnouncementForm edit announcement={data.announcement} />
+					</div>
+				</CardBody>
+			</Card>
+		</>
 	);
 }
 

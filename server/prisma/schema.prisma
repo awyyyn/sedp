@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,29 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model SystemUser {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  firstName String
-  lastName String
-  middleName String?
-  password String
-  mfaSecret String?
-  phoneNumber String
-  birthDate DateTime
-  gender Gender
-  mfaEnabled Boolean @default(false) 
-  address address 
-  role SystemUserRole
-  status SystemUserStatus @default(UNVERIFIED)
-  verifiedAt DateTime?
+model MonthlyLateSubmitter {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  month       Int
+  year        Int
+  reason      String?
+  studentId   String      @db.ObjectId
+  student     Student     @relation(references: [id], fields: [studentId])
+  updatedById String?     @db.ObjectId
+  updatedBy   SystemUser? @relation(fields: [updatedById], references: [id])
+  updatedOn   DateTime?
+  isApproved  Boolean?
 
-  transactions Transactions[]
-  announcements Announcement[] 
+  openUntil DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model SystemUser {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  email       String           @unique
+  firstName   String
+  lastName    String
+  office      String           @default("Albay District")
+  middleName  String?
+  password    String
+  mfaSecret   String?
+  phoneNumber String
+  birthDate   DateTime
+  gender      Gender
+  mfaEnabled  Boolean          @default(false)
+  address     address
+  role        SystemUserRole
+  status      SystemUserStatus @default(UNVERIFIED)
+  verifiedAt  DateTime?
+
+  transactions  Transaction[]
+  announcements Announcement[]
 
   // TimeStamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  monthlyLateSubmitter MonthlyLateSubmitter[]
 
   @@map("system_users")
 }
@@ -51,38 +68,40 @@ enum SystemUserRole {
 }
 
 model Student {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  email String @unique
-  firstName String
-  lastName String 
-  middleName String?
-  address address
-  password String
-  gender Gender
-  birthDate DateTime
+  email       String        @unique
+  firstName   String
+  lastName    String
+  office      String        @default("Albay District")
+  middleName  String?
+  address     address
+  password    String
+  gender      Gender
+  birthDate   DateTime
   phoneNumber String
-  status StudentStatus @default(SCHOLAR)
-  semester Int @default(1)
+  status      StudentStatus @default(SCHOLAR)
+  semester    Int           @default(1)
 
-  allowance Allowance[]
+  allowance     Allowance[]
   notifications ScholarNotification[]
 
-  mfaSecret String?
-  mfaEnabled Boolean @default(false) 
+  mfaSecret  String?
+  mfaEnabled Boolean @default(false)
 
-  yearLevel Int 
-  yearLevelJoined Int? @default(1)
-  schoolName String 
-  course String @default("") 
+  yearLevel       Int
+  yearLevelJoined Int?   @default(1)
+  schoolName      String
+  course          String @default("")
 
-  statusUpdatedAt DateTime? 
+  statusUpdatedAt DateTime?
 
   documents Document[]
 
   // TimeStamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  monthlyLateSubmitter MonthlyLateSubmitter[]
 
   @@map("students")
 }
@@ -94,7 +113,7 @@ enum Gender {
 
 type address {
   street String
-  city String 
+  city   String
 }
 
 enum StudentStatus {
@@ -105,12 +124,11 @@ enum StudentStatus {
   ARCHIVED
 }
 
- 
 model token {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  email String   @unique
   token String
-  time  DateTime  
+  time  DateTime
 
   @@map("tokens")
 }
@@ -120,30 +138,29 @@ enum documentTypeEnum {
   document
 }
 
- 
-
 model Events {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title String
+  title       String
   description String
-  startTime String
-  endTime String
-  location String
-  startDate String
-  endDate String
+  startTime   String
+  endTime     String
+  location    String
+  startDate   String
+  endDate     String
 
-  createdAt DateTime@default(now())
+  createdAt DateTime @default(now())
+
   @@map("events")
 }
 
 model Announcement {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title String
-  content String
-  createdBy SystemUser   @relation(references: [id], fields: [createdById])
-  createdById String @db.ObjectId 
+  title       String
+  content     String
+  createdBy   SystemUser @relation(references: [id], fields: [createdById])
+  createdById String     @db.ObjectId
 
   createdAt DateTime @default(now())
 
@@ -151,67 +168,85 @@ model Announcement {
 }
 
 model Meeting {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title String
+  title       String
   description String
 
   startTime String
-  endTime String
-  location String
-  date String
+  endTime   String
+  location  String
+  date      String
 
   createdAt DateTime @default(now())
 
   @@map("meetings")
 }
 
-
-model Transactions {
+model Transaction {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  transaction String
-  transactionId String @db.ObjectId
+  action   TransactionAction
+  entity   TransactionEntity
+  entityId String            @db.ObjectId
 
-  userId String @db.ObjectId
-  user SystemUser @relation(references: [id], fields: [userId])
+  description String
+
+  transactedById String     @db.ObjectId
+  transactedBy   SystemUser @relation(references: [id], fields: [transactedById])
 
   createdAt DateTime @default(now())
+
+  @@map("transactions")
 }
 
+enum TransactionAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  DISAPPROVE
+  BLOCK
+  UNBLOCK
+}
 
- 
+enum TransactionEntity {
+  STUDENT
+  ALLOWANCE
+  MEETING
+  EVENT
+  ANNOUNCEMENT
+  LATE_SUBMISSION
+}
 
 model Document {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId 
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   documentName String
   documentType documentTypeEnum @default(photo)
   documentUrl  String
-  docType DocType 
-  otherType String?
-  
-  
+  docType      DocType
+  otherType    String?
+
   // folderId     String?  @db.ObjectId // Nullable in case the document isn't assigned to any folder
   // folder       Folder?   @relation(fields: [folderId], references: [id]) // Relation to Folder
 
   monthlyDocument Boolean @default(true)
-  month Int
-  year Int
-  schoolYear String
-  semester Int
+  month           Int
+  year            Int
+  schoolYear      String
+  semester        Int
 
-  studentId String @db.ObjectId
-  student Student @relation(references: [id], fields: [studentId])
-  amount Float? @default(0.0) // Nullable to allow for documents without an amount
+  studentId String  @db.ObjectId
+  student   Student @relation(references: [id], fields: [studentId])
+  amount    Float?  @default(0.0) // Nullable to allow for documents without an amount
 
   // TimeStamps
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("documents")
 }
-
 
 enum DocType {
   NARRATIVE_REPORT
@@ -219,42 +254,41 @@ enum DocType {
   COR
   COG
   ACKNOWLEDGEMENT
-MISCELLANEOUS
+  MISCELLANEOUS
   OTHER
 }
 
 model Allowance {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  studentId String @db.ObjectId
-  student Student @relation(references: [id], fields: [studentId])
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String  @db.ObjectId
+  student   Student @relation(references: [id], fields: [studentId])
 
-  yearLevel Int
-  year Int
-  month Int
-  semester Int
-  monthlyAllowance Float @default(0.0)
+  yearLevel              Int
+  year                   Int
+  month                  Int
+  semester               Int
+  monthlyAllowance       Float @default(0.0)
   miscellaneousAllowance Float @default(0.0)
-  bookAllowance Float @default(0.0) 
-  thesisAllowance Float @default(0.0)
+  bookAllowance          Float @default(0.0)
+  thesisAllowance        Float @default(0.0)
 
-  totalAmount Float @default(0.0)
-  claimedAt DateTime?
-  claimed Boolean @default(false)
+  totalAmount Float     @default(0.0)
+  claimedAt   DateTime?
+  claimed     Boolean   @default(false)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
+  updatedAt DateTime @updatedAt
 
   @@map("allowance")
 }
 
-
 model ScholarNotification {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  read Boolean @default(false)
-  message String
-  title String
-  receiverId String @db.ObjectId
-  receiver Student @relation(references: [id], fields: [receiverId])
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  read       Boolean @default(false)
+  message    String
+  title      String
+  receiverId String  @db.ObjectId
+  receiver   Student @relation(references: [id], fields: [receiverId])
 
   type ScholarNotificationType
   link String?
@@ -268,7 +302,7 @@ enum ScholarNotificationType {
   MEETING
   EVENT
   ANNOUNCEMENT
-  ALLOWANCE 
+  ALLOWANCE
   SYSTEM_UPDATE
   OTHER
 }
@@ -280,12 +314,12 @@ enum AdminNotificationType {
 }
 
 model AdminNotification {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  read Boolean @default(false)
+  id      String                @id @default(auto()) @map("_id") @db.ObjectId
+  read    Boolean               @default(false)
   message String
-  title String
-  role SystemUserRole
-  type AdminNotificationType
+  title   String
+  role    SystemUserRole
+  type    AdminNotificationType
 
   readerIds String[] @db.ObjectId
 

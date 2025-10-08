@@ -20,6 +20,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { toast } from "sonner";
 import { Card, CardBody } from "@heroui/card";
+import { Helmet } from "react-helmet";
 
 import { DeleteModal } from "../__components";
 
@@ -209,6 +210,15 @@ export default function Announcements() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Announcements | Admin</title>
+				<meta
+					name="description"
+					content="Manage announcements to keep scholars informed about important updates and events."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235]">
 				<CardBody className="pt-8 ">
 					<div className="px-5 flex justify-between">

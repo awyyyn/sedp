@@ -24,6 +24,7 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
 import { PaginationResult, Student } from "@/types";
@@ -266,6 +267,15 @@ export default function SemesterSubmissions() {
 
 	return (
 		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Semester Documents | Admin</title>
+				<meta
+					name="description"
+					content="View and manage semester document submissions from scholars in the admin panel."
+				/>
+			</Helmet>
 			<Card className="bg-[#A6F3B235]">
 				<CardBody className="pt-8 ">
 					<div className="px-5 flex justify-between">

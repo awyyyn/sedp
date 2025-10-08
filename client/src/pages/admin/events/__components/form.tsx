@@ -8,341 +8,408 @@ import { Button } from "@heroui/button";
 import { toast } from "sonner";
 import { DateRangePicker } from "@heroui/date-picker";
 import {
-	getLocalTimeZone,
-	parseAbsoluteToLocal,
-	parseDate,
-	Time,
-	today,
+  getLocalTimeZone,
+  parseAbsoluteToLocal,
+  parseDate,
+  Time,
+  today,
 } from "@internationalized/date";
 import { TimeInput, TimeInputValue } from "@heroui/date-input";
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatDate } from "date-fns";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { Tooltip } from "@heroui/tooltip";
 
 import { AddEventSchema } from "@/definitions";
 import { AddEventSchemaData, Event, PaginationResult } from "@/types";
 import {
-	CREATE_EVENT_MUTATION,
-	READ_EVENTS_QUERY,
-	UPDATE_EVENT_MUTATION,
+  CREATE_EVENT_MUTATION,
+  READ_EVENTS_QUERY,
+  UPDATE_EVENT_MUTATION,
 } from "@/queries";
 
 interface EventFormProps {
-	edit?: boolean;
-	defaultValues?: Event;
+  edit?: boolean;
+  defaultValues?: Event;
 }
 
 export default function EventForm({ edit, defaultValues }: EventFormProps) {
-	let [startTime, setStartTime] = useState<TimeInputValue | null>(
-		defaultValues ? parseAbsoluteToLocal(defaultValues.startTime) : null
-	);
-	let [endTime, setEndTime] = useState<TimeInputValue | null>(
-		defaultValues ? parseAbsoluteToLocal(defaultValues.endTime) : null
-	);
-	const [upsertEvent] = useMutation(
-		edit ? UPDATE_EVENT_MUTATION : CREATE_EVENT_MUTATION
-	);
+  let [startTime, setStartTime] = useState<TimeInputValue | null>(
+    defaultValues ? parseAbsoluteToLocal(defaultValues.startTime) : null,
+  );
+  let [endTime, setEndTime] = useState<TimeInputValue | null>(
+    defaultValues ? parseAbsoluteToLocal(defaultValues.endTime) : null,
+  );
+  const [upsertEvent] = useMutation(
+    edit ? UPDATE_EVENT_MUTATION : CREATE_EVENT_MUTATION,
+  );
 
-	const { data } = useQuery<{ events: PaginationResult<Event> }>(
-		READ_EVENTS_QUERY
-	);
+  const { data } = useQuery<{ events: PaginationResult<Event> }>(
+    READ_EVENTS_QUERY,
+  );
 
-	const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(
-		defaultValues
-			? {
-					start: parseDate(
-						formatDate(
-							parseAbsoluteToLocal(
-								new Date(defaultValues?.startDate || new Date()).toISOString()
-							).toDate(),
-							"yyyy-MM-dd"
-						)
-					),
-					end: parseDate(
-						formatDate(
-							parseAbsoluteToLocal(
-								new Date(defaultValues?.endDate || new Date()).toISOString()
-							).toDate(),
-							"yyyy-MM-dd"
-						)
-					),
-				}
-			: null
-	);
+  const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(
+    defaultValues
+      ? {
+          start: parseDate(
+            formatDate(
+              parseAbsoluteToLocal(
+                new Date(defaultValues?.startDate || new Date()).toISOString(),
+              ).toDate(),
+              "yyyy-MM-dd",
+            ),
+          ),
+          end: parseDate(
+            formatDate(
+              parseAbsoluteToLocal(
+                new Date(defaultValues?.endDate || new Date()).toISOString(),
+              ).toDate(),
+              "yyyy-MM-dd",
+            ),
+          ),
+        }
+      : null,
+  );
 
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	const disabledRanges = (data?.events.data || []).map((event: Event) => {
-		const startDate = parseDate(
-			formatDate(
-				parseAbsoluteToLocal(new Date(event.startDate).toISOString()).toDate(),
-				"yyyy-MM-dd"
-			)
-		);
-		const endDate = parseDate(
-			formatDate(
-				parseAbsoluteToLocal(new Date(event.endDate).toISOString()).toDate(),
-				"yyyy-MM-dd"
-			)
-		);
+  const disabledRanges = (data?.events.data || [])
+    .map((event: Event) => {
+      if (!!defaultValues?.id && defaultValues.id === event.id) return null;
+      const startDate = parseDate(
+        formatDate(
+          parseAbsoluteToLocal(
+            new Date(event.startDate).toISOString(),
+          ).toDate(),
+          "yyyy-MM-dd",
+        ),
+      );
+      const endDate = parseDate(
+        formatDate(
+          parseAbsoluteToLocal(new Date(event.endDate).toISOString()).toDate(),
+          "yyyy-MM-dd",
+        ),
+      );
 
-		return [startDate, endDate];
-	});
+      return [startDate, endDate];
+    })
+    .filter((i) => i !== null);
 
-	return (
-		<Card className="rounded-md shadow-md mb-10 ">
-			<CardHeader className="flex rounded-none bg-[#A6F3B2] flex-col items-start">
-				<h1 className="text-2xl">{edit ? "Edit" : "Create New"} Event</h1>
-				<p>
-					{edit
-						? "Edit the details of the event."
-						: "Fill in the details to create a new event and manage its settings."}
-				</p>
-			</CardHeader>
-			<CardBody className="bg-[#A6F3B235]">
-				<div className="lg:max-w-[80%] w-full mx-auto my-5">
-					<Formik
-						validationSchema={AddEventSchema}
-						initialValues={
-							{
-								title: defaultValues?.title || "",
-								location: defaultValues?.location || "",
-								description: defaultValues?.description || "",
-								startDate: defaultValues ? defaultValues.startDate : "",
-								endDate: defaultValues ? defaultValues.endDate : "",
-								startTime: defaultValues?.startTime || "",
-								endTime: defaultValues?.endTime || "",
-							} as AddEventSchemaData
-						}
-						onSubmit={async (values: AddEventSchemaData, helpers) => {
-							try {
-								const variables = {
-									...values,
-									id: defaultValues ? defaultValues.id : "no-id",
-								};
+  return (
+    <Card className="rounded-md shadow-md mb-10 ">
+      <CardHeader className="flex items-center  gap-2  rounded-none bg-[#A6F3B2]  ">
+        <Tooltip content="Back">
+          <Button
+            variant="solid"
+            color="success"
+            as={Link}
+            to="/admin/events"
+            className=" "
+            isIconOnly
+          >
+            <Icon
+              icon="iconamoon:arrow-left-2-bold"
+              style={{ color: "#FFF" }}
+              width="24"
+              height="24"
+            />
+          </Button>
+        </Tooltip>
+        <div className="flex flex-col items-start">
+          <h1 className="text-2xl">{edit ? "Edit" : "Create New"} Event</h1>
+          <p>
+            {edit
+              ? "Edit the details of the event."
+              : "Fill in the details to create a new event and manage its settings."}
+          </p>
+        </div>
+      </CardHeader>
+      <CardBody className="bg-[#A6F3B235]">
+        <div className="lg:max-w-[80%] w-full mx-auto my-5">
+          <Formik
+            validationSchema={AddEventSchema}
+            initialValues={
+              {
+                title: defaultValues?.title || "",
+                location: defaultValues?.location || "",
+                description: defaultValues?.description || "",
+                startDate: dateRange ? dateRange?.start : "",
+                endDate: dateRange ? dateRange.end : "",
+                startTime: defaultValues?.startTime || "",
+                endTime: defaultValues?.endTime || "",
+              } as AddEventSchemaData
+            }
+            // initialTouched={{ startDate: true, endDate: true }}
+            onSubmit={async (values: AddEventSchemaData, helpers) => {
+              try {
+                // return console.log("qqqq", values.startDate, values.endDate);
 
-								await upsertEvent({
-									variables,
-									refetchQueries: [READ_EVENTS_QUERY],
-								});
+                if (!dateRange) {
+                  return helpers.setErrors({
+                    startDate: "Date must not be empty!",
+                  });
+                }
 
-								navigate("/admin/events");
+                let startDate = values.startDate;
+                let endDate = values.endDate;
 
-								helpers.resetForm({
-									values: {
-										description: "",
-										endTime: "",
-										location: "",
-										startDate: "",
-										startTime: "",
-										title: "",
-										endDate: "",
-									},
-								});
+                if (!!defaultValues?.id) {
+                  startDate = new Date(
+                    dateRange.start.year,
+                    dateRange.start.month - 1,
+                    dateRange.start.day,
+                  ).toISOString();
 
-								toast.success(
-									edit
-										? "Event updated successfully"
-										: "Event created successfully",
-									{
-										description: edit
-											? "The event has been updated successfully."
-											: "The new event has been created.",
-										richColors: true,
-										position: "top-center",
-									}
-								);
-							} catch (err) {
-								toast.error(
-									edit ? "Failed to update event" : "Failed to create event",
-									{
-										description: edit
-											? "There was an error updating the event. Please try again."
-											: "There was an error creating the event. Please try again.",
-										richColors: true,
-										position: "top-center",
-									}
-								);
-							}
-						}}>
-						{({
-							handleSubmit,
-							handleBlur,
-							handleChange,
-							setFieldValue,
-							values,
-							touched,
-							errors,
-							isValid,
-							isSubmitting,
-						}) => {
-							return (
-								<Form
-									className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
-									onSubmit={handleSubmit}>
-									<div className="lg:col-span-6">Event Information</div>
-									<Input
-										isReadOnly={isSubmitting}
-										value={values.title}
-										isInvalid={touched.title && !!errors.title}
-										errorMessage={errors.title}
-										onBlur={handleBlur}
-										onChange={handleChange}
-										className="lg:col-span-6"
-										name="title"
-										label="Event Name"
-									/>
+                  endDate = new Date(
+                    dateRange.end.year,
+                    dateRange.end.month - 1,
+                    dateRange.end.day,
+                  ).toISOString();
+                }
 
-									<Textarea
-										isReadOnly={isSubmitting}
-										isInvalid={touched.description && !!errors.description}
-										errorMessage={errors.description}
-										onBlur={handleBlur}
-										onChange={handleChange}
-										value={values.description}
-										onValueChange={handleChange}
-										className="lg:col-span-6 "
-										name="description"
-										label="Event Description"
-									/>
+                const variables = {
+                  ...values,
+                  id: defaultValues ? defaultValues.id : "no-id",
+                  startDate,
+                  endDate,
+                };
 
-									<DateRangePicker
-										visibleMonths={2}
-										isDateUnavailable={(date) =>
-											disabledRanges.some(
-												(interval) =>
-													date.compare(interval[0]) >= 0 &&
-													date.compare(interval[1]) <= 0
-											)
-										}
-										validate={(value) =>
-											disabledRanges.some(
-												(interval) =>
-													value &&
-													// @ts-ignore
-													value.end.compare(interval[0]) >= 0 &&
-													// @ts-ignore
-													value.start.compare(interval[1]) <= 0
-											)
-												? "Selected date range may not include unavailable dates."
-												: null
-										}
-										validationBehavior="native"
-										showMonthAndYearPickers
-										isReadOnly={isSubmitting}
-										isInvalid={touched.startDate && !!errors.startDate}
-										errorMessage={String(errors.startDate)}
-										onBlur={handleBlur}
-										// @ts-ignore
-										value={dateRange}
-										onChange={(e) => {
-											if (e === null) return;
-											const dateValue: {
-												start: {
-													year: number;
-													month: number;
-													day: number;
-												};
-												end: {
-													year: number;
-													month: number;
-													day: number;
-												};
-											} = e;
+                if (
+                  !defaultValues?.id &&
+                  (!dateRange?.start || !dateRange?.end)
+                ) {
+                  return helpers.setErrors({
+                    startDate: "Date must not be empty!",
+                  });
+                }
 
-											const startDate = dateValue
-												? new Date(
-														dateValue.start.year,
-														dateValue.start.month - 1,
-														dateValue.start.day
-													)
-												: null;
+                await upsertEvent({
+                  variables,
+                  refetchQueries: [READ_EVENTS_QUERY],
+                });
 
-											const endDate = dateValue
-												? new Date(
-														dateValue.end.year,
-														dateValue.end.month - 1,
-														dateValue.end.day
-													)
-												: null;
+                navigate("/admin/events");
 
-											setDateRange(e);
-											setFieldValue("startDate", startDate?.toISOString());
-											setFieldValue("endDate", endDate?.toISOString());
-										}}
-										className="lg:col-span-6"
-										label="Date"
-										minValue={today(getLocalTimeZone())}
-									/>
+                helpers.resetForm({
+                  values: {
+                    description: "",
+                    endTime: "",
+                    location: "",
+                    startDate: "",
+                    startTime: "",
+                    title: "",
+                    endDate: "",
+                  },
+                });
 
-									<TimeInput
-										name="startTime"
-										value={startTime}
-										onChange={(time) => {
-											if (!time) return;
-											setStartTime(time);
-											const value = new Date(
-												new Date().setHours(time.hour, Number(time.minute))
-											).toISOString();
+                toast.success(
+                  edit
+                    ? "Event updated successfully"
+                    : "Event created successfully",
+                  {
+                    description: edit
+                      ? "The event has been updated successfully."
+                      : "The new event has been created.",
+                    richColors: true,
+                    position: "top-center",
+                  },
+                );
+              } catch (err) {
+                toast.error(
+                  edit ? "Failed to update event" : "Failed to create event",
+                  {
+                    description:
+                      (err as Error).message || edit
+                        ? "There was an error updating the event. Please try again."
+                        : "There was an error creating the event. Please try again.",
+                    richColors: true,
+                    position: "top-center",
+                  },
+                );
+              }
+            }}
+          >
+            {({
+              handleSubmit,
+              handleBlur,
+              handleChange,
+              setFieldValue,
+              values,
+              touched,
+              errors,
+              isValid,
+              isSubmitting,
+            }) => {
+              return (
+                <Form
+                  className="grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-6"
+                  onSubmit={handleSubmit}
+                >
+                  <div className="lg:col-span-6">Event Information</div>
+                  <Input
+                    isReadOnly={isSubmitting}
+                    value={values.title}
+                    isInvalid={touched.title && !!errors.title}
+                    errorMessage={errors.title}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    className="lg:col-span-6"
+                    name="title"
+                    label="Event Name"
+                  />
 
-											setFieldValue("startTime", value);
-										}}
-										isInvalid={touched.startTime && !!errors.startTime}
-										errorMessage={errors.startTime}
-										className="h-full lg:col-span-3"
-										size="lg"
-									/>
+                  <Textarea
+                    isReadOnly={isSubmitting}
+                    isInvalid={touched.description && !!errors.description}
+                    errorMessage={errors.description}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.description}
+                    onValueChange={handleChange}
+                    className="lg:col-span-6 "
+                    name="description"
+                    label="Event Description"
+                  />
 
-									<TimeInput
-										size="lg"
-										name="endTime"
-										isInvalid={touched.endTime && !!errors.endTime}
-										errorMessage={errors.endTime}
-										minValue={new Time(startTime?.hour)}
-										className="h-full lg:col-span-3"
-										onBlur={handleBlur}
-										value={endTime}
-										onChange={(time) => {
-											if (!time) return;
-											setEndTime(time);
-											const value = new Date(
-												new Date().setHours(time.hour, Number(time.minute))
-											).toISOString();
+                  <DateRangePicker
+                    visibleMonths={2}
+                    isDateUnavailable={(date) =>
+                      disabledRanges.some(
+                        (interval) =>
+                          date.compare(interval[0]) >= 0 &&
+                          date.compare(interval[1]) <= 0,
+                      )
+                    }
+                    validate={(value) =>
+                      disabledRanges.some(
+                        (interval) =>
+                          value &&
+                          // @ts-ignore
+                          value.end.compare(interval[0]) >= 0 &&
+                          // @ts-ignore
+                          value.start.compare(interval[1]) <= 0,
+                      )
+                        ? "Selected date range may not include unavailable dates."
+                        : null
+                    }
+                    validationBehavior="native"
+                    showMonthAndYearPickers
+                    isReadOnly={isSubmitting}
+                    isInvalid={touched.startDate && !!errors.startDate}
+                    errorMessage={String(errors.startDate)}
+                    onBlur={handleBlur}
+                    // @ts-ignore
+                    value={dateRange}
+                    onChange={(e) => {
+                      if (e === null) return;
+                      const dateValue: {
+                        start: {
+                          year: number;
+                          month: number;
+                          day: number;
+                        };
+                        end: {
+                          year: number;
+                          month: number;
+                          day: number;
+                        };
+                      } = e;
 
-											setFieldValue("endTime", value);
-										}}
-									/>
+                      const startDate = dateValue
+                        ? new Date(
+                            dateValue.start.year,
+                            dateValue.start.month - 1,
+                            dateValue.start.day,
+                          )
+                        : null;
 
-									<Input
-										isReadOnly={isSubmitting}
-										isInvalid={touched.location && !!errors.location}
-										errorMessage={errors.location}
-										onBlur={handleBlur}
-										onChange={handleChange}
-										value={values.location}
-										className="lg:col-span-6"
-										name="location"
-										label="Event Location"
-									/>
+                      const endDate = dateValue
+                        ? new Date(
+                            dateValue.end.year,
+                            dateValue.end.month - 1,
+                            dateValue.end.day,
+                          )
+                        : null;
 
-									<div className="lg:col-span-6 flex justify-center mt-5">
-										<Button
-											type="submit"
-											isDisabled={!isValid || isSubmitting}
-											isLoading={isSubmitting}
-											className="min-w-full md:min-w-[60%] bg-[#A6F3B2]">
-											{edit ? "Update" : "Create"} Event
-										</Button>
-									</div>
-								</Form>
-							);
-						}}
-					</Formik>
-				</div>
-			</CardBody>
-		</Card>
-	);
+                      setDateRange(e);
+                      setFieldValue("startDate", startDate?.toISOString());
+                      setFieldValue("endDate", endDate?.toISOString());
+                    }}
+                    className="lg:col-span-6"
+                    label="Date"
+                    minValue={today(getLocalTimeZone())}
+                  />
+
+                  <TimeInput
+                    name="startTime"
+                    value={startTime}
+                    onChange={(time) => {
+                      if (!time) return;
+                      setStartTime(time);
+                      const value = new Date(
+                        new Date().setHours(time.hour, Number(time.minute)),
+                      ).toISOString();
+
+                      setFieldValue("startTime", value);
+                    }}
+                    isInvalid={touched.startTime && !!errors.startTime}
+                    errorMessage={errors.startTime}
+                    className="h-full lg:col-span-3"
+                    size="lg"
+                  />
+
+                  <TimeInput
+                    size="lg"
+                    name="endTime"
+                    isInvalid={touched.endTime && !!errors.endTime}
+                    errorMessage={errors.endTime}
+                    minValue={new Time(startTime?.hour)}
+                    className="h-full lg:col-span-3"
+                    onBlur={handleBlur}
+                    value={endTime}
+                    onChange={(time) => {
+                      if (!time) return;
+                      setEndTime(time);
+                      const value = new Date(
+                        new Date().setHours(time.hour, Number(time.minute)),
+                      ).toISOString();
+
+                      setFieldValue("endTime", value);
+                    }}
+                  />
+
+                  <Input
+                    isReadOnly={isSubmitting}
+                    isInvalid={touched.location && !!errors.location}
+                    errorMessage={errors.location}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.location}
+                    className="lg:col-span-6"
+                    name="location"
+                    label="Event Location"
+                  />
+
+                  <div className="lg:col-span-6 flex justify-center mt-5">
+                    <Button
+                      type="submit"
+                      isDisabled={!isValid || isSubmitting}
+                      isLoading={isSubmitting}
+                      className="min-w-full md:min-w-[60%] bg-[#A6F3B2]"
+                    >
+                      {edit ? "Update" : "Create"} Event
+                    </Button>
+                  </div>
+                </Form>
+              );
+            }}
+          </Formik>
+        </div>
+      </CardBody>
+    </Card>
+  );
 }
 
 // "note": "This list is not exhaustive. Philippine universities and colleges regularly update their program offerings based on industry demands and educational trends."

@@ -7,3 +7,5 @@ export * from "./event.js";
 export * from "./meeting.js";
 export * from "./documents.js";
 export * from "./dashboard.js";
+export * from "./transaction.js";
+export * from "./late-submitter.js";

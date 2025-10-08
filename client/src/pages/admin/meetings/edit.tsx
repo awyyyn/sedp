@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { useQuery } from "@apollo/client";
 
 import MeetingForm from "./__components/form";
@@ -24,8 +25,19 @@ export default function EditMeeting() {
 	if (!data?.meeting || loading) return <Loader />;
 
 	return (
-		<div>
-			<MeetingForm edit defaultValues={data.meeting} />
-		</div>
+		<>
+			<Helmet>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<title>Edit Meeting | Admin</title>
+				<meta
+					name="description"
+					content="Edit your meeting details on our admin page. Update schedules, manage participants, and securely change meeting information with our comprehensive editing tool."
+				/>
+			</Helmet>
+			<div>
+				<MeetingForm edit defaultValues={data.meeting} />
+			</div>
+		</>
 	);
 }

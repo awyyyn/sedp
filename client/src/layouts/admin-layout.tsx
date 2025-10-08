@@ -7,26 +7,33 @@ import NotificationDropdown from "./__components/admin-notifications";
 
 import { AppSidebar } from "@/components";
 import { sidebarAtom } from "@/states";
+import { useAuth } from "@/contexts";
 
 export default function AdminLayout() {
-	const setIsSidebarOpen = useSetAtom(sidebarAtom);
+  const { office } = useAuth();
+  const setIsSidebarOpen = useSetAtom(sidebarAtom);
 
-	return (
-		<div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
-			<AppSidebar />
-			<main className="w-full relative px-3 sm:px-0  overflow-hidden  ">
-				<div className="absolute h-16  bg-[#A6F3B235] z-[20]  top-0 left-0 right-0  backdrop-blur-lg  ">
-					<div className="gap-2 items-center justify-between md:justify-end h-full flex mx-auto container px-3 sm:px-5  ">
-						<Button
-							isIconOnly
-							variant="flat"
-							onPress={() => setIsSidebarOpen(true)}
-							size="sm"
-							className=" block md:hidden">
-							<Icon fontSize={30} icon="stash:burger-arrow-right" />
-						</Button>
+  return (
+    <div className="flex min-h-dvh max-h-[100dvh] h-[100dvh] overflow-hidden">
+      <AppSidebar />
+      <main className="w-full relative px-3 sm:px-0  overflow-hidden  ">
+        <div className="absolute h-16  bg-[#A6F3B235] z-[20]  top-0 left-0 right-0  backdrop-blur-lg  ">
+          <div className="gap-2 items-center justify-between   h-full flex mx-auto container px-3 sm:px-5  ">
+            <div className="flex items-center gap-2">
+              <Button
+                isIconOnly
+                variant="flat"
+                onPress={() => setIsSidebarOpen(true)}
+                size="sm"
+                className=" block md:hidden"
+              >
+                <Icon fontSize={30} icon="stash:burger-arrow-right" />
+              </Button>
 
-						{/* <Breadcrumbs className="py-4 md:py-6">
+              <h1 className="font-medium">{office} Office</h1>
+            </div>
+
+            {/* <Breadcrumbs className="py-4 md:py-6">
 							{breadcrumbs.map((item, index) => (
 								<BreadcrumbItem
 									href={item.href}
@@ -36,19 +43,19 @@ export default function AdminLayout() {
 								</BreadcrumbItem>
 							))}
 						</Breadcrumbs> */}
-						<div className="flex gap-2">
-							<NotificationDropdown />
-							{/* <Button isIconOnly variant="light" className="rounded-full">
+            <div className="flex gap-2">
+              <NotificationDropdown />
+              {/* <Button isIconOnly variant="light" className="rounded-full">
 								<Icon icon="solar:settings-linear" width="24" height="24" />
 							</Button> */}
-						</div>
-					</div>
-				</div>
+            </div>
+          </div>
+        </div>
 
-				<section className="overflow-y-scroll h-full pt-[4.5rem] md:pt-20 scrollbar-hide mx-auto container px-3 sm:px-5 ">
-					<Outlet />
-				</section>
-			</main>
-		</div>
-	);
+        <section className="overflow-y-scroll h-full pt-[4.5rem] md:pt-20 scrollbar-hide mx-auto container px-3 sm:px-5 ">
+          <Outlet />
+        </section>
+      </main>
+    </div>
+  );
 }
