@@ -26,6 +26,7 @@ import {
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
 import { formatDate, setMonth, setYear } from "date-fns";
+import { Helmet } from "react-helmet";
 import { Chip } from "@heroui/chip";
 
 import ClaimModal from "../__components/claim-modal";
@@ -40,9 +41,8 @@ import {
   Student,
 } from "@/types";
 import { Documents, months, semester } from "@/lib/constant";
-import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
-import { Helmet } from "react-helmet";
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },

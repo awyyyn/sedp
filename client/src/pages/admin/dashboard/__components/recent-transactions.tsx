@@ -1,12 +1,13 @@
-import { TransactionEntityActionColorMap } from "@/constants";
-import { Transaction } from "@/types";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { formatDate, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
+
+import { Transaction } from "@/types";
+import { TransactionEntityActionColorMap } from "@/constants";
 
 interface RecentTransactionsProps {
   transactions: Transaction[];

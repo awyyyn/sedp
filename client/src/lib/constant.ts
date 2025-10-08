@@ -6,6 +6,15 @@ export const getFileExtension = (url: string) => {
 
   return ext;
 };
+export const getSystemUserStatusColorMap: Record<
+  SystemUser["status"],
+  "secondary" | "success" | "danger" | "warning"
+> = {
+  DELETED: "danger",
+  PENDING: "secondary",
+  UNVERIFIED: "warning",
+  VERIFIED: "success",
+};
 
 export const imagesExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
 

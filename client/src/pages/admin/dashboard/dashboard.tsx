@@ -6,10 +6,12 @@ import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { useState } from "react";
 import { Divider } from "@heroui/divider";
 import { Card, CardBody } from "@heroui/card";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 
 import MiniInfoCard from "./__components/mini-info-card";
 import { RecentAnnouncements } from "./__components/announcement";
 import ScholarStatusStat from "./__components/scholar-status-stat";
+import { UpcomingEvents } from "./__components/upcoming-events";
 import RecentTransactions from "./__components/recent-transactions";
 
 import {

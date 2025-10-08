@@ -10,7 +10,7 @@ import {
   Selection,
 } from "@heroui/table";
 import { Spinner } from "@heroui/spinner";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Pagination } from "@heroui/pagination";
 import { Select, SelectItem } from "@heroui/select";
 import { Icon } from "@iconify/react";
@@ -22,7 +22,6 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { Card, CardBody } from "@heroui/card";
-import { useReactToPrint } from "react-to-print";
 import { Helmet } from "react-helmet";
 import { format } from "date-fns";
 
@@ -34,13 +33,7 @@ import { TransactionDataModal } from "./_components/transaction-data-modal";
 import { getTransactionMessage } from "@/lib/utils";
 import { READ_TRANSACTIONS_QUERY } from "@/queries";
 import {
-  Allowance,
-  Announcement,
-  Event,
-  Meeting,
-  MonthlyLateSubmitter,
   PaginationResult,
-  Student,
   SystemUser,
   Transaction,
   TransactionEntity,
@@ -82,12 +75,12 @@ export default function Scholars() {
   const [entity, setEntity] = useState<Selection>(new Set([]));
   const [page, setPage] = useState(1);
   const [user, setUser] = useState<SystemUser | null>(null);
-  const toPrintRef = useRef<HTMLDivElement>(null);
+  // const toPrintRef = useRef<HTMLDivElement>(null);
   const [modal, setModal] = useState<null | Transaction>(null);
-  const printFn = useReactToPrint({
-    contentRef: toPrintRef,
-    documentTitle: "Allowance List",
-  });
+  // const printFn = useReactToPrint({
+  //   contentRef: toPrintRef,
+  //   documentTitle: "Allowance List",
+  // });
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
@@ -296,12 +289,6 @@ export default function Scholars() {
       </div>
     );
   }, [visibleColumns, statusFilter, entity]);
-
-  const handlePrint = () => {
-    printFn();
-  };
-
-  console.log(entity, "qqq");
 
   return (
     <>
