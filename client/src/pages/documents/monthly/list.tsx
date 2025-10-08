@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatDate, isFuture } from "date-fns";
 import { useQuery } from "@apollo/client";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import { jwtDecode, JwtPayload } from "jwt-decode";
 
 import ErrorFetching from "../__components/error-fetch";
 
