@@ -35,10 +35,11 @@ import { SendNotifModal } from "./__components/send-notif-modal";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
 import logo from "@/assets/sedp-mfi.e31049f.webp";
-import { Scholars as AllowedRoles } from "@/lib/constant";
+import { Scholars as AllowedRoles, schoolOptions } from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
 import { scholarsSentNotificationsAtom } from "@/states";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },
@@ -78,13 +79,18 @@ const rowsPerPageItems = [
 ];
 
 export default function Scholars() {
+  const [school, setSchool] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState<string>("25");
   const [page, setPage] = useState(1);
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const [filterValue, setFilterValue] = useState("");
   const { data: allUsers } = useQuery<{
     students: PaginationResult<Student>;
-  }>(READ_STUDENTS_QUERY);
+  }>(READ_STUDENTS_QUERY, {
+    variables: {
+      school: school || undefined,
+    },
+  });
   const [sendNotifToStudent, setSendNotifToStudent] = useState<Student | null>(
     null,
   );
@@ -108,12 +114,12 @@ export default function Scholars() {
   // const [statusFilter] = useState<Array<SystemUserRole>>([]);
   const [statusFilter] = useState<Selection>("all");
   const hasSearchFilter = Boolean(filterValue);
-
   const { loading, data } = useQuery<{
     students: PaginationResult<Student>;
   }>(READ_STUDENTS_QUERY, {
     variables: {
       includeDocs: true,
+      school: school || undefined,
     },
   });
 
@@ -331,6 +337,25 @@ export default function Scholars() {
             onValueChange={setFilterValue}
           />
           <div className="flex gap-3 justify-between md:justify-end w-full">
+            <Autocomplete
+              size="md"
+              // label="School Name"
+              defaultItems={schoolOptions}
+              placeholder="Filter by School"
+              variant="bordered"
+              classNames={{
+                popoverContent: "border-1 bg-[#A6F3B2]  !border-green-600",
+              }}
+              selectedKey={school}
+              onSelectionChange={(e) => {
+                setSchool(e as string);
+              }}
+              className="lg:max-w-[450px]  rounded-xl   bg-[#A6F3B2]  "
+            >
+              {(item) => (
+                <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
+              )}
+            </Autocomplete>
             <Dropdown
               classNames={{
                 content: "bg-[#A6F3B2]",
@@ -375,7 +400,7 @@ export default function Scholars() {
         </div>
       </div>
     );
-  }, [visibleColumns, statusFilter]);
+  }, [visibleColumns, statusFilter, school]);
 
   const handlePrint = async () => {
     printFn();
@@ -559,6 +584,17 @@ export default function Scholars() {
                   <h2 className="text-center font-semibold">
                     Scholarship Program
                   </h2>
+                  <div className="text-sm    text-black/80 flex gap-2 items-center justify-center">
+                    <span>
+                      {role === "SUPER_ADMIN" ? "All Offices" : office}
+                    </span>
+                    {school && (
+                      <>
+                        <span>•</span>
+                        <span>{school}</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -581,6 +617,11 @@ export default function Scholars() {
                       <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
                         SCHOOL
                       </th>
+                      {role === "SUPER_ADMIN" && (
+                        <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
+                          OFFICE
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="text-xs bo print:text-xs">
@@ -606,6 +647,11 @@ export default function Scholars() {
                             <td className="px-1 py-1 max-w-xs truncate">
                               {scholar.schoolName}
                             </td>
+                            {role === "SUPER_ADMIN" && (
+                              <td className="px-1 py-1 text-start">
+                                {scholar.office}
+                              </td>
+                            )}
                           </tr>
                         );
                       },

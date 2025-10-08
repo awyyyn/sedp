@@ -327,7 +327,7 @@ export default function Scholars() {
                 </p>
               </div>
 
-              <div className="flex gap-3 items-center">
+              {/*<div className="flex gap-3 items-center">
                 <Button
                   color="primary"
                   onPress={handlePrint}
@@ -336,7 +336,7 @@ export default function Scholars() {
                   <Icon width="20" height="20" icon="fluent:print-16-regular" />
                   Print
                 </Button>
-              </div>
+              </div>*/}
             </div>
             <Table
               classNames={{
