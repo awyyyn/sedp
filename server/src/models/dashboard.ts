@@ -1,6 +1,9 @@
 import { Student, Prisma } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
-import { sub } from "date-fns";
+import { offices, officesOptions } from "../services/utils.js";
+
+const today = new Date();
+const beginningOfYear = new Date(today.getFullYear(), 0, 1);
 
 export const studentsStatusOverview = async ({
   office,
@@ -61,7 +64,7 @@ export const briefOverviewData = async ({
       ...where,
       status: "SCHOLAR",
       createdAt: {
-        gte: sub(new Date(), { months: 6 }),
+        gte: beginningOfYear,
       },
     },
   });
@@ -69,6 +72,9 @@ export const briefOverviewData = async ({
     where: {
       ...where,
       status: "GRADUATED",
+      createdAt: {
+        gte: beginningOfYear,
+      },
     },
   });
 
@@ -76,7 +82,7 @@ export const briefOverviewData = async ({
   const newEvents = await prisma.events.findMany({
     where: {
       createdAt: {
-        gte: sub(new Date(), { months: 1 }),
+        gte: beginningOfYear,
       },
     },
   });
@@ -98,5 +104,166 @@ export const briefOverviewData = async ({
       new: graduated.length,
       avg: Number(((graduated.length / students) * 100).toFixed(2)),
     },
+  };
+};
+
+export const totalAllowancesData = async ({
+  office,
+}: { office?: string } = {}) => {
+  let where: Prisma.AllowanceWhereInput = {
+    createdAt: {
+      gte: beginningOfYear,
+    },
+  };
+
+  if (office) {
+    where.student = {
+      office,
+    };
+  }
+
+  const allowances = await prisma.allowance.findMany({
+    where,
+    include: { student: true },
+  });
+
+  const totalAllowances = allowances.reduce(
+    (acc, curr) => acc + curr.totalAmount,
+    0,
+  );
+
+  return totalAllowances;
+};
+
+export const officesReportsData = async () => {
+  const data = await Promise.all(
+    officesOptions.map(async (data) => {
+      return await Promise.all(
+        data.offices.map(async (office) => {
+          const allowances = await prisma.allowance.findMany({
+            where: {
+              createdAt: {
+                gte: beginningOfYear,
+              },
+              student: {
+                office,
+              },
+            },
+            include: {
+              student: true,
+            },
+          });
+
+          const totalAllowance = allowances.reduce(
+            (acc, curr) => acc + curr.totalAmount,
+            0,
+          );
+
+          const scholar = await prisma.student.findMany({
+            where: {
+              office,
+            },
+          });
+
+          const totalActiveScholars = scholar.filter(
+            (scholar) => scholar.status === "SCHOLAR",
+          ).length;
+
+          const totalGraduatesScholars = scholar.filter(
+            (scholar) => scholar.status === "GRADUATED",
+          ).length;
+
+          const totalDisqualifiedScholars = scholar.filter(
+            (scholar) => scholar.status === "DISQUALIFIED",
+          ).length;
+
+          return {
+            name: `${office}, ${data.province}`,
+            office,
+            totalAllowance,
+            totalScholars: scholar.length,
+            totalActiveScholars,
+            totalGraduatesScholars,
+            totalDisqualifiedScholars,
+          };
+        }),
+      );
+    }),
+  );
+
+  return data.flat();
+};
+
+export const reportsByOfficeData = async ({
+  office,
+  schoolName,
+}: { office?: string; schoolName?: string } = {}) => {
+  const allowances = await prisma.allowance.findMany({
+    where: {
+      createdAt: {
+        gte: beginningOfYear,
+      },
+      student: {
+        office,
+        schoolName,
+      },
+    },
+    include: {
+      student: true,
+    },
+  });
+
+  const totalAllowance = allowances.reduce(
+    (acc, curr) => acc + curr.totalAmount,
+    0,
+  );
+
+  const scholar = await prisma.student.findMany({
+    where: {
+      office,
+      schoolName,
+    },
+  });
+
+  const totalActiveScholars = scholar.filter(
+    (scholar) => scholar.status === "SCHOLAR",
+  ).length;
+  const totalGraduatesScholars = scholar.filter(
+    (scholar) => scholar.status === "GRADUATED",
+  ).length;
+  const totalDisqualifiedScholars = scholar.filter(
+    (scholar) => scholar.status === "DISQUALIFIED",
+  ).length;
+
+  console.log(totalGraduatesScholars, "qq ggg");
+
+  const totalMiscellaneousAllowance = allowances.reduce(
+    (acc, curr) => acc + curr.miscellaneousAllowance,
+    0,
+  );
+  const totalMonthlyAllowance = allowances.reduce(
+    (acc, curr) => acc + curr.monthlyAllowance,
+    0,
+  );
+  const totalBookAllowance = allowances.reduce(
+    (acc, curr) => acc + curr.bookAllowance,
+    0,
+  );
+  const totalThesisAllowance = allowances.reduce(
+    (acc, curr) => acc + curr.thesisAllowance,
+    0,
+  );
+
+  return {
+    office: office || "All Offices",
+    totalAllowance,
+    totalScholars: scholar.length,
+    totalActiveScholars,
+    totalGraduatesScholars,
+    totalDisqualifiedScholars,
+    totalMiscellaneousAllowance,
+    totalMonthlyAllowance,
+    totalBookAllowance,
+    totalThesisAllowance,
   };
 };

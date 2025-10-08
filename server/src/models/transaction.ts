@@ -35,6 +35,7 @@ export const readTransactions = async ({
   action,
   entity,
   pagination,
+  office,
   transactedById,
 }: TransactionPaginationArgs = {}): Promise<
   PaginationResult<Omit<Transaction, "createdAt"> & { createdAt: string }>
@@ -46,6 +47,12 @@ export const readTransactions = async ({
   if (entity) where.entity = entity;
 
   if (transactedById) where.transactedById = transactedById;
+
+  if (office) {
+    where.transactedBy = {
+      office,
+    };
+  }
 
   const transactions = await prisma.transaction.findMany({
     where,

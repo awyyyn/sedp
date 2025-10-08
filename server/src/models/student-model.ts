@@ -162,9 +162,11 @@ export async function readAllStudents({
   status,
   includeDocs,
   office,
-}: PaginationArgs<StudentStatus> & { includeDocs?: boolean } = {}): Promise<
-  PaginationResult<Student>
-> {
+  school,
+}: PaginationArgs<StudentStatus> & {
+  includeDocs?: boolean;
+  school?: string;
+} = {}): Promise<PaginationResult<Student>> {
   let where: Prisma.StudentWhereInput = {};
 
   if (filter) {
@@ -177,11 +179,15 @@ export async function readAllStudents({
     };
   }
 
+  if (school?.trim()) {
+    where.schoolName = school.trim();
+  }
+
   if (office) {
     where.office = office;
   }
 
-  if (status) {
+  if (typeof status !== "undefined") {
     where.status = status;
   }
 

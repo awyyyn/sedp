@@ -60,7 +60,8 @@ export const createAnnouncement = async ({
 export const readAnnouncements = async ({
   filter,
   pagination,
-}: PaginationArgs<never> = {}): Promise<
+  office,
+}: PaginationArgs<never> & { office?: string } = {}): Promise<
   PaginationResult<AnnouncementWithRelation>
 > => {
   let where: Prisma.AnnouncementWhereInput = {};
@@ -68,6 +69,14 @@ export const readAnnouncements = async ({
   if (filter) {
     where = {
       title: { contains: filter },
+    };
+  }
+  if (office) {
+    where = {
+      ...where,
+      createdBy: {
+        office,
+      },
     };
   }
 
