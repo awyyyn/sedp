@@ -1,6 +1,6 @@
 import { Student, Prisma } from "@prisma/client";
 import { prisma } from "../services/prisma.js";
-import { offices, officesOptions } from "../services/utils.js";
+import { officesOptions } from "../services/utils.js";
 
 const today = new Date();
 const beginningOfYear = new Date(today.getFullYear(), 0, 1);

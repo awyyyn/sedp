@@ -240,6 +240,7 @@ export const studentRegisterController = async (
       firstName,
       lastName,
       mfaSecret,
+
       password,
       address: {
         city: city,
