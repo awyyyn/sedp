@@ -1,6 +1,8 @@
 import { GraphQLError } from "graphql";
 import {
   briefOverviewData,
+  officesReportsData,
+  reportsByOfficeData,
   studentsStatusOverview,
 } from "../../models/dashboard.js";
 import { readAnnouncements } from "../../models/announcement.js";
@@ -34,6 +36,33 @@ export const dashboardOverviewDataResolver = async (
     };
   } catch (err) {
     console.log(err);
-    throw new GraphQLError("Internal Server Error!");
+    throw new GraphQLError(
+      (err as GraphQLError).message || "Internal Server Error!",
+    );
+  }
+};
+
+export const reportsByOfficeResolver = async (
+  _: never,
+  { office, schoolName }: { office?: string; schoolName?: string },
+) => {
+  try {
+    const t = await reportsByOfficeData({ office, schoolName });
+    console.log(t);
+    return t;
+  } catch (err) {
+    throw new GraphQLError(
+      (err as GraphQLError).message || "Internal Server Error!",
+    );
+  }
+};
+
+export const officesReportsResolver = async () => {
+  try {
+    return officesReportsData();
+  } catch (err) {
+    throw new GraphQLError(
+      (err as GraphQLError).message || "Internal Server Error!",
+    );
   }
 };

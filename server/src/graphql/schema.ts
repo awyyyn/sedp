@@ -6,6 +6,8 @@ export const typeDefs = gql`
     adminNotificationSent(role: SystemUserRole): AdminNotification
   }
   type Query {
+    reportsByOffice(office: String, schoolName: String): OfficeReportData
+    officesReports: [OfficesReportData]
     lateSubmissionRequests(
       isApproved: Boolean
       pagination: PaginationInput
@@ -25,11 +27,13 @@ export const typeDefs = gql`
       pagination: PaginationInput
       status: String
       includeDocs: Boolean
+      school: String
     ): StudentsResult
     student(id: String!): Student
     announcements(
       filter: String
       pagination: PaginationInput
+      office: String
     ): AnnouncementsResult
     announcement(id: String): Announcement
     events(filter: String, pagination: PaginationInput): EventsResult
@@ -309,6 +313,7 @@ export const typeDefs = gql`
 
   input TransactionPaginationArgs {
     pagination: PaginationInput
+    office: String
     enity: TransactionEntity
     action: TransactionAction
     transactedById: String
@@ -444,6 +449,30 @@ export const typeDefs = gql`
     briefOverview: BriefOverviewData
     chart: [ChartData]
     announcements: [Announcement]
+  }
+
+  type OfficesReportData {
+    name: String!
+    office: String
+    totalAllowance: Float!
+    totalScholars: Int!
+    totalActiveScholars: Int!
+
+    totalGraduatesScholars: Int!
+    totalDisqualifiedScholars: Int!
+  }
+
+  type OfficeReportData {
+    office: String!
+    totalAllowance: Float!
+    totalScholars: Int!
+    totalActiveScholars: Int!
+    totalGraduatesScholars: Int!
+    totalDisqualifiedScholars: Int!
+    totalMiscellaneousAllowance: Float!
+    totalMonthlyAllowance: Float!
+    totalBookAllowance: Float!
+    totalThesisAllowance: Float!
   }
 
   enum StudentStatus {

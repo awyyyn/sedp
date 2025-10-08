@@ -39,10 +39,10 @@ export const createAnnouncementResolver = async (
 
 export const announcementsResolver = async (
   _: never,
-  { filter, pagination }: PaginationArgs<never>,
+  { filter, pagination, office }: PaginationArgs<never> & { office?: string },
 ) => {
   try {
-    return await readAnnouncements({ filter, pagination });
+    return await readAnnouncements({ filter, pagination, office });
   } catch (err) {
     console.log(err);
     throw new GraphQLError("Internal Server Error!");

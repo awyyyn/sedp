@@ -50,7 +50,8 @@ export const studentsResolver = async (
     pagination,
     status,
     includeDocs = false,
-  }: PaginationArgs<StudentStatus> & { includeDocs?: boolean },
+    school,
+  }: PaginationArgs<StudentStatus> & { includeDocs?: boolean; school?: string },
   app: AppContext,
 ) => {
   let office: string | undefined = undefined;
@@ -59,8 +60,6 @@ export const studentsResolver = async (
     office = app.office;
   }
 
-  console.log(office);
-
   try {
     return await readAllStudents({
       filter: filter ?? undefined,
@@ -68,6 +67,7 @@ export const studentsResolver = async (
       status,
       includeDocs,
       office,
+      school,
     });
   } catch (err) {
     console.log(err);

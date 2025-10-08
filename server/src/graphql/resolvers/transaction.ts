@@ -10,6 +10,7 @@ interface TransactionInput {
     take: number;
     page: number;
   };
+  office?: string;
 }
 
 export const transactionsResolver = async (
@@ -17,9 +18,10 @@ export const transactionsResolver = async (
   { input }: { input: TransactionInput },
 ) => {
   try {
+    console.log(input, "qqq");
     return await readTransactions(input);
   } catch (err) {
-    console.log(err);
+    console.log(err, "qqq");
     throw new GraphQLError(
       (err as GraphQLError)?.message || "Internal Server Error!",
     );
