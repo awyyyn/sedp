@@ -16,6 +16,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AddScholar from "@/pages/admin/scholars/create";
 import AddSystemUser from "@/pages/admin/system-users/add-system-user";
+1;
 import Announcements from "@/pages/admin/announcements/list";
 import AddAnnouncement from "@/pages/admin/announcements/add";
 import AnnouncementInfo from "@/pages/admin/announcements/info";

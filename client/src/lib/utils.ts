@@ -9,6 +9,7 @@ import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { SystemUserRole } from "../types/system-user.js";
+
 import { TransactionAction, TransactionEntity } from "@/types/transaction.js";
 import { transactionMessages } from "./constant.js";
 
@@ -140,3 +141,7 @@ export function getTransactionMessage(
 ): string {
   return transactionMessages[action]?.[entity] ?? "Performed a transaction";
 }
+
+export const getPercentage = (part: number, total: number) => {
+  return total === 0 ? 0 : (part / total) * 100;
+};

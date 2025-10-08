@@ -66,7 +66,7 @@ export default function NotificationDropdown() {
       </Badge>
       <DropdownMenu
         aria-label="Static Actions"
-        className="md:min-w-[300px] min-w-[275px] md:max-w-[300px] max-w-[275px]"
+        className="md:min-w-[300px] min-w-[275px] md:max-w-[300px] max-w-[275px] max-h-[400px] lg:max-h-[600px] overflow-y-auto"
       >
         <DropdownSection title="Notifications">
           {notifications.length > 0 ? (

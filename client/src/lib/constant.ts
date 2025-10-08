@@ -65,7 +65,10 @@ export const transactionActionsMap: Record<
   CREATE: "Create a new transaction",
   UPDATE: "Modify an existing transaction",
   DELETE: "Remove a transaction",
-  GENERATE: "",
+  APPROVE: "Approve a transaction",
+  BLOCK: "Block a transaction",
+  DISAPPROVE: "Reject a transaction",
+  UNBLOCK: "Unblock a transaction",
 };
 
 export const transactionMessages: Record<
@@ -76,37 +79,58 @@ export const transactionMessages: Record<
     [TransactionEntity.STUDENT]: "Adds a scholar",
     [TransactionEntity.ALLOWANCE]: "Creates a new allowance record",
     [TransactionEntity.MEETING]: "Schedules a new meeting",
-    [TransactionEntity.GATHERING]: "Organizes a gathering",
+    [TransactionEntity.EVENT]: "Organizes a event",
     [TransactionEntity.ANNOUNCEMENT]: "Publishes an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Creates a new late submission record",
   },
   [TransactionAction.UPDATE]: {
     [TransactionEntity.STUDENT]: "Updates scholar information",
     [TransactionEntity.ALLOWANCE]: "Updates an allowance record",
     [TransactionEntity.MEETING]: "Reschedules or edits a meeting",
-    [TransactionEntity.GATHERING]: "Updates gathering details",
+    [TransactionEntity.EVENT]: "Updates events detail",
+    [TransactionEntity.LATE_SUBMISSION]: "Updates a late submission record",
     [TransactionEntity.ANNOUNCEMENT]: "Edits an announcement",
   },
   [TransactionAction.DELETE]: {
     [TransactionEntity.STUDENT]: "Removes a scholar",
     [TransactionEntity.ALLOWANCE]: "Deletes an allowance record",
     [TransactionEntity.MEETING]: "Cancels a meeting",
-    [TransactionEntity.GATHERING]: "Cancels a gathering",
+    [TransactionEntity.EVENT]: "Cancels an event",
     [TransactionEntity.ANNOUNCEMENT]: "Deletes an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Deletes a late submission record",
   },
-  [TransactionAction.GENERATE]: {
-    [TransactionEntity.ALLOWANCE]: "Generates allowance data",
-    [TransactionEntity.STUDENT]: "Generates scholar-related report",
+  [TransactionAction.APPROVE]: {
+    [TransactionEntity.ALLOWANCE]: "Approves an allowance record",
+    [TransactionEntity.MEETING]: "Approves a meeting",
+    [TransactionEntity.EVENT]: "Approves an event",
+    [TransactionEntity.ANNOUNCEMENT]: "Approves an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Approves a late submission record",
+    [TransactionEntity.STUDENT]: "Approves a scholar",
   },
-};
-
-export const getSystemUserStatusColorMap: Record<
-  SystemUser["status"],
-  "secondary" | "success" | "danger" | "warning"
-> = {
-  DELETED: "danger",
-  PENDING: "secondary",
-  UNVERIFIED: "warning",
-  VERIFIED: "success",
+  [TransactionAction.BLOCK]: {
+    [TransactionEntity.ALLOWANCE]: "Blocks an allowance record",
+    [TransactionEntity.MEETING]: "Blocks a meeting",
+    [TransactionEntity.EVENT]: "Blocks an event",
+    [TransactionEntity.ANNOUNCEMENT]: "Blocks an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Blocks a late submission record",
+    [TransactionEntity.STUDENT]: "Blocks a scholar",
+  },
+  [TransactionAction.UNBLOCK]: {
+    [TransactionEntity.ALLOWANCE]: "Unblocks an allowance record",
+    [TransactionEntity.MEETING]: "Unblocks a meeting",
+    [TransactionEntity.EVENT]: "Unblocks an event",
+    [TransactionEntity.ANNOUNCEMENT]: "Unblocks an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Unblocks a late submission record",
+    [TransactionEntity.STUDENT]: "Unblocks a scholar",
+  },
+  [TransactionAction.DISAPPROVE]: {
+    [TransactionEntity.ALLOWANCE]: "Disapproves an allowance record",
+    [TransactionEntity.MEETING]: "Disapproves a meeting",
+    [TransactionEntity.EVENT]: "Disapproves an event",
+    [TransactionEntity.ANNOUNCEMENT]: "Disapproves an announcement",
+    [TransactionEntity.LATE_SUBMISSION]: "Disapproves a late submission record",
+    [TransactionEntity.STUDENT]: "Disapproves a scholar",
+  },
 };
 
 export const getSystemUserRoleColorMap: Record<SystemUser["role"], string> = {

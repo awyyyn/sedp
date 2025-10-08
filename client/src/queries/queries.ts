@@ -11,6 +11,65 @@ import {
   transactionFragment,
 } from "./fragments";
 
+export const READ_OFFICES_REPORTS_QUERY = gql`
+  query {
+    officesReports {
+      name
+      office
+      totalAllowance
+      totalScholars
+      totalActiveScholars
+      totalGraduatesScholars
+      totalDisqualifiedScholars
+    }
+  }
+`;
+
+export const READ_REPORTS_BY_OFFICE_QUERY = gql`
+  ${systemUsersFragment}
+  ${transactionFragment}
+  query (
+    $office: String
+    $filter: String
+    $pagination: PaginationInput
+    $input: TransactionPaginationArgs
+    $schoolName: String
+  ) {
+    transactions(input: $input) {
+      data {
+        ...TransactionFragment
+      }
+      count
+      hasMore
+    }
+    reportsByOffice(office: $office, schoolName: $schoolName) {
+      office
+      totalAllowance
+      totalScholars
+      totalActiveScholars
+      totalGraduatesScholars
+      totalDisqualifiedScholars
+      totalMiscellaneousAllowance
+      totalMonthlyAllowance
+      totalBookAllowance
+      totalThesisAllowance
+    }
+    announcements(filter: $filter, pagination: $pagination, office: $office) {
+      data {
+        id
+        content
+        title
+        createdAt
+        createdBy {
+          ...SystemUserFragment
+        }
+      }
+      hasMore
+      count
+    }
+  }
+`;
+
 export const READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY = gql`
   ${monthlyLateSubmitterFragment}
   ${documentFragment}
@@ -127,11 +186,13 @@ export const READ_STUDENTS_QUERY = gql`
     $pagination: PaginationInput
     $filter: String
     $includeDocs: Boolean
+    $school: String
   ) {
     students(
       status: $status
       pagination: $pagination
       filter: $filter
+      school: $school
       includeDocs: $includeDocs
     ) {
       data {
@@ -148,8 +209,8 @@ export const READ_STUDENTS_QUERY = gql`
 
 export const READ_ANNOUNCEMENTS_QUERY = gql`
   ${systemUsersFragment}
-  query ($filter: String, $pagination: PaginationInput) {
-    announcements(filter: $filter, pagination: $pagination) {
+  query ($filter: String, $pagination: PaginationInput, $office: String) {
+    announcements(filter: $filter, pagination: $pagination, office: $office) {
       data {
         id
         content

@@ -11,16 +11,16 @@ import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { client } from "./lib/apollo.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<ApolloProvider client={client}>
-			<AuthProvider>
-				<BrowserRouter>
-					<Provider>
-						<App />
-						<Toaster />
-					</Provider>
-				</BrowserRouter>
-			</AuthProvider>
-		</ApolloProvider>
-	</React.StrictMode>
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Provider>
+            <App />
+            <Toaster />
+          </Provider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ApolloProvider>
+  </React.StrictMode>,
 );

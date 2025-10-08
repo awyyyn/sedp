@@ -88,3 +88,26 @@ export interface DashboardOverviewData {
   };
   announcements: Announcement[];
 }
+
+export interface ReportsByOfficeData {
+  office: string;
+  totalAllowance: number;
+  totalScholars: number;
+  totalActiveScholars: number;
+  totalGraduatesScholars: number;
+  totalDisqualifiedScholars: number;
+  totalMiscellaneousAllowance: number;
+  totalMonthlyAllowance: number;
+  totalBookAllowance: number;
+  totalThesisAllowance: number;
+}
+
+export interface OfficesReportData {
+  name: string;
+  office: string;
+  totalAllowance: number;
+  totalScholars: number;
+  totalActiveScholars: number;
+  totalGraduatesScholars: number;
+  totalDisqualifiedScholars: number;
+}
