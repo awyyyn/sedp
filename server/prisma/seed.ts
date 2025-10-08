@@ -13,7 +13,9 @@ const systemUsersData: SystemUser[] = [
   {
     id: "67978ca96902fd9478480673",
     email: "sedpscholar94@gmail.com",
+
     firstName: "Admin",
+    office: "Albay District",
     middleName: null,
     verifiedAt: new Date("2025-01-27T09:08:26.459Z"),
     lastName: "1",
@@ -42,6 +44,7 @@ const systemUsersData: SystemUser[] = [
     password: "$2b$04$pD4Ux9r6fgHf7497a8W8auHrZVsoaClIAp8U9aU/Df3k6DWEWb0Nq",
     mfaSecret: "N45FCW3ROFKHSUKNMM5G2S2UKEYTAMTZ",
     phoneNumber: "9123123123",
+    office: "Ligao",
     birthDate: new Date("2010-01-25T16:00:00.000Z"),
     mfaEnabled: false,
     role: "ADMIN_MANAGE_DOCUMENTS",
@@ -69,6 +72,7 @@ const systemUsersData: SystemUser[] = [
     mfaEnabled: false,
     role: "ADMIN_MANAGE_SCHOLAR",
     status: "PENDING",
+    office: "Ligao",
     createdAt: new Date("2025-04-10T07:55:15.611Z"),
     updatedAt: new Date("2025-04-10T07:55:15.611Z"),
     address: {
@@ -91,6 +95,7 @@ const systemUsersData: SystemUser[] = [
     mfaEnabled: false,
     role: "ADMIN_MANAGE_DOCUMENTS",
     status: "PENDING",
+    office: "Ligao",
     createdAt: new Date("2025-04-10T08:09:01.033Z"),
     updatedAt: new Date("2025-04-10T08:09:01.033Z"),
     address: {
@@ -111,6 +116,7 @@ const systemUsersData: SystemUser[] = [
     mfaEnabled: false,
     mfaSecret: null,
     verifiedAt: new Date(),
+    office: "Ligao",
     role: "ADMIN_MANAGE_GATHERINGS",
     status: "PENDING",
     createdAt: new Date("2025-04-24T02:31:34.361Z"),
@@ -135,6 +141,7 @@ const systemUsersData: SystemUser[] = [
     mfaEnabled: false,
     role: "ADMIN_VIEWER",
     status: "PENDING",
+    office: "Ligao",
     createdAt: new Date("2025-04-24T02:33:27.625Z"),
     updatedAt: new Date("2025-04-24T02:33:27.625Z"),
     address: {
@@ -166,6 +173,7 @@ const scholarsData: Student[] = [
       street: "Bagumbayan",
       city: "Daraga",
     },
+    office: ""
     gender: "FEMALE",
     statusUpdatedAt: new Date("2025-04-11T07:57:49.723Z"),
     createdAt: new Date("2021-04-01T13:25:11.642Z"),
@@ -371,6 +379,7 @@ const documentsData: Document[] = [
     semester: -1,
     studentId: "679e20b90225a393230b625b",
     amount: 400.4,
+
     createdAt: new Date("2025-04-02T07:45:54.552Z"),
     updatedAt: new Date("2025-04-03T12:47:08.821Z"),
   },
@@ -789,7 +798,7 @@ async function seedData() {
       await prsma.systemUser.create({ data: systemUser });
     }
 
-    logProgress("SYSTEM USERS DATA SEEDED!");
+  return  logProgress("SYSTEM USERS DATA SEEDED!");
 
     // SEED Scholars
     for (const student of scholarsData) {

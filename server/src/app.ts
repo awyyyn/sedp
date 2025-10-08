@@ -91,6 +91,7 @@ app.use("/api", routes);
   app.use(
     "/graphql",
     // @ts-ignore
+
     expressMiddleware(server, {
       context: async ({ req }): Promise<AppContext> => {
         const token = req.headers.authorization?.split(" ")[1];

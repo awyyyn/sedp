@@ -26,6 +26,7 @@ export type TransactionPaginationArgs = {
   entity?: TransactionEntity;
   action?: TransactionAction;
   transactedById?: string;
+  office?: string;
 };
 
 export interface PaginationResult<T> {

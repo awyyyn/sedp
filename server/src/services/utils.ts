@@ -80,3 +80,47 @@ function getUserName(user: SystemUser): string {
     `User ${user.id.slice(-4)}`
   );
 }
+
+export const offices = {
+  Albay: [
+    "Tiwi",
+    "Malinao",
+    "Tabaco",
+    "Malilipot",
+    "Bacacay I",
+    "Bacacay II",
+    "Rapu-Rapu",
+    "Legazpi Port",
+    "Albay District",
+    "Manito",
+    "Anislag (Daraga area)",
+    "Daraga",
+    "Camalig",
+    "Ligao",
+    "Pioduran",
+    "Polangui",
+    "Libon",
+  ],
+  "Camarines Sur": [
+    "Nabua",
+    "Baao",
+    "Pili",
+    "Goa",
+    "Pasacao",
+    "Libmanan",
+    "Sipocot",
+  ],
+  Sorsogon: ["Pilar", "Castilla", "Sorsogon City", "Irosin", "Bulan"],
+  Masbate: ["Aroroy", "Masbate City"],
+  Catanduanes: ["Virac", "Batan"],
+  "Northern Samar": ["Catarman"],
+  "Cagayan (Region II)": ["Claveria"],
+  "Other Offices": ["Diocesan Subsidy", "Pre-Diaconal"],
+};
+
+export const officesOptions = Object.entries(offices).map(
+  ([province, locations]) => ({
+    province,
+    offices: locations,
+  }),
+);
