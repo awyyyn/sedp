@@ -14,7 +14,7 @@ import { genSalt, hash } from "bcrypt";
 
 export const createStudent = async (
   values: CreateScholarInput,
-  systemUserId: string,
+  systemUserId?: string,
 ): Promise<Student> => {
   return await prisma.$transaction(async (tx) => {
     const {
@@ -43,7 +43,7 @@ export const createStudent = async (
       where: { id: systemUserId },
     });
 
-    if (!systemUser) throw new Error("Unauthorized user");
+    if (systemUserId && !systemUser) throw new Error("Unauthorized user");
 
     if (isStudentExist)
       throw new Error(`Student with email ${values.email} already exists.`);
@@ -75,25 +75,25 @@ export const createStudent = async (
     });
 
     if (!newStudentUser) throw new Error("Error creating scholar user");
-
-    const transaction = await tx.transaction.create({
-      data: {
-        action: "CREATE",
-        entity: "STUDENT",
-        description: generateTransactionDescription(
-          "CREATE",
-          "STUDENT",
-          systemUser,
-        ),
-        entityId: newStudentUser.id,
-        transactedBy: {
-          connect: { id: systemUser.id },
+    if (systemUser) {
+      const transaction = await tx.transaction.create({
+        data: {
+          action: "CREATE",
+          entity: "STUDENT",
+          description: generateTransactionDescription(
+            "CREATE",
+            "STUDENT",
+            systemUser,
+          ),
+          entityId: newStudentUser.id,
+          transactedBy: {
+            connect: { id: systemUser.id },
+          },
         },
-      },
-    });
+      });
 
-    if (!transaction) throw new Error("Error creating transaction");
-
+      if (!transaction) throw new Error("Error creating transaction");
+    }
     return {
       ...newStudentUser,
       birthDate: newStudentUser.birthDate.toISOString(),
