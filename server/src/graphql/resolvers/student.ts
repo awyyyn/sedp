@@ -4,7 +4,6 @@ import {
   updateStudent,
   readAllStudents,
   createStudent,
-  sendCredentials,
   sendDisqualificationEmail,
 } from "../../models/index.js";
 import {
