@@ -48,7 +48,7 @@ export const reportsByOfficeResolver = async (
 ) => {
   try {
     const t = await reportsByOfficeData({ office, schoolName });
-    console.log(t);
+
     return t;
   } catch (err) {
     throw new GraphQLError(

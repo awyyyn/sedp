@@ -18,10 +18,8 @@ export const transactionsResolver = async (
   { input }: { input: TransactionInput },
 ) => {
   try {
-    console.log(input, "qqq");
     return await readTransactions(input);
   } catch (err) {
-    console.log(err, "qqq");
     throw new GraphQLError(
       (err as GraphQLError)?.message || "Internal Server Error!",
     );
