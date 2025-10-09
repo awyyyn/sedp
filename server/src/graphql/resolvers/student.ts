@@ -125,10 +125,7 @@ export const createStudentResolver = async (
     const newScholar = await createStudent(data, app.id);
 
     if (!newScholar) return null;
-    await sendCredentials({
-      email: newScholar.email,
-      password: data.password,
-    });
+
     return newScholar;
   } catch (error) {
     console.log(error);

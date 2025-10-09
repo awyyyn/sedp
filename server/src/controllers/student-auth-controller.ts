@@ -295,49 +295,6 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
-      res.status(400).json({
-        error: {
-          code: 400,
-          message: "Email is required!",
-        },
-      });
-      return;
-    }
-
-    const user = await readStudent(email);
-
-    const admin = await readSystemUser(email);
-
-    if (!user && !admin) {
-      res.status(404).json({
-        error: {
-          code: 400,
-          message: "User is not registered!",
-        },
-      });
-      return;
-    }
-
-    const token = await readToken(email);
-
-    if (token !== null) {
-      const min = differenceInMinutes(new Date(), token.time);
-      const minutesLeft = 5 - min;
-      const seconds = differenceInSeconds(new Date(), token.time);
-
-      console.log(minutesLeft, seconds);
-      res.status(400).json({
-        error: {
-          code: 400,
-          message: `Token already sent. Please wait for ${
-            !minutesLeft ? seconds : minutesLeft
-          } ${!minutesLeft ? "second(s)" : "minute(s)"}`,
-        },
-      });
-      return;
-    }
-
     await sendForgotPasswordOTP(email);
 
     res.status(200).json({
@@ -350,7 +307,7 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
     res.status(500).json({
       error: {
         code: 500,
-        message: "Internal Server Error!",
+        message: (error as Error).message || "Internal Server Error!",
       },
     });
   }
