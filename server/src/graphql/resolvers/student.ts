@@ -51,6 +51,7 @@ export const studentsResolver = async (
     status,
     includeDocs = false,
     school,
+    office: officeFilter,
   }: PaginationArgs<StudentStatus> & { includeDocs?: boolean; school?: string },
   app: AppContext,
 ) => {
@@ -58,6 +59,10 @@ export const studentsResolver = async (
 
   if (app.role !== "SUPER_ADMIN") {
     office = app.office;
+  }
+
+  if (officeFilter && app.role === "SUPER_ADMIN") {
+    office = officeFilter;
   }
 
   try {

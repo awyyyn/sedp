@@ -20,6 +20,7 @@ export const typeDefs = gql`
       filter: String
       pagination: PaginationInput
       status: String
+      office: String
     ): SystemUsersResult
     systemUser(id: String!): SystemUser
     students(
@@ -28,6 +29,7 @@ export const typeDefs = gql`
       status: String
       includeDocs: Boolean
       school: String
+      office: String
     ): StudentsResult
     student(id: String!): Student
     announcements(
