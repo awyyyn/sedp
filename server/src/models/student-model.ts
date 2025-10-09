@@ -11,6 +11,7 @@ import {
 } from "../types/index.js";
 import { Prisma } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
+import { sendCredentials } from "./email-model.js";
 
 export const createStudent = async (
   values: CreateScholarInput,
@@ -75,6 +76,16 @@ export const createStudent = async (
     });
 
     if (!newStudentUser) throw new Error("Error creating scholar user");
+
+    const emailResult = await sendCredentials({
+      email: newStudentUser.email,
+      password: values.password,
+    });
+
+    if (emailResult.rejected.length > 0) {
+      throw new Error("There was an error creating account");
+    }
+
     if (systemUser) {
       const transaction = await tx.transaction.create({
         data: {

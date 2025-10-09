@@ -112,6 +112,7 @@ export async function readAllSystemUsers({
   filter,
   pagination,
   status,
+  office,
 }: PaginationArgs<SystemUserStatus> = {}): Promise<
   PaginationResult<SystemUser>
 > {
@@ -125,6 +126,10 @@ export async function readAllSystemUsers({
         { lastName: { contains: filter } },
       ],
     };
+  }
+
+  if (office) {
+    where.office = office;
   }
 
   if (status) {

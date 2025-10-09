@@ -1,28 +1,76 @@
 import { environment } from "../environments/environment.js";
-import { createToken } from "./token-model.js";
 import { transporter } from "../services/nodemailer.js";
 import { generateAccessToken } from "../services/jwt.js";
 import { SystemUserRole } from "../types/system-user.js";
+import { prisma } from "../services/prisma.js";
+import { differenceInMinutes, differenceInSeconds } from "date-fns";
 
 export const sendForgotPasswordOTP = async (email: string) => {
-  const token = await createToken(email);
-  const mailOptions = {
-    from: environment.EMAIL,
-    sender: {
-      name: "SEDP - Ligao",
-      address: environment.EMAIL!,
-    },
-    to: email,
-    subject: "Password Reset Link",
-    html: `
+  const generatedToken = Math.random()
+    .toString(36)
+    .substring(2)
+    .toUpperCase()
+    .substring(0, 6);
+
+  return await prisma.$transaction(async (tx) => {
+    const user = await tx.student.count({ where: { email } });
+    const admin = await tx.systemUser.count({ where: { email } });
+
+    if (!user && !admin) {
+      throw new Error("User is not registered!");
+    }
+
+    const token = await tx.token.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (token !== null) {
+      const min = differenceInMinutes(new Date(), token.time);
+      const minutesLeft = 5 - min;
+      const seconds = differenceInSeconds(new Date(), token.time);
+
+      throw new Error(
+        `Token already sent. Please wait for ${
+          !minutesLeft ? seconds : minutesLeft
+        } ${!minutesLeft ? "second(s)" : "minute(s)"}`,
+      );
+    }
+
+    const newToken = await tx.token.create({
+      data: {
+        email,
+        token: generatedToken,
+        time: new Date(),
+      },
+    });
+
+    if (!newToken) throw new Error("Failed to create token");
+
+    const mailOptions = {
+      from: environment.EMAIL,
+      sender: {
+        name: "SEDP - Ligao",
+        address: environment.EMAIL!,
+      },
+      to: email,
+      subject: "Password Reset Link",
+      html: `
 			 	<h1>Password Reset Request</h1>
-				<p>Your OTP for password reset is: <b>${token.token}</b></p>
+				<p>Your OTP for password reset is: <b>${newToken.token}</b></p>
 
 				<p>If you didn't request this, please ignore this email.</p>
 			`,
-  };
+    };
 
-  await transporter.sendMail(mailOptions);
+    const result = await transporter.sendMail(mailOptions);
+
+    if (result.rejected.length > 0)
+      throw new Error("Something went wrong! Please contact support.");
+
+    return newToken;
+  });
 };
 
 interface RegistrationLink {
@@ -157,7 +205,7 @@ export const sendCredentials = async ({
 			`,
   };
 
-  await transporter.sendMail(mailOptions);
+  return await transporter.sendMail(mailOptions);
 };
 
 export const sendDisqualificationEmail = async ({

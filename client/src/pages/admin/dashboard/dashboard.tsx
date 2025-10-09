@@ -7,6 +7,14 @@ import { useState } from "react";
 import { Divider } from "@heroui/divider";
 import { Card, CardBody } from "@heroui/card";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
+import { useNavigate } from "react-router-dom";
 
 import MiniInfoCard from "./__components/mini-info-card";
 import { RecentAnnouncements } from "./__components/announcement";
@@ -28,6 +36,7 @@ import {
   schoolOptions,
 } from "@/lib/constant";
 import { formatCurrency } from "@/lib/utils";
+import { useAuth } from "@/contexts";
 
 const officesOptions = [
   {
@@ -39,6 +48,8 @@ const officesOptions = [
 export default function Dashboard() {
   const [selectedOffice, setSelectedOffice] = useState("All Offices");
   const [schoolName, setSchoolName] = useState("");
+  const navigate = useNavigate();
+  const { role } = useAuth();
   const { data, loading, error, refetch } = useQuery<{
     reportsByOffice: ReportsByOfficeData;
     announcements: PaginationResult<Announcement>;
@@ -108,50 +119,114 @@ export default function Dashboard() {
         <div className="flex md:items-center md:justify-between flex-col md:flex-row gap-2">
           <h1 className="text-3xl font-medium">Dashboard</h1>
           <div className="flex gap-2 flex-col md:flex-row">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  variant="flat"
+                  size="lg"
+                  color="primary"
+                  className="px-4 min-w-[120px]"
+                >
+                  Print Reports
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem
+                  key="scholars"
+                  onPress={() => navigate("/admin/scholars")}
+                >
+                  Scholars Report
+                </DropdownItem>
+                <DropdownItem
+                  key="allowances"
+                  onPress={() => navigate("/admin/allowances")}
+                >
+                  Allowances Report
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
             <Autocomplete
               size="sm"
               label="School Name"
               defaultItems={schoolOptions}
               selectedKey={schoolName}
+              inputProps={{
+                classNames: {
+                  inputWrapper:
+                    "bg-[#a6f3b2] data-[hover=true]:bg-[#a6f3b290] data-[focus=true]:bg-[#a6f3b290]",
+                },
+              }}
+              classNames={{
+                popoverContent: "bg-[#a6f3b2]  ",
+
+                // selectorButton: " data-[hover=true]:bg-[#a6f3b290]  ",
+                // clearButton: " data-[hover=true]:bg-[#a6f3b290]  ",
+                // base: "data-[hover=true]:bg-[#a6f3b290]   ",
+              }}
               name="schoolName"
               onSelectionChange={(e) => {
                 setSchoolName(e as string);
               }}
-              className="lg:min-w-[350px] "
+              className="lg:min-w-[350px]  "
             >
               {(item) => (
-                <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
+                <AutocompleteItem
+                  className="!data-[hover=true]:bg-red-400"
+                  classNames={{
+                    base: "data-[hover=true]:text-white data-[hover=true]:bg-[#1f4e26]",
+                  }}
+                  key={item.key}
+                >
+                  {item.label}
+                </AutocompleteItem>
               )}
             </Autocomplete>
-            <Select
-              disallowEmptySelection
-              className=" border-none ring-0 outline-none lg:min-w-[180px]"
-              size="sm"
-              label="Office"
-              variant="flat"
-              scrollShadowProps={{
-                isEnabled: false,
-              }}
-              selectedKeys={[selectedOffice]}
-              onChange={(e) => setSelectedOffice(e.target.value)}
-            >
-              {officesOptions.map((office) => {
-                return (
-                  <SelectSection
-                    classNames={{
-                      heading: headingClasses,
-                    }}
-                    showDivider
-                    title={office.province}
-                    key={office.province}
-                  >
-                    {office.offices.map((office) => (
-                      <SelectItem key={office}>{office}</SelectItem>
-                    ))}
-                  </SelectSection>
-                );
-              })}
-            </Select>
+            {role === "SUPER_ADMIN" && (
+              <Select
+                disallowEmptySelection
+                className=" border-none ring-0 outline-none lg:min-w-[180px]"
+                classNames={{
+                  innerWrapper: "",
+                  value: "text-black",
+                  trigger: "bg-[#a6f3b2] data-[hover=true]:bg-[#a6f3b290]  ",
+                  popoverContent:
+                    "bg-[#a6f3b2] data-[focus=true]:bg-[#a6f3b2] hover:bg-[#a6f3b2]",
+                  selectorIcon: "text-black",
+                }}
+                size="sm"
+                label="Office"
+                variant="flat"
+                scrollShadowProps={{
+                  isEnabled: false,
+                }}
+                selectedKeys={[selectedOffice]}
+                onChange={(e) => setSelectedOffice(e.target.value)}
+              >
+                {officesOptions.map((office) => {
+                  return (
+                    <SelectSection
+                      classNames={{
+                        heading: `${headingClasses} !bg-[#32753d] !text-white`,
+                      }}
+                      showDivider
+                      title={office.province}
+                      key={office.province}
+                    >
+                      {office.offices.map((office) => (
+                        <SelectItem
+                          key={office}
+                          classNames={{
+                            base: "data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white",
+                          }}
+                        >
+                          {office}
+                        </SelectItem>
+                      ))}
+                    </SelectSection>
+                  );
+                })}
+              </Select>
+            )}
           </div>
         </div>
         <Divider className="my-3" />

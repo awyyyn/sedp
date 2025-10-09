@@ -4,7 +4,6 @@ import {
   updateStudent,
   readAllStudents,
   createStudent,
-  sendCredentials,
   sendDisqualificationEmail,
 } from "../../models/index.js";
 import {
@@ -51,6 +50,7 @@ export const studentsResolver = async (
     status,
     includeDocs = false,
     school,
+    office: officeFilter,
   }: PaginationArgs<StudentStatus> & { includeDocs?: boolean; school?: string },
   app: AppContext,
 ) => {
@@ -58,6 +58,10 @@ export const studentsResolver = async (
 
   if (app.role !== "SUPER_ADMIN") {
     office = app.office;
+  }
+
+  if (officeFilter && app.role === "SUPER_ADMIN") {
+    office = officeFilter;
   }
 
   try {
@@ -125,10 +129,7 @@ export const createStudentResolver = async (
     const newScholar = await createStudent(data, app.id);
 
     if (!newScholar) return null;
-    await sendCredentials({
-      email: newScholar.email,
-      password: data.password,
-    });
+
     return newScholar;
   } catch (error) {
     console.log(error);

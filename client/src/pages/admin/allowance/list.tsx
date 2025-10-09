@@ -569,7 +569,7 @@ export default function AllowanceList() {
                   {semester[data.allowances.data[0].semester]}
                 </h2>
                 <p className="text-center text-sm">
-                  {months[data.allowances.data[0].month]}{" "}
+                  {months[data.allowances.data[0].month + 1]}{" "}
                   {data.allowances.data[0].year}
                 </p>
               </div>

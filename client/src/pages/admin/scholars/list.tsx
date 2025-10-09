@@ -10,14 +10,15 @@ import {
   Selection,
 } from "@heroui/table";
 import { Spinner } from "@heroui/spinner";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useMemo, useRef, useState } from "react";
 import { Pagination } from "@heroui/pagination";
 import { Tooltip } from "@heroui/tooltip";
 import { formatDate } from "date-fns";
-import { Select, SelectItem } from "@heroui/select";
+import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Link } from "react-router-dom";
+import { lazy } from "react";
 import { Button } from "@heroui/button";
 import {
   Dropdown,
@@ -29,17 +30,30 @@ import { Card, CardBody } from "@heroui/card";
 import { useReactToPrint } from "react-to-print";
 import { Helmet } from "react-helmet";
 import { useAtomValue } from "jotai";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 
 import UpdateStatusModal from "./__components/update-status";
 import { SendNotifModal } from "./__components/send-notif-modal";
 
 import { READ_STUDENTS_QUERY } from "@/queries";
-import logo from "@/assets/sedp-mfi.e31049f.webp";
-import { Scholars as AllowedRoles, schoolOptions } from "@/lib/constant";
+import {
+  Scholars as AllowedRoles,
+  headingClasses,
+  officesOptions as opts,
+  schoolOptions,
+} from "@/lib/constant";
 import { PaginationResult, Student } from "@/types";
 import { useAuth } from "@/contexts";
 import { scholarsSentNotificationsAtom } from "@/states";
-import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+
+const PDF = lazy(() => import("./__components/pdf"));
+
+const officesOptions = [
+  {
+    province: "All Offices",
+    offices: ["All Offices"],
+  },
+].concat(opts);
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },
@@ -84,11 +98,18 @@ export default function Scholars() {
   const [page, setPage] = useState(1);
   const { role, office } = useAuth();
   const [filterValue, setFilterValue] = useState("");
+  const [selectedOffice, setSelectedOffice] = useState("All Offices");
   const { data: allUsers } = useQuery<{
     students: PaginationResult<Student>;
   }>(READ_STUDENTS_QUERY, {
     variables: {
       school: school || undefined,
+      office:
+        selectedOffice === "All Offices"
+          ? undefined
+          : role === "SUPER_ADMIN"
+            ? selectedOffice
+            : office,
     },
   });
   const [sendNotifToStudent, setSendNotifToStudent] = useState<Student | null>(
@@ -114,12 +135,14 @@ export default function Scholars() {
   // const [statusFilter] = useState<Array<SystemUserRole>>([]);
   const [statusFilter] = useState<Selection>("all");
   const hasSearchFilter = Boolean(filterValue);
+
   const { loading, data } = useQuery<{
     students: PaginationResult<Student>;
   }>(READ_STUDENTS_QUERY, {
     variables: {
       includeDocs: true,
       school: school || undefined,
+      office: selectedOffice === "All Offices" ? undefined : selectedOffice,
     },
   });
 
@@ -221,7 +244,8 @@ export default function Scholars() {
                     isIconOnly
                     isDisabled={
                       !!user.documents?.length ||
-                      alreadySentNotif.includes(user.id)
+                      alreadySentNotif.includes(user.id) ||
+                      user.status !== "SCHOLAR"
                     }
                     variant="ghost"
                     className="border hover:!bg-none border-none"
@@ -324,7 +348,7 @@ export default function Scholars() {
           <Input
             isClearable
             classNames={{
-              base: "w-full sm:max-w-[44%]",
+              base: "w-full sm:max-w-[24%]",
               input: " placeholder:text-[#1f4e26]/60",
               inputWrapper: "border-1 bg-[#A6F3B2]  !border-green-600",
             }}
@@ -337,6 +361,56 @@ export default function Scholars() {
             onValueChange={setFilterValue}
           />
           <div className="flex gap-3 justify-between md:justify-end w-full">
+            {role === "SUPER_ADMIN" && (
+              <>
+                <Select
+                  disallowEmptySelection
+                  className=" border-none ring-0 outline-none max-w-[200px]  "
+                  classNames={{
+                    innerWrapper: "",
+                    value: "text-black",
+                    trigger: "bg-[#a6f3b2] data-[hover=true]:bg-[#a6f3b290]  ",
+                    popoverContent:
+                      "bg-[#a6f3b2] data-[focus=true]:bg-[#a6f3b2] hover:bg-[#a6f3b2]",
+                    selectorIcon: "text-black",
+                  }}
+                  size="md"
+                  // labelPlacement="outside-left"
+                  // label="Office"
+                  placeholder="Office"
+                  color="success"
+                  scrollShadowProps={{
+                    isEnabled: false,
+                  }}
+                  selectedKeys={[selectedOffice]}
+                  onChange={(e) => setSelectedOffice(e.target.value)}
+                >
+                  {officesOptions.map((office) => {
+                    return (
+                      <SelectSection
+                        classNames={{
+                          heading: `${headingClasses} !bg-[#32753d] !text-white`,
+                        }}
+                        showDivider
+                        title={office.province}
+                        key={office.province}
+                      >
+                        {office.offices.map((office) => (
+                          <SelectItem
+                            classNames={{
+                              base: "data-[focus=true]:!bg-[#1f4e26] data-[focus=true]:!text-white",
+                            }}
+                            key={office}
+                          >
+                            {office}
+                          </SelectItem>
+                        ))}
+                      </SelectSection>
+                    );
+                  })}
+                </Select>
+              </>
+            )}
             <Autocomplete
               size="md"
               // label="School Name"
@@ -400,11 +474,13 @@ export default function Scholars() {
         </div>
       </div>
     );
-  }, [visibleColumns, statusFilter, school]);
+  }, [visibleColumns, statusFilter, school, selectedOffice]);
 
   const handlePrint = async () => {
     printFn();
   };
+
+  console.log("qqq selected", selectedOffice, school);
 
   return (
     <>
@@ -571,108 +647,16 @@ export default function Scholars() {
           />
         )}
 
-        {allUsers?.students.data && allUsers?.students.data.length > 0 && (
-          <div ref={toPrintRef} className="hidden print:block print:m-[0.75in]">
-            <div className="w-full bg-white overflow-hidden">
-              <div className="bg-yellow-100 py-10 relative flex justify-center items-center  px-4 border-b">
-                <img
-                  src={logo}
-                  className="h-24 w-24 absolute left-3 rounded-full items-center mix-blend-multiply"
-                  alt="sedp logo"
-                />
-                <div>
-                  <h2 className="text-center font-semibold">
-                    Scholarship Program
-                  </h2>
-                  <div className="text-sm    text-black/80 flex gap-2 items-center justify-center">
-                    <span>
-                      {role === "SUPER_ADMIN" ? "All Offices" : office}
-                    </span>
-                    {school && (
-                      <>
-                        <span>•</span>
-                        <span>{school}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full overflow-visible print:overflow-visible">
-                <table className="w-full border-collapse text-sm print:text-xs">
-                  <thead>
-                    <tr>
-                      <th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
-                        NO.
-                      </th>
-                      <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-                        SCHOLAR&apos;S NAME
-                      </th>
-                      <th className="bg-blue-200 font-normal border border-gray-300 px-1 py-1 text-xs print:text-xs">
-                        YR
-                      </th>
-                      <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-                        COURSE
-                      </th>
-                      <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-                        SCHOOL
-                      </th>
-                      {role === "SUPER_ADMIN" && (
-                        <th className="bg-blue-200 font-normal border border-gray-300 text-center py-1 text-xs print:text-xs">
-                          OFFICE
-                        </th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody className="text-xs bo print:text-xs">
-                    {allUsers.students.data.map(
-                      (scholar: any, index: number) => {
-                        return (
-                          <tr
-                            key={scholar.id}
-                            className="print:break-inside-avoid"
-                          >
-                            <td className="border border-gray-300 px-1 py-1 text-center">
-                              {index + 1}
-                            </td>
-                            <td className="px-1 py-1 max-w-xs truncate">
-                              {scholar.lastName}, {scholar.firstName}
-                            </td>
-                            <td className="px-1 py-1 text-center">
-                              {scholar.yearLevel}
-                            </td>
-                            <td className="px-1 py-1 max-w-xs truncate">
-                              {scholar.course}
-                            </td>
-                            <td className="px-1 py-1 max-w-xs truncate">
-                              {scholar.schoolName}
-                            </td>
-                            {role === "SUPER_ADMIN" && (
-                              <td className="px-1 py-1 text-start">
-                                {scholar.office}
-                              </td>
-                            )}
-                          </tr>
-                        );
-                      },
-                    )}
-
-                    {/* <tr className="print:break-inside-avoid">
-										<td
-											colSpan={3}
-											className="border border-gray-300 px-1 py-1 text-right font-medium">
-											Total Scholars:
-										</td>
-										<td className="border border-gray-300 px-1 py-1 text-right font-bold">
-											{allUsers.students.count}
-										</td>
-									</tr> */}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
+        <Suspense>
+          <PDF
+            data={allUsers?.students.data || []}
+            office={selectedOffice}
+            role={role!}
+            toPrintRef={toPrintRef}
+            hasFilter={!!school}
+            school={school}
+          />
+        </Suspense>
       </div>
     </>
   );
