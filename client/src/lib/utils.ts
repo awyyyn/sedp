@@ -10,8 +10,10 @@ import { twMerge } from "tailwind-merge";
 
 import { SystemUserRole } from "../types/system-user.js";
 
-import { TransactionAction, TransactionEntity } from "@/types/transaction.js";
 import { transactionMessages } from "./constant.js";
+
+import { TransactionAction, TransactionEntity } from "@/types/transaction.js";
+import { Student } from "@/types/student.js";
 
 export function generatePassword(length = 12) {
   const charset =
@@ -145,3 +147,20 @@ export function getTransactionMessage(
 export const getPercentage = (part: number, total: number) => {
   return total === 0 ? 0 : (part / total) * 100;
 };
+
+export function groupBySchool(students: Student[]): Record<string, Student[]> {
+  return students.reduce(
+    (groups, student) => {
+      const key = student.schoolName.toString();
+
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+
+      groups[key].push(student);
+
+      return groups;
+    },
+    {} as Record<string, Student[]>,
+  );
+}

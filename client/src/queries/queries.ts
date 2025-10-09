@@ -158,8 +158,8 @@ export const GENERATE_TOTP_QUERY = gql`
 
 export const systemUsersQuery = gql`
   ${systemUsersFragment}
-  query ($filter: String, $pagination: PaginationInput) {
-    systemUsers(filter: $filter, pagination: $pagination) {
+  query ($filter: String, $pagination: PaginationInput, $office: String) {
+    systemUsers(filter: $filter, pagination: $pagination, office: $office) {
       data {
         ...SystemUserFragment
       }
@@ -187,8 +187,10 @@ export const READ_STUDENTS_QUERY = gql`
     $filter: String
     $includeDocs: Boolean
     $school: String
+    $office: String
   ) {
     students(
+      office: $office
       status: $status
       pagination: $pagination
       filter: $filter
