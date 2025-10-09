@@ -186,7 +186,7 @@ export const sendCredentials = async ({
 						</p>
 
 						<div style="text-align: center; margin: 30px 0;">
-							<a href="https://sedp.vercel.app/login" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Login to Your Account</a>
+							<a href="https://sedp.xyz/login" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Login to Your Account</a>
 						</div>
 
 						<p style="font-size: 14px; color: #777777; margin-top: 30px;">
