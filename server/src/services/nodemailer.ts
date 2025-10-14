@@ -4,7 +4,10 @@ import nodemailer from "nodemailer";
 export const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
+    type: "OAuth2",
     user: environment.EMAIL,
-    pass: environment.PASSWORD,
+    clientId: environment.GMAIL_CLIENT_ID,
+    clientSecret: environment.GMAIL_CLIENT_SECRET,
+    refreshToken: environment.GMAIL_REFRESH_TOKEN,
   },
 });
