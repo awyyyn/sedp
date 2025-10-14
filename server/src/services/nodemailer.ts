@@ -2,11 +2,9 @@ import { environment } from "../environments/environment.js";
 import nodemailer from "nodemailer";
 
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
-  secure: false,
-  port: 587,
+  host: "gmail",
   auth: {
-    user: environment.EMAIL,
+    user: environment.USER,
     pass: environment.PASSWORD,
   },
 });
