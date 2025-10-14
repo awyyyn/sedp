@@ -108,7 +108,7 @@ export const createStudent = async (
     password: values.password,
   });
 
-  if (emailResult.rejected.length > 0) {
+  if (emailResult.error) {
     throw new Error("There was an error creating account");
   }
 

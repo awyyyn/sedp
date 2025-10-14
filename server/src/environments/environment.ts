@@ -11,4 +11,5 @@ export const environment = {
   GMAIL_CLIENT_ID: String(process.env.GMAIL_CLIENT_ID),
   GMAIL_CLIENT_SECRET: String(process.env.GMAIL_CLIENT_SECRET),
   GMAIL_REFRESH_TOKEN: String(process.env.GMAIL_REFRESH_TOKEN),
+  RESEND_API_KEY: String(process.env.RESEND_API_KEY),
 };

@@ -1,9 +1,9 @@
 import { environment } from "../environments/environment.js";
-import { createTransporter } from "../services/nodemailer.js";
 import { generateAccessToken } from "../services/jwt.js";
 import { SystemUserRole } from "../types/system-user.js";
 import { prisma } from "../services/prisma.js";
 import { differenceInMinutes, differenceInSeconds } from "date-fns";
+import { resend } from "../services/resend.js";
 
 export const sendForgotPasswordOTP = async (email: string) => {
   const generatedToken = Math.random()
@@ -68,8 +68,11 @@ export const sendForgotPasswordOTP = async (email: string) => {
 			<p>If you didn't request this, please ignore this email.</p>
 		`,
   };
-  const transporter = await createTransporter();
-  const result = await transporter.sendMail(mailOptions);
+
+  const result = await resend.emails.send(mailOptions);
+
+  // const transporter = await createTransporter();
+  // const result = await transporter.sendMail(mailOptions);
   // const result = await transporter.send({
   // 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
   // 	to: [{ email: mailOptions.to }],
@@ -77,8 +80,10 @@ export const sendForgotPasswordOTP = async (email: string) => {
   // 	html: mailOptions.html!,
   // });
 
-  if (result.rejected.length > 0)
+  if (result.error) {
+    console.log(result);
     throw new Error("Something went wrong! Please contact support.");
+  }
 
   return newToken;
 };
@@ -120,8 +125,9 @@ export const sendRegistrationLink = async ({
 			`,
   };
 
-  const transporter = await createTransporter();
-  await transporter.sendMail(mailOptions);
+  await resend.emails.send(mailOptions);
+  // const transporter = await createTransporter();
+  // await transporter.sendMail(mailOptions);
   // await transporter.send({
   // 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
   // 	to: [{ email: mailOptions.to }],
@@ -222,8 +228,9 @@ export const sendCredentials = async ({
 			`,
   };
 
-  const transporter = await createTransporter();
-  return await transporter.sendMail(mailOptions);
+  return await resend.emails.send(mailOptions);
+  // const transporter = await createTransporter();
+  // return await transporter.sendMail(mailOptions);
   // return await transporter.send({
   // 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
   // 	to: [{ email: mailOptions.to }],
@@ -285,8 +292,9 @@ export const sendDisqualificationEmail = async ({
 		`,
   };
 
-  const transporter = await createTransporter();
-  await transporter.sendMail(mailOptions);
+  await resend.emails.send(mailOptions);
+  // const transporter = await createTransporter();
+  // await transporter.sendMail(mailOptions);
   // await transporter.se({
   // 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
   // 	to: [{ email: mailOptions.to }],

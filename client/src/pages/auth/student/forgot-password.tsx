@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { InputOtp } from "@heroui/input-otp";
 import { Helmet } from "react-helmet";
-import { jwtDecode } from "jwt-decode";
+
 import { ROLE } from "@/contexts";
 
 export default function StudentForgotPassword() {
