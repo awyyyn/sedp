@@ -6,131 +6,143 @@ import { prisma } from "../services/prisma.js";
 import { differenceInMinutes, differenceInSeconds } from "date-fns";
 
 export const sendForgotPasswordOTP = async (email: string) => {
-  const generatedToken = Math.random()
-    .toString(36)
-    .substring(2)
-    .toUpperCase()
-    .substring(0, 6);
+	const generatedToken = Math.random()
+		.toString(36)
+		.substring(2)
+		.toUpperCase()
+		.substring(0, 6);
 
-  return await prisma.$transaction(async (tx) => {
-    const user = await tx.student.count({ where: { email } });
-    const admin = await tx.systemUser.count({ where: { email } });
+	return await prisma.$transaction(async (tx) => {
+		const user = await tx.student.count({ where: { email } });
+		const admin = await tx.systemUser.count({ where: { email } });
 
-    if (!user && !admin) {
-      throw new Error("User is not registered!");
-    }
+		if (!user && !admin) {
+			throw new Error("User is not registered!");
+		}
 
-    const token = await tx.token.findFirst({
-      where: {
-        email,
-      },
-    });
+		const token = await tx.token.findFirst({
+			where: {
+				email,
+			},
+		});
 
-    if (token !== null) {
-      const min = differenceInMinutes(new Date(), token.time);
-      const minutesLeft = 5 - min;
-      const seconds = differenceInSeconds(new Date(), token.time);
+		if (token !== null) {
+			const min = differenceInMinutes(new Date(), token.time);
+			const minutesLeft = 5 - min;
+			const seconds = differenceInSeconds(new Date(), token.time);
 
-      throw new Error(
-        `Token already sent. Please wait for ${
-          !minutesLeft ? seconds : minutesLeft
-        } ${!minutesLeft ? "second(s)" : "minute(s)"}`,
-      );
-    }
+			throw new Error(
+				`Token already sent. Please wait for ${
+					!minutesLeft ? seconds : minutesLeft
+				} ${!minutesLeft ? "second(s)" : "minute(s)"}`
+			);
+		}
 
-    const newToken = await tx.token.create({
-      data: {
-        email,
-        token: generatedToken,
-        time: new Date(),
-      },
-    });
+		const newToken = await tx.token.create({
+			data: {
+				email,
+				token: generatedToken,
+				time: new Date(),
+			},
+		});
 
-    if (!newToken) throw new Error("Failed to create token");
+		if (!newToken) throw new Error("Failed to create token");
 
-    const mailOptions = {
-      from: environment.EMAIL,
-      sender: {
-        name: "SEDP - Ligao",
-        address: environment.EMAIL!,
-      },
-      to: email,
-      subject: "Password Reset Link",
-      html: `
+		const mailOptions = {
+			from: environment.EMAIL,
+			sender: {
+				name: "SEDP - Ligao",
+				address: environment.EMAIL!,
+			},
+			to: email,
+			subject: "Password Reset Link",
+			html: `
 			 	<h1>Password Reset Request</h1>
 				<p>Your OTP for password reset is: <b>${newToken.token}</b></p>
 
 				<p>If you didn't request this, please ignore this email.</p>
 			`,
-    };
+		};
 
-    const result = await transporter.sendMail(mailOptions);
+		const result = await transporter.sendMail(mailOptions);
+		// const result = await transporter.send({
+		// 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
+		// 	to: [{ email: mailOptions.to }],
+		// 	subject: mailOptions.subject,
+		// 	html: mailOptions.html!,
+		// });
 
-    if (result.rejected.length > 0)
-      throw new Error("Something went wrong! Please contact support.");
+		if (result.rejected.length > 0)
+			throw new Error("Something went wrong! Please contact support.");
 
-    return newToken;
-  });
+		return newToken;
+	});
 };
 
 interface RegistrationLink {
-  email: string;
-  role: SystemUserRole | "STUDENT";
+	email: string;
+	role: SystemUserRole | "STUDENT";
 }
 
 export const sendRegistrationLink = async ({
-  role,
-  email,
+	role,
+	email,
 }: RegistrationLink) => {
-  const registrationToken = generateAccessToken({
-    email,
-    role,
-    id: "",
-    office: "",
-  });
+	const registrationToken = generateAccessToken({
+		email,
+		role,
+		id: "",
+		office: "",
+	});
 
-  const userRole = role !== "STUDENT" ? "/admin/" : "/";
+	const userRole = role !== "STUDENT" ? "/admin/" : "/";
 
-  const link = `${environment.CLIENT_URL}${userRole}register?registrationToken=${registrationToken}`;
+	const link = `${environment.CLIENT_URL}${userRole}register?registrationToken=${registrationToken}`;
 
-  const mailOptions = {
-    from: environment.EMAIL,
-    sender: {
-      name: "SEDP - Ligao",
-      address: environment.EMAIL!,
-    },
-    to: email,
-    subject: "Registration Link",
-    html: `
+	const mailOptions = {
+		from: environment.EMAIL,
+		sender: {
+			name: "SEDP - Ligao",
+			address: environment.EMAIL!,
+		},
+		to: email,
+		subject: "Registration Link",
+		html: `
 				<h1>Welcome to SEDP - Ligao</h1>
 				<p>Please click the link below to complete your registration:</p>
 				<a href="${link}">Complete Registration</a>
 
 				<p>If you didn't request this, please ignore this email.</p>
 			`,
-  };
+	};
 
-  await transporter.sendMail(mailOptions);
+	await transporter.sendMail(mailOptions);
+	// await transporter.send({
+	// 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
+	// 	to: [{ email: mailOptions.to }],
+	// 	subject: mailOptions.subject,
+	// 	html: mailOptions.html!,
+	// });
 };
 
 export const sendCredentials = async ({
-  email,
-  password,
-  role,
+	email,
+	password,
+	role,
 }: {
-  email: string;
-  password: string;
-  role?: string;
+	email: string;
+	password: string;
+	role?: string;
 }) => {
-  const mailOptions = {
-    from: environment.EMAIL,
-    sender: {
-      name: "SEDP - Ligao",
-      address: environment.EMAIL!,
-    },
-    to: email,
-    subject: "Registration Link",
-    html: `
+	const mailOptions = {
+		from: environment.EMAIL,
+		sender: {
+			name: "SEDP - Ligao",
+			address: environment.EMAIL!,
+		},
+		to: email,
+		subject: "Registration Link",
+		html: `
 			<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -149,13 +161,13 @@ export const sendCredentials = async ({
 					<!-- Content -->
 					<div style="padding: 30px 25px; color: #333333;">
 						<h2 style="margin-top: 0; color: #333333; font-size: 20px;">New ${
-              role ? "Admin" : "Scholar"
-            } Account Created</h2>
+							role ? "Admin" : "Scholar"
+						} Account Created</h2>
 
 						<p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
 							Your ${
-                role ? "administrator" : "scholar"
-              } account has been successfully created. Below are your login credentials:
+								role ? "administrator" : "scholar"
+							} account has been successfully created. Below are your login credentials:
 						</p>
 						<div style="background-color: #f5f8ff; border-left: 4px solid #4CAF50; padding: 15px; margin-bottom: 25px; border-radius: 0 5px 5px 0;">
 							<table style="width: 100%; border-collapse: collapse;">
@@ -168,8 +180,8 @@ export const sendCredentials = async ({
 									<td style="padding: 8px 0; color: #333;">${password}</td>
 								</tr>
 								${
-                  role &&
-                  `
+									role &&
+									`
 										<tr>
 											<td style="padding: 8px 0;">
 												<strong>Role:</strong>
@@ -177,7 +189,7 @@ export const sendCredentials = async ({
 											<td style="padding: 8px 0; color: #333;">${role}</td>
 										</tr>
 									`
-                }
+								}
 							</table>
 						</div>
 
@@ -203,25 +215,31 @@ export const sendCredentials = async ({
 			</body>
 			</html>
 			`,
-  };
+	};
 
-  return await transporter.sendMail(mailOptions);
+	return await transporter.sendMail(mailOptions);
+	// return await transporter.send({
+	// 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
+	// 	to: [{ email: mailOptions.to }],
+	// 	subject: mailOptions.subject,
+	// 	html: mailOptions.html!,
+	// });
 };
 
 export const sendDisqualificationEmail = async ({
-  email,
+	email,
 }: {
-  email: string;
+	email: string;
 }) => {
-  const mailOptions = {
-    from: environment.EMAIL,
-    sender: {
-      name: "SEDP - Ligao",
-      address: environment.EMAIL!,
-    },
-    to: email,
-    subject: "Disqualification Notice",
-    html: `
+	const mailOptions = {
+		from: environment.EMAIL,
+		sender: {
+			name: "SEDP - Ligao",
+			address: environment.EMAIL!,
+		},
+		to: email,
+		subject: "Disqualification Notice",
+		html: `
 			<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -259,7 +277,13 @@ export const sendDisqualificationEmail = async ({
 			</body>
 			</html>
 		`,
-  };
+	};
 
-  await transporter.sendMail(mailOptions);
+	await transporter.sendMail(mailOptions);
+	// await transporter.se({
+	// 	from: { name: mailOptions.sender.name, email: mailOptions.from! },
+	// 	to: [{ email: mailOptions.to }],
+	// 	subject: mailOptions.subject,
+	// 	html: mailOptions.html!,
+	// });
 };
