@@ -455,7 +455,7 @@ export const READ_SCHOLAR_SEMESTER_DOCUMENTS_QUERY = gql`
 
   query Documents(
     $year: Int
-    $scholarId: String!
+    $scholarId: ID!
     $monthlyDocument: Boolean
     $type: DocumentType
     $semester: Int
