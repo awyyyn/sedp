@@ -233,7 +233,12 @@ export const getLateSubmissionRequests = async ({
   });
 
   const count = await prisma.monthlyLateSubmitter.count({
-    where,
+    where: {
+      ...where,
+      updatedOn: {
+        isSet: false,
+      },
+    },
   });
 
   const hasMore = pagination
