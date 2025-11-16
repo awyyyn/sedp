@@ -179,7 +179,7 @@ export default function ScholarInfo() {
                 <p className="text-sm font-medium text-muted-foreground">
                   Street
                 </p>
-                <p className="font-medium">{data.student.address.city}</p>
+                <p className="font-medium">{data.student.address.street}</p>
               </div>
             </div>
           </CardBody>
