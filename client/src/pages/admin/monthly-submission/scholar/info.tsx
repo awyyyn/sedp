@@ -12,6 +12,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Helmet } from "react-helmet";
+import { isFuture } from "date-fns";
 
 import GenerateAllowance from "../../__components/generate-allowance";
 
@@ -27,7 +28,9 @@ import {
 } from "@/lib/constant";
 import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
-import { isFuture } from "date-fns";
+import { Loader } from "@/components/loader";
+import { useSetAtom } from "jotai";
+import { studentAtom } from "@/states";
 
 const getYears = (yearStarted: number) => {
   const years = [];
@@ -41,8 +44,7 @@ const getYears = (yearStarted: number) => {
 
 export default function StudentFiles() {
   const { scholarId } = useParams();
-  const { state }: { state: { scholar: Student } } = useLocation();
-  const scholar = state.scholar;
+
   const [yearFilter, setYearFilter] = useState<Selection>(
     new Set([new Date().getFullYear()]),
   );
@@ -50,6 +52,7 @@ export default function StudentFiles() {
     new Set([new Date().getMonth()]),
   );
   const { role } = useAuth();
+  const setStudent = useSetAtom(studentAtom);
   const [generateModal, setGenerateModal] = useState(false);
   const [viewAllowanceModal, setViewAllowanceModal] = useState(false);
   const [previewModal, onPreviewModalChange] = useState(false);
@@ -57,16 +60,25 @@ export default function StudentFiles() {
   const { loading, error, data, refetch } = useQuery<{
     documents: Document[];
     allowance: Allowance;
+    student: Student;
     requests: MonthlyLateSubmitter[];
   }>(READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY, {
     variables: {
+      id: scholarId,
       scholarId: scholarId,
       month: Number(Array.from(monthFilter)[0]),
       year: Number(Array.from(yearFilter)[0]),
       allowanceYear2: Number(Array.from(yearFilter)[0]),
       allowanceMonth2: Number(Array.from(monthFilter)[0]),
     },
+    onCompleted: (data) => {
+      if (data.student) {
+        setStudent(data.student);
+      }
+    },
   });
+
+  const scholar = data?.student;
 
   useEffect(() => {
     if (!error) {
@@ -78,8 +90,10 @@ export default function StudentFiles() {
     }
   }, [yearFilter, monthFilter]);
 
-  if (!scholarId && !scholar)
-    return <Navigate to={`/admin/monthly-submissions`} />;
+  if (loading) return <Loader />;
+
+  if (!scholarId) return <Navigate to={`/admin/scholars`} />;
+  if (!scholar) return <Navigate to={`/admin/scholars`} />;
 
   const yearStarted = new Date(
     !isNaN(Number(scholar.createdAt))
@@ -113,26 +127,7 @@ export default function StudentFiles() {
       <div className="container mx-auto  py-5">
         <div className="flex-col md:flex-row flex  justify-between items-center ">
           <div className="flex items-center gap-2">
-            <Tooltip content="Back">
-              <Button
-                variant="solid"
-                color="primary"
-                as={Link}
-                to="/admin/scholars"
-                className=" "
-                isIconOnly
-              >
-                <Icon
-                  icon="iconamoon:arrow-left-2-bold"
-                  width="24"
-                  height="24"
-                />
-              </Button>
-            </Tooltip>
             <div>
-              <h1 className="text-2xl">
-                {scholar.firstName} {scholar.lastName}&apos;s <span>files</span>
-              </h1>
               <p className="md:max-w-2xl text-sm text-default-400">
                 The list below displays the files submitted by the student for
                 the monthly submission process. Please click on a file to view
