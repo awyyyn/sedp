@@ -75,6 +75,7 @@ export const READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY = gql`
   ${documentFragment}
   ${documentFragment}
   ${allowanceFragment}
+  ${studentsFragment}
   query (
     $scholarId: ID!
     $month: Int
@@ -85,7 +86,11 @@ export const READ_SCHOLAR_DOCS_AND_LATE_SUBMISSION_QUERY = gql`
     $schoolYear: String
     $allowanceYear2: Int!
     $allowanceMonth2: Int!
+    $id: String!
   ) {
+    student(id: $id) {
+      ...StudentFragment
+    }
     requests: lateSubmissionByScholar(
       id: $scholarId
       month: $month
@@ -511,6 +516,39 @@ export const READ_ALLOWANCES_QUERY = gql`
   }
 `;
 
+export const READ_ALLOWANCES_W_USER_INFO_QUERY = gql`
+  ${allowanceFragment}
+  ${studentsFragment}
+  query (
+    $claimed: Boolean
+    $studentId: String
+    $month: Int
+    $pagination: PaginationInput
+    $year: Int
+    $semester: Int
+    $yearLevel: Int
+    $id: String!
+  ) {
+    allowances(
+      claimed: $claimed
+      studentId: $studentId
+      month: $month
+      pagination: $pagination
+      year: $year
+      semester: $semester
+      yearLevel: $yearLevel
+    ) {
+      hasMore
+      count
+      data {
+        ...AllowanceFragment
+      }
+    }
+    student(id: $id) {
+      ...StudentFragment
+    }
+  }
+`;
 export const READ_MONTHLY_EVENTS = gql`
   query {
     events: monthlyEvents {
