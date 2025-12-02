@@ -18,7 +18,11 @@ import {
 import { DocumentTable, PreviewModal } from "@/components";
 import { getFileExtension, imagesExtensions } from "@/lib/constant";
 
-const semester = ["1st Semester", "2nd Semester", "3rd Semester"];
+const semester = [
+  "1st Semester",
+  "2nd Semester",
+  // "3rd Semester"
+];
 
 export const generateFolders = (
   date: string,

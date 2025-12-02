@@ -58,7 +58,7 @@ export default function MonthlyDocumentForm({
         // UPLOAD
 
         const input = {
-          documentName: values.documentName,
+          documentName: values.documentName || values.documentType,
           docType: values.documentType,
           documentUrl: values.documentUrl,
           monthlyDocument: true,
@@ -165,7 +165,7 @@ export default function MonthlyDocumentForm({
       <div className="h-[calc(100vh-28vh)] px-2 pt-32 gap-y-3 py-5 grid-cols-1 md:grid-cols-2 grid gap-x-2 md:gap-5  overflow-y-auto ">
         <div className="space-y-3">
           <div className="">
-            <Input
+            {/*<Input
               isReadOnly={formik.isSubmitting}
               label="Name"
               onChange={formik.handleChange}
@@ -174,7 +174,7 @@ export default function MonthlyDocumentForm({
               value={formik.values.documentName}
               isInvalid={!!formik.errors.documentName}
               errorMessage={formik.errors.documentName}
-            />
+            />*/}
           </div>
           <div className="">
             <Select
@@ -199,18 +199,20 @@ export default function MonthlyDocumentForm({
               ))}
             </Select>
           </div>
-          <div className="">
-            <Input
-              isReadOnly={formik.isSubmitting}
-              label="Amount"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="amount"
-              value={formik.values.amount?.toString() || ""}
-              isInvalid={!!formik.errors.amount}
-              errorMessage={formik.errors.amount}
-            />
-          </div>
+          {formik.values.documentType === "RECEIPT" && (
+            <div className="">
+              <Input
+                isReadOnly={formik.isSubmitting}
+                label="Amount"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="amount"
+                value={formik.values.amount?.toString() || ""}
+                isInvalid={!!formik.errors.amount}
+                errorMessage={formik.errors.amount}
+              />
+            </div>
+          )}
         </div>
         {/*<div className="">
                     <Select
