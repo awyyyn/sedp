@@ -212,6 +212,9 @@ export async function readAllStudents({
     include: {
       documents: includeDocs,
     },
+    orderBy: {
+      lastName: "asc",
+    },
   });
 
   const count = await prisma.student.count({
