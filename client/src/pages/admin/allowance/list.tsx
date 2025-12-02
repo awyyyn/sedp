@@ -48,6 +48,7 @@ export const columns = [
   { name: "NAME", uid: "name", sortable: true },
   { name: "YEAR LEVEL", uid: "yearLevel" },
   { name: "SCHOOL", uid: "school" },
+  { name: "COURSE", uid: "course" },
   { name: "AMOUNT", uid: "amount" },
   { name: "STATUS", uid: "status" },
   // { name: "STATUS", uid: "status" },
@@ -58,6 +59,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "name",
   "yearLevel",
   "school",
+  "course",
   "status",
   "amount",
   "actions",
@@ -144,7 +146,7 @@ export default function AllowanceList() {
 
       switch (columnKey) {
         case "name":
-          return <p>{`${student.firstName} ${student.lastName}`}</p>;
+          return <p>{`${student.lastName}, ${student.firstName}`}</p>;
 
         // case "date":
         // 	return formatDate(allowance.date, "MMMM dd, yyyy");
@@ -163,6 +165,9 @@ export default function AllowanceList() {
 
         case "school":
           return <p>{allowance.student.schoolName}</p>;
+
+        case "course":
+          return <p>{allowance.student.course}</p>;
 
         case "amount":
           return formatCurrency(allowance.totalAmount);
