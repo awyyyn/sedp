@@ -86,7 +86,7 @@ export const AddMeetingSchema = yup.object({
 });
 
 export const AddMonthlyDocumentSchema = yup.object({
-  documentName: yup.string().required("Document name is required."),
+  documentName: yup.string().required("Document name is required.").optional(),
   documentType: yup.string().required("Type of Document is required."),
   documentUrl: yup.string().required("Document is required."),
   amount: yup
