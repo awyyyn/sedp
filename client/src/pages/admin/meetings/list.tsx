@@ -147,7 +147,7 @@ export default function MeetingList() {
                 <Icon icon="fluent:status-12-filled" color="green" />
               </Button>
             </Tooltip>
-            <Tooltip color="danger" content="Delete meeting">
+            {/*<Tooltip color="danger" content="Delete meeting">
               <Button
                 size="sm"
                 isIconOnly
@@ -161,7 +161,7 @@ export default function MeetingList() {
               >
                 <Icon icon="solar:trash-bin-minimalistic-bold" color="red" />
               </Button>
-            </Tooltip>
+            </Tooltip>*/}
           </div>
         );
       default:
