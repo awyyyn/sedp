@@ -105,7 +105,7 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
             variant="solid"
             color="success"
             as={Link}
-            to="/admin/events"
+            to="/admin/activities/events"
             className=" "
             isIconOnly
           >
@@ -190,7 +190,7 @@ export default function EventForm({ edit, defaultValues }: EventFormProps) {
                   refetchQueries: [READ_EVENTS_QUERY],
                 });
 
-                navigate("/admin/events");
+                navigate("/admin/activities/events");
 
                 helpers.resetForm({
                   values: {

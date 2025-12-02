@@ -148,7 +148,7 @@ export default function EventList() {
                 isIconOnly
                 variant="light"
                 as={Link}
-                to={`/admin/events/${event.id}`}
+                to={`/admin/activities/events/${event.id}`}
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
               >
                 <Icon icon="solar:info-square-bold" color="gray" />
@@ -162,7 +162,7 @@ export default function EventList() {
                 variant="light"
                 isDisabled={!Gatherings.includes(role!)}
                 as={Link}
-                to={`/admin/events/${event.id}/edit`}
+                to={`/admin/activities/events/${event.id}/edit`}
                 className="text-lg text-default-400  cursor-pointer active:opacity-50"
               >
                 <Icon icon="fluent:status-12-filled" color="green" />
@@ -357,7 +357,7 @@ export default function EventList() {
               className="text-white/90"
               as={Link}
               isDisabled={!Gatherings.includes(role!)}
-              to="/admin/events/add"
+              to="/admin/activities/events/add"
             >
               <Icon icon="lets-icons:add-ring-light" width="24" height="24" />
               Add Event
@@ -477,7 +477,7 @@ export default function EventList() {
             <Tab key="calendar" title="Calendar">
               <FCalendar
                 handlePress={(id) => {
-                  navigate(`/admin/events/${id}`);
+                  navigate(`/admin/activities/events/${id}`);
                 }}
                 type="EVENT"
                 events={data?.calendarEvents || []}
