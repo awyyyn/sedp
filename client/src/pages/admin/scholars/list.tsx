@@ -57,6 +57,9 @@ const officesOptions = [
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },
+  { name: "YEAR LEVEL", uid: "yearLevel" },
+  { name: "SCHOOL", uid: "school" },
+  { name: "COURSE", uid: "course" },
   {
     name: `${formatDate(Date.now(), "MMMM").toUpperCase()} DOCS`,
     uid: "documents",
@@ -68,10 +71,19 @@ export const columns = [
 
 const columnsWithoutDocs = [
   { name: "NAME", uid: "name" },
+  { name: "YEAR LEVEL", uid: "yearLevel" },
+  { name: "SCHOOL", uid: "school" },
+  { name: "COURSE", uid: "course" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "documents", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "yearLevel",
+  "school",
+  "course",
+  "actions",
+];
 
 const rowsPerPageItems = [
   { key: "25", label: "25" },
@@ -165,6 +177,8 @@ export default function Scholars() {
 
           return <p>{`${user.lastName},  ${user.firstName} ${middleName}`}</p>;
 
+        case "school":
+          return <>{user.schoolName}</>;
         case "documents":
           return (
             <p
@@ -543,6 +557,7 @@ export default function Scholars() {
               classNames={{
                 wrapper: "bg-transparent",
               }}
+              color="secondary"
               sortDescriptor={sortDescriptor}
               onSortChange={setSortDescriptor}
               aria-label="Example table with custom cells"
@@ -621,7 +636,7 @@ export default function Scholars() {
                 {(column) => (
                   <TableColumn
                     className="bg-[#A6F3B2]"
-                    allowsSorting={column.sortable}
+                    // allowsSorting={column.sortable}
                     key={column.uid}
                     align={column.uid === "actions" ? "center" : "start"}
                   >
