@@ -61,6 +61,7 @@ import ScholarAllowances from "@/pages/admin/scholars/allowances";
 import Transactions from "@/pages/admin/transactions/list";
 import LateSubmissionList from "@/pages/admin/late-submission/list";
 import ActivitiesLayout from "@/layouts/__components/activities";
+import FeaturesLayout from "@/layouts/features-layout";
 
 function App() {
   const manageScholarRoutes = {
@@ -97,6 +98,7 @@ function App() {
 
               {
                 path: ":scholarId",
+                element: <FeaturesLayout />,
                 children: [
                   {
                     path: "monthly-docs",
