@@ -332,7 +332,7 @@ export default function MeetingList() {
               className="text-white/90"
               as={Link}
               isDisabled={!Gatherings.includes(role!)}
-              to="/admin/meetings/add"
+              to="/admin/activities/meetings/add"
             >
               <Icon icon="lets-icons:add-ring-light" width="24" height="24" />
               Add Meeting
