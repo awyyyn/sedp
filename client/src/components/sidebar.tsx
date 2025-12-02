@@ -44,25 +44,20 @@ const defaultLinks = [
     icon: "material-symbols-light:assignment-late-outline-rounded",
   },
   {
-    path: "/events",
+    path: "/activities/events",
     icon: "mdi:events",
   },
-  {
-    path: "/meetings",
-    icon: "healthicons:group-discussion-meetingx3",
-  },
-  {
-    path: "/announcements",
-    icon: "mingcute:announcement-line",
-  },
+  // {
+  //   path: "/meetings",
+  //   icon: "healthicons:group-discussion-meetingx3",
+  // },
+  // {
+  //   path: "/announcements",
+  //   icon: "mingcute:announcement-line",
+  // },
 ];
 
-const adminManageGatheringRoutes = [
-  "/dashboard",
-  "/meetings",
-  "/events",
-  "/announcements",
-];
+const adminManageGatheringRoutes = ["/dashboard", "/activities/events"];
 const adminManageScholarRoutes = ["/dashboard", "/scholars"];
 const adminManageDocsRoutes = [
   "/dashboard",
