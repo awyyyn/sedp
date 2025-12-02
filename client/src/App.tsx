@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 
 import AuthLayout from "@/layouts/auth-layout";
 import Login from "@/pages/auth/admin/login";
@@ -60,6 +60,8 @@ import DisqualifyPage from "@/pages/disqualify";
 import ScholarAllowances from "@/pages/admin/scholars/allowances";
 import Transactions from "@/pages/admin/transactions/list";
 import LateSubmissionList from "@/pages/admin/late-submission/list";
+import ActivitiesLayout from "./layouts/__components/activities";
+import ActivitiesPage from "./pages/admin/activities/page";
 
 function App() {
   const manageScholarRoutes = {
@@ -136,79 +138,89 @@ function App() {
         element: <AdminLayout />,
         children: [
           {
-            path: "events",
+            element: <ActivitiesLayout />,
+            path: "activities",
             children: [
               {
-                element: <EventLists />,
                 index: true,
+                element: <Navigate to="/admin/activities/events" />,
               },
               {
-                element: <AddEvent />,
-                path: "add",
-              },
-              {
-                path: ":id",
+                path: "events",
                 children: [
                   {
-                    element: <EventInfo />,
+                    element: <EventLists />,
                     index: true,
                   },
                   {
-                    element: <EditEvent />,
-                    path: "edit",
+                    element: <AddEvent />,
+                    path: "add",
+                  },
+                  {
+                    path: ":id",
+                    children: [
+                      {
+                        element: <EventInfo />,
+                        index: true,
+                      },
+                      {
+                        element: <EditEvent />,
+                        path: "edit",
+                      },
+                    ],
                   },
                 ],
               },
-            ],
-          },
-          {
-            path: "meetings",
-            children: [
               {
-                element: <Meetings />,
-                index: true,
-              },
-              {
-                element: <AddMeeting />,
-                path: "add",
-              },
-              {
-                path: ":id",
+                path: "meetings",
                 children: [
                   {
-                    element: <MeetingInfo />,
+                    element: <Meetings />,
                     index: true,
                   },
                   {
-                    element: <EditMeeting />,
-                    path: "edit",
+                    element: <AddMeeting />,
+                    path: "add",
+                  },
+                  {
+                    path: ":id",
+                    children: [
+                      {
+                        element: <MeetingInfo />,
+                        index: true,
+                      },
+                      {
+                        element: <EditMeeting />,
+                        path: "edit",
+                      },
+                    ],
                   },
                 ],
               },
-            ],
-          },
-          {
-            path: "announcements",
-            children: [
               {
-                element: <Announcements />,
-                index: true,
-              },
-              {
-                element: <AddAnnouncement />,
-                path: "add",
-              },
-              {
-                path: ":id",
+                path: "announcements",
                 children: [
                   {
+                    element: <Announcements />,
                     index: true,
-                    element: <AnnouncementInfo />,
                   },
+                  {
+                    element: <AddAnnouncement />,
+                    path: "add",
+                  },
+                  {
+                    path: ":id",
+                    children: [
+                      {
+                        index: true,
+                        element: <AnnouncementInfo />,
+                      },
 
-                  {
-                    element: <EditAnnouncement />,
-                    path: "edit",
+                      {
+                        element: <EditAnnouncement />,
+                        path: "edit",
+                      },
+                    ],
                   },
                 ],
               },
