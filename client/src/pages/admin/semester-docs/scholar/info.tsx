@@ -23,6 +23,8 @@ import {
   READ_STUDENT_QUERY,
 } from "@/queries";
 import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
+import { useSetAtom } from "jotai";
+import { studentAtom } from "@/states";
 
 const getYears = (yearStarted: number, yearLevelJoined: number) => {
   const years = [];
@@ -59,12 +61,18 @@ export default function StudentSemesterFiles() {
   // const createdAt = !isNaN(Number(scholar.createdAt))
   // 	? Number(scholar.createdAt)
   // 	: scholar.createdAt;
+  const setStudent = useSetAtom(studentAtom);
   // const year = new Date(createdAt).getFullYear();
   const { data: studentData } = useQuery<{ student: Student }>(
     READ_STUDENT_QUERY,
     {
       variables: {
         id: scholarId,
+      },
+      onCompleted: (data) => {
+        if (data.student) {
+          setStudent(data.student);
+        }
       },
     },
   );
@@ -139,26 +147,7 @@ export default function StudentSemesterFiles() {
       <div className="container mx-auto  py-5">
         <div className="flex-col md:flex-row flex  justify-between items-center ">
           <div className="flex items-center gap-2">
-            <Tooltip content="Back">
-              <Button
-                variant="solid"
-                color="primary"
-                as={Link}
-                to="/admin/scholars"
-                className=" "
-                isIconOnly
-              >
-                <Icon
-                  icon="iconamoon:arrow-left-2-bold"
-                  width="24"
-                  height="24"
-                />
-              </Button>
-            </Tooltip>
             <div>
-              <h1 className="text-2xl">
-                {scholar.firstName} {scholar.lastName}&apos;s <span>files</span>
-              </h1>
               <p className="md:max-w-2xl text-sm text-default-400">
                 The list below displays the files submitted by the student for
                 the semester submission process. Please click on a file to view
