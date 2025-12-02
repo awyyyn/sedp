@@ -57,31 +57,21 @@ const officesOptions = [
 
 export const columns = [
   { name: "NAME", uid: "name", sortable: true },
-  { name: "ALLOWANCES", uid: "email", sortable: true },
-  { name: "MONTHLY DOCS", uid: "phoneNumber", sortable: true },
   {
     name: `${formatDate(Date.now(), "MMMM").toUpperCase()} DOCS`,
     uid: "documents",
     sortable: true,
   },
-  { name: "SEMESTER DOCS", uid: "address" },
+  { name: "FEATURES", uid: "address" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
 const columnsWithoutDocs = [
   { name: "NAME", uid: "name", sortable: true },
-  { name: "ALLOWANCES", uid: "email", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "email",
-  "documents",
-  "phoneNumber",
-  "address",
-  "actions",
-];
+const INITIAL_VISIBLE_COLUMNS = ["name", "documents", "address", "actions"];
 
 const rowsPerPageItems = [
   { key: "25", label: "25" },
@@ -172,7 +162,7 @@ export default function Scholars() {
             ? ` ${user.middleName[0].toUpperCase()}.`
             : "";
 
-          return <p>{`${user.firstName}${middleName} ${user.lastName}`}</p>;
+          return <p>{`${user.lastName},  ${user.firstName} ${middleName}`}</p>;
 
         case "documents":
           return (
@@ -186,42 +176,57 @@ export default function Scholars() {
             </p>
           );
 
-        case "email":
-          return (
-            <Button
-              size="sm"
-              as={Link}
-              variant="light"
-              state={{ scholar: user }}
-              to={`/admin/scholars/${user.id}/allowance-history`}
-            >
-              Allowances
-            </Button>
-          );
-
-        case "phoneNumber":
-          return role !== "ADMIN_MANAGE_SCHOLAR" ? (
-            <Button
-              size="sm"
-              variant="light"
-              as={Link}
-              state={{ scholar: user }}
-              to={`/admin/scholars/${user.id}/monthly-docs`}
-            >
-              Monthly Docs
-            </Button>
-          ) : null;
         case "address":
           return role !== "ADMIN_MANAGE_SCHOLAR" ? (
-            <Button
-              size="sm"
-              as={Link}
-              variant="light"
-              state={{ scholar: user }}
-              to={`/admin/scholars/${user.id}/semester-docs`}
-            >
-              Semester Docs
-            </Button>
+            <>
+              <div className="flex gap-2">
+                <Tooltip content="Allowances">
+                  <Button
+                    size="sm"
+                    as={Link}
+                    variant="light"
+                    state={{ scholar: user }}
+                    to={`/admin/scholars/${user.id}/allowance-history`}
+                    isIconOnly
+                  >
+                    <Icon
+                      icon="fluent:receipt-money-16-filled"
+                      width="24"
+                      height="24"
+                      style={{ color: "#000" }}
+                    />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Monthly Docs">
+                  <Button
+                    size="sm"
+                    as={Link}
+                    variant="light"
+                    state={{ scholar: user }}
+                    to={`/admin/scholars/${user.id}/monthly-docs`}
+                    isIconOnly
+                  >
+                    <Icon icon="material-symbols:docs" width="24" height="24" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Semester Docs">
+                  <Button
+                    size="sm"
+                    as={Link}
+                    variant="light"
+                    state={{ scholar: user }}
+                    to={`/admin/scholars/${user.id}/semester-docs`}
+                    isIconOnly
+                  >
+                    <Icon
+                      icon="material-icon-theme:folder-docs"
+                      width="24"
+                      height="24"
+                    />
+                  </Button>
+                </Tooltip>
+              </div>
+            </>
           ) : null;
         case "actions":
           return (
