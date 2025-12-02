@@ -17,7 +17,7 @@ import { formatDate } from "date-fns";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { lazy } from "react";
 import { Button } from "@heroui/button";
 import {
@@ -62,16 +62,16 @@ export const columns = [
     uid: "documents",
     sortable: true,
   },
-  { name: "FEATURES", uid: "address" },
+  // { name: "FEATURES", uid: "address" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
 const columnsWithoutDocs = [
-  { name: "NAME", uid: "name", sortable: true },
+  { name: "NAME", uid: "name" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "documents", "address", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "documents", "actions"];
 
 const rowsPerPageItems = [
   { key: "25", label: "25" },
@@ -89,6 +89,7 @@ export default function Scholars() {
   const { role, office } = useAuth();
   const [filterValue, setFilterValue] = useState("");
   const [selectedOffice, setSelectedOffice] = useState("All Offices");
+  const navigate = useNavigate();
   const { data: allUsers } = useQuery<{
     students: PaginationResult<Student>;
   }>(READ_STUDENTS_QUERY, {
@@ -176,61 +177,65 @@ export default function Scholars() {
             </p>
           );
 
-        case "address":
-          return role !== "ADMIN_MANAGE_SCHOLAR" ? (
-            <>
-              <div className="flex gap-2">
-                <Tooltip content="Allowances">
-                  <Button
-                    size="sm"
-                    as={Link}
-                    variant="light"
-                    state={{ scholar: user }}
-                    to={`/admin/scholars/${user.id}/allowance-history`}
-                    isIconOnly
-                  >
-                    <Icon
-                      icon="fluent:receipt-money-16-filled"
-                      width="24"
-                      height="24"
-                      style={{ color: "#000" }}
-                    />
-                  </Button>
-                </Tooltip>
-                <Tooltip content="Monthly Docs">
-                  <Button
-                    size="sm"
-                    as={Link}
-                    variant="light"
-                    state={{ scholar: user }}
-                    to={`/admin/scholars/${user.id}/monthly-docs`}
-                    isIconOnly
-                  >
-                    <Icon icon="material-symbols:docs" width="24" height="24" />
-                  </Button>
-                </Tooltip>
-                <Tooltip content="Semester Docs">
-                  <Button
-                    size="sm"
-                    as={Link}
-                    variant="light"
-                    state={{ scholar: user }}
-                    to={`/admin/scholars/${user.id}/semester-docs`}
-                    isIconOnly
-                  >
-                    <Icon
-                      icon="material-icon-theme:folder-docs"
-                      width="24"
-                      height="24"
-                    />
-                  </Button>
-                </Tooltip>
-              </div>
-            </>
-          ) : null;
+        // case "address":
+        //   return role !== "ADMIN_MANAGE_SCHOLAR" ? (
+        //     <>
+        //       <div className="flex gap-2">
+        //         <Tooltip content="Allowances">
+        //           <Button
+        //             size="sm"
+        //             as={Link}
+        //             variant="light"
+        //             state={{ scholar: user }}
+        //             to={`/admin/scholars/${user.id}/allowance-history`}
+        //             isIconOnly
+        //           >
+        //             <Icon
+        //               icon="fluent:receipt-money-16-filled"
+        //               width="24"
+        //               height="24"
+        //               style={{ color: "#000" }}
+        //             />
+        //           </Button>
+        //         </Tooltip>
+        //         <Tooltip content="Monthly Docs">
+        //           <Button
+        //             size="sm"
+        //             as={Link}
+        //             variant="light"
+        //             state={{ scholar: user }}
+        //             to={`/admin/scholars/${user.id}/monthly-docs`}
+        //             isIconOnly
+        //           >
+        //             <Icon icon="material-symbols:docs" width="24" height="24" />
+        //           </Button>
+        //         </Tooltip>
+        //         <Tooltip content="Semester Docs">
+        //           <Button
+        //             size="sm"
+        //             as={Link}
+        //             variant="light"
+        //             state={{ scholar: user }}
+        //             to={`/admin/scholars/${user.id}/semester-docs`}
+        //             isIconOnly
+        //           >
+        //             <Icon
+        //               icon="material-icon-theme:folder-docs"
+        //               width="24"
+        //               height="24"
+        //             />
+        //           </Button>
+        //         </Tooltip>
+        //       </div>
+        //     </>
+        //   ) : null;
+
         case "actions":
           return (
-            <div className="relative flex justify-center items-center gap-2">
+            <div
+              data-disabled
+              className="z-[9999] relative flex justify-center items-center gap-2"
+            >
               <Tooltip content="Details">
                 <Link to={`/admin/scholars/${user.id}`}>
                   <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
@@ -330,21 +335,21 @@ export default function Scholars() {
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const sortedItems = useMemo(() => {
-    return [...(items ?? [])].sort((a: Student, b: Student) => {
-      const first =
-        sortDescriptor.column === "name"
-          ? a["firstName"]
-          : a[sortDescriptor.column as keyof Student]!;
-      const second =
-        sortDescriptor.column === "name"
-          ? b["firstName"]
-          : b[sortDescriptor.column as keyof Student]!;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
+  // const sortedItems = useMemo(() => {
+  //   return [...(items ?? [])].sort((a: Student, b: Student) => {
+  //     const first =
+  //       sortDescriptor.column === "name"
+  //         ? a["firstName"]
+  //         : a[sortDescriptor.column as keyof Student]!;
+  //     const second =
+  //       sortDescriptor.column === "name"
+  //         ? b["firstName"]
+  //         : b[sortDescriptor.column as keyof Student]!;
+  //     const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items]);
+  //     return sortDescriptor.direction === "descending" ? -cmp : cmp;
+  //   });
+  // }, [sortDescriptor, items]);
 
   const topContent = useMemo(() => {
     return (
@@ -542,6 +547,7 @@ export default function Scholars() {
               onSortChange={setSortDescriptor}
               aria-label="Example table with custom cells"
               shadow="none"
+              selectionMode="single"
               bottomContentPlacement="outside"
               topContent={topContent}
               bottomContent={
@@ -603,6 +609,13 @@ export default function Scholars() {
                   </div>
                 ) : null
               }
+              onCellAction={(k) => {
+                const id = k.toString().slice(0, 24);
+
+                if (!k.toString().includes("actions")) {
+                  navigate(`/admin/scholars/${id}/allowance-history`);
+                }
+              }}
             >
               <TableHeader columns={headerColumns}>
                 {(column) => (
@@ -620,13 +633,15 @@ export default function Scholars() {
                 emptyContent={"No rows to display."}
                 loadingContent={<Spinner />}
                 loadingState={loadingState}
-                // items={sortedItems ?? []}
-                items={sortedItems ?? []}
+                items={items ?? []}
               >
                 {(item) => (
                   <TableRow key={`${item.id}`}>
                     {(columnKey) => (
-                      <TableCell className="min-w-[140px]">
+                      <TableCell
+                        onClick={(e) => e.stopPropagation()}
+                        className="min-w-[140px]"
+                      >
                         {renderCell(item, columnKey)}
                       </TableCell>
                     )}
