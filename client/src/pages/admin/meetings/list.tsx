@@ -65,10 +65,7 @@ export default function MeetingList() {
   const [filterValue, setFilterValue] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
-  const [toDeleteItem, setToDeleteItem] = useState<Pick<
-    Meeting,
-    "id" | "title"
-  > | null>(null);
+  const [toDeleteItem] = useState<Pick<Meeting, "id" | "title"> | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );

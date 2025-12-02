@@ -1,5 +1,4 @@
 import { Button, ButtonGroup } from "@heroui/button";
-import { cn } from "@heroui/theme";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function ActivitiesLayout() {

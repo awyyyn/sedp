@@ -81,10 +81,7 @@ export default function EventList() {
   const [openModal, setOpenModal] = useState(false);
   const setEvents = useSetAtom(eventsAtom);
   const navigate = useNavigate();
-  const [toDeleteItem, setToDeleteItem] = useState<Pick<
-    Event,
-    "id" | "title"
-  > | null>(null);
+  const [toDeleteItem] = useState<Pick<Event, "id" | "title"> | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );

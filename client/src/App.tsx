@@ -60,8 +60,7 @@ import DisqualifyPage from "@/pages/disqualify";
 import ScholarAllowances from "@/pages/admin/scholars/allowances";
 import Transactions from "@/pages/admin/transactions/list";
 import LateSubmissionList from "@/pages/admin/late-submission/list";
-import ActivitiesLayout from "./layouts/__components/activities";
-import ActivitiesPage from "./pages/admin/activities/page";
+import ActivitiesLayout from "@/layouts/__components/activities";
 
 function App() {
   const manageScholarRoutes = {
