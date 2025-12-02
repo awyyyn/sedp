@@ -9,8 +9,6 @@ export default function FeaturesLayout() {
   const { pathname } = useLocation();
   const scholar = useAtomValue(studentAtom);
 
-  let label = "";
-
   return (
     <div>
       <h1 className="text-2xl mb-2">

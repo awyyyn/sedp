@@ -1,4 +1,5 @@
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useSetAtom } from "jotai";
 import { Selection } from "@react-types/shared";
 import {
   Dropdown,
@@ -8,7 +9,6 @@ import {
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Tooltip } from "@heroui/tooltip";
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Helmet } from "react-helmet";
@@ -23,7 +23,6 @@ import {
   READ_STUDENT_QUERY,
 } from "@/queries";
 import { getFileExtension, imagesExtensions, semester } from "@/lib/constant";
-import { useSetAtom } from "jotai";
 import { studentAtom } from "@/states";
 
 const getYears = (yearStarted: number, yearLevelJoined: number) => {

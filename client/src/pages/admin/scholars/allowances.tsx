@@ -1,20 +1,15 @@
 import { useQuery } from "@apollo/client";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Tab, Tabs } from "@heroui/tabs";
 import { Helmet } from "react-helmet";
-import { Tooltip } from "@heroui/tooltip";
-import { Button } from "@heroui/button";
+import { useSetAtom } from "jotai";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Divider } from "@heroui/divider";
 import { Skeleton } from "@heroui/skeleton";
 
 import { ErrorUI, MonthsTable } from "@/components";
-import {
-  READ_ALLOWANCES_QUERY,
-  READ_ALLOWANCES_W_USER_INFO_QUERY,
-} from "@/queries";
+import { READ_ALLOWANCES_W_USER_INFO_QUERY } from "@/queries";
 import { Allowance, PaginationResult, Student } from "@/types";
-import { useAtom, useSetAtom } from "jotai";
 import { studentAtom } from "@/states";
 
 export default function ScholarAllowances() {

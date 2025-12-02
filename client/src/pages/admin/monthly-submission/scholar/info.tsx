@@ -1,4 +1,4 @@
-import { Link, Navigate, useLocation, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Selection } from "@react-types/shared";
 import {
   Dropdown,
@@ -6,8 +6,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
+import { useSetAtom } from "jotai";
 import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
@@ -29,7 +29,6 @@ import {
 import { checkIfPreviousMonth, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts";
 import { Loader } from "@/components/loader";
-import { useSetAtom } from "jotai";
 import { studentAtom } from "@/states";
 
 const getYears = (yearStarted: number) => {
