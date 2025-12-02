@@ -9,19 +9,29 @@ import { Divider } from "@heroui/divider";
 import { Skeleton } from "@heroui/skeleton";
 
 import { ErrorUI, MonthsTable } from "@/components";
-import { READ_ALLOWANCES_QUERY } from "@/queries";
-import { Allowance, PaginationResult } from "@/types";
+import {
+  READ_ALLOWANCES_QUERY,
+  READ_ALLOWANCES_W_USER_INFO_QUERY,
+} from "@/queries";
+import { Allowance, PaginationResult, Student } from "@/types";
+import { useAtom, useSetAtom } from "jotai";
+import { studentAtom } from "@/states";
 
 export default function ScholarAllowances() {
   const params = useParams();
-  const { state } = useLocation();
-
+  const setStudent = useSetAtom(studentAtom);
   const { data, error, loading, refetch } = useQuery<{
     allowances: PaginationResult<Allowance>;
-  }>(READ_ALLOWANCES_QUERY, {
+    student: Student;
+  }>(READ_ALLOWANCES_W_USER_INFO_QUERY, {
     variables: {
       studentId: params.scholarId,
-      includeStudent: true,
+      id: params.scholarId,
+    },
+    onCompleted: (data) => {
+      if (data.student) {
+        setStudent(data.student);
+      }
     },
   });
 
@@ -53,7 +63,7 @@ export default function ScholarAllowances() {
     );
   }
 
-  if (error) {
+  if (error || !data?.student) {
     return (
       <div className="min-h-[calc(100dvh-25dvh)] flex items-center justify-center">
         <ErrorUI
@@ -90,25 +100,12 @@ export default function ScholarAllowances() {
           content="View the allowance history for a scholar in the admin panel."
         />
       </Helmet>
-      <div className="">
+      <div className="mt-5">
         <div className=" flex items-center gap-2">
-          <Tooltip content="Back">
-            <Button
-              variant="solid"
-              color="primary"
-              as={Link}
-              to="/admin/scholars"
-              className=" "
-              isIconOnly
-            >
-              <Icon icon="iconamoon:arrow-left-2-bold" width="24" height="24" />
-            </Button>
-          </Tooltip>
           <div className="">
-            <h1 className="text-3xl font-bold ">Allowance History</h1>
             <p className="text-gray-600 ">
               Here you can view the allowance history for the selected scholar (
-              {`${state.scholar.lastName}, ${state.scholar.firstName}`}).
+              {`${data.student.lastName}, ${data.student.firstName}`}).
             </p>
           </div>
         </div>
@@ -121,7 +118,7 @@ export default function ScholarAllowances() {
                 title={year}
                 className="bg-white dark:bg-gray-800"
               >
-                <MonthsTable data={allowances} studentUser={state.scholar} />
+                <MonthsTable data={allowances} studentUser={data.student} />
               </Tab>
             ))}
           </Tabs>
