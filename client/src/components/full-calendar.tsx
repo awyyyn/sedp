@@ -7,235 +7,383 @@ import listPlugin from "@fullcalendar/list";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@heroui/button";
 
-/*  
-  	id: string;
-	editable: boolean;
-	durationEditable: boolean;
-	interactive: boolean;
-	start: Date;
-	end: Date;
-	title: string;
-	location: string;
-	backgroundColor?: string;
-	borderColor?: string;
-*/
-
 export function FCalendar<T>({
-	events,
-	handlePress,
+  events,
+  handlePress,
 }: {
-	events: T[];
-	type?: "MEETING" | "EVENT";
-	handlePress: (id: string) => void;
+  events: T[];
+  type?: "MEETING" | "EVENT";
+  handlePress: (id: string) => void;
 }) {
-	const calendarRef = React.useRef<any>(null);
-	const [currentView, setCurrentView] = React.useState("dayGridMonth");
+  const calendarRef = React.useRef<any>(null);
+  const [currentView, setCurrentView] = React.useState("dayGridMonth");
 
-	// Custom buttons with Tailwind styling
-	const customButtons = {
-		prev: {
-			text: (
-				<Icon
-					icon="mynaui:chevron-left-solid"
-					className="w-5 h-5 text-gray-600 hover:text-[#17c964]"
-				/>
-			),
-			click: () => {
-				if (calendarRef.current) {
-					calendarRef.current.getApi().prev();
-				}
-			},
-		},
-		next: {
-			text: (
-				<Icon
-					icon="mynaui:chevron-right-solid"
-					className="w-5 h-5 text-gray-600 hover:text-[#17c964]"
-				/>
-			),
-			click: () => {
-				if (calendarRef.current) {
-					calendarRef.current.getApi().next();
-				}
-			},
-		},
-		today: {
-			text: "Today",
-			click: () => {
-				if (calendarRef.current) {
-					calendarRef.current.getApi().today();
-				}
-			},
-		},
-	};
+  // Custom CSS for FullCalendar
+  const customStyles = `
+    .fc {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
 
-	// Customized toolbar configuration
-	const headerToolbar = {
-		left: "title",
-		center: "",
-		right: "prev,next",
-	};
+    /* Toolbar Styling */
+    .fc .fc-toolbar-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
 
-	// Memoized events to prevent unnecessary re-renders
-	const memoizedEvents = React.useMemo(
-		() =>
-			events.map((event: any) => ({
-				...event,
-				id: String(event.id),
-				editable: false,
-				durationEditable: false,
-			})) ?? [],
-		[events]
-	);
+    /* Custom Button Styling */
+    .fc .fc-button {
+      background: transparent;
+      border: none;
+      padding: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: none;
+    }
 
-	// Custom button rendering for view switcher
-	const buttonClassNames = (view: string) =>
-		`px-3 py-1 text-sm transition-colors duration-200 ${
-			currentView === view
-				? "bg-[#17c964] text-white"
-				: "text-gray-600 hover:bg-[#17c964]/10"
-		}`;
+    .fc .fc-button:hover {
+      background: #f3f4f6;
+      transform: scale(1.05);
+    }
 
-	const Switcher = () => (
-		<div className="space-x-2 bg-gray-100 rounded-md p-1">
-			{["dayGridMonth", "timeGridWeek", "listWeek"].map((view) => (
-				<button
-					key={view}
-					onClick={() => {
-						if (calendarRef.current) {
-							calendarRef.current.getApi().changeView(view);
-							setCurrentView(view);
-						}
-					}}
-					className={buttonClassNames(view)}>
-					{view === "dayGridMonth"
-						? "Month"
-						: view === "timeGridWeek"
-							? "Week"
-							: "List"}
-				</button>
-			))}
-		</div>
-	);
+    .fc .fc-button:focus {
+      box-shadow: none;
+      outline: none;
+    }
 
-	return (
-		<div className="w-full max-w-full bg-white shadow-md rounded-lg overflow-hidden">
-			{/* Header */}
-			<div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-				<div>
-					<h2 className="text-2xl font-semibold text-gray-800 flex items-center">
-						<Icon
-							icon="fluent-color:calendar-28"
-							className="mr-2 w-6 h-6 text-[#17c964]"
-						/>
-						SEDP Calendar
-					</h2>
-					<p className="text-sm text-gray-500 mt-1">
-						Manage events, announcements, and meetings
-					</p>
-				</div>
+    .fc .fc-button-active {
+      background: #17c964 !important;
+      color: white !important;
+      border-radius: 0.5rem;
+    }
 
-				{/* View Switcher */}
-				<div className="hidden md:flex ">
-					<Switcher />
-				</div>
-			</div>
+    /* Day Headers */
+    .fc .fc-col-header-cell {
+      padding: 0.75rem 0.5rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      background: #f9fafb;
+      border: none;
+    }
 
-			{/* Calendar */}
-			<div className="p-4">
-				<FullCalendar
-					ref={calendarRef}
-					plugins={[
-						dayGridPlugin,
-						timeGridPlugin,
-						interactionPlugin,
-						listPlugin,
-					]}
-					initialView="dayGridMonth"
-					headerToolbar={headerToolbar}
-					weekNumberClassNames={`hidden`}
-					customButtons={customButtons as any}
-					events={memoizedEvents}
-					eventContent={(eventInfo) => {
-						return (
-							<Button
-								onPress={() => handlePress(eventInfo.event.id)}
-								as={"div"}
-								radius="none" // to={`/admin/${type === "EVENT" ? "events" : "meetings"}/${eventInfo.event.id}`}
-								className="border-none h-full justify-start bg-transparent hover:bg-transparent flex flex-col w-full gap-0 items-start relative overflow-hidden p-2 "
-								suppressHydrationWarning>
-								<h1 className="pl-2 block  ">{eventInfo.event.title}</h1>
-								<p className="pl-2 block text-gray-600 ">
-									@{eventInfo.event.extendedProps.location}
-								</p>
-							</Button>
-						);
-					}}
-					// Styling and Interaction
-					editable={false}
-					selectable={true}
-					selectMirror={true}
-					dayMaxEvents={true}
-					weekNumbers={true}
-					height="auto"
-					// Color Customization
-					eventColor="#17c964"
-					eventTextColor="white"
-					// View-specific formatting
-					viewClassNames={"overflow-x-auto"}
-					views={{
-						dayGridMonth: {
-							titleFormat: { year: "numeric", month: "long" },
-						},
-						timeGridWeek: {
-							titleFormat: { year: "numeric", month: "long", day: "numeric" },
-						},
-						listWeek: {
-							titleFormat: { year: "numeric", month: "long" },
-						},
-					}}
-					// Buttons appearance customization
-					buttonText={{
-						today: "Today",
-						month: "Month",
-						week: "Week",
-						list: "List",
-					}}
-				/>
-			</div>
+    /* Day Cells */
+    .fc .fc-daygrid-day {
+      border-color: #e5e7eb;
+      transition: background 0.2s;
+    }
 
-			{/* Mobile View Switcher */}
-			<div className="md:hidden flex justify-center pb-4 px-4">
-				<div className="inline-flex rounded-md shadow-sm">
-					{["dayGridMonth", "timeGridWeek", "listWeek"].map((view) => (
-						<button
-							key={view}
-							onClick={() => {
-								if (calendarRef.current) {
-									calendarRef.current.getApi().changeView(view);
-									setCurrentView(view);
-								}
-							}}
-							className={`
-                                px-4 py-2 text-sm border border-gray-200 
-                                first:rounded-l-lg last:rounded-r-lg
-                                ${
-																	currentView === view
-																		? "bg-[#17c964] text-white"
-																		: "text-gray-600 bg-white hover:bg-gray-50"
-																}
-                            `}>
-							{view === "dayGridMonth"
-								? "Month"
-								: view === "timeGridWeek"
-									? "Week"
-									: "List"}
-						</button>
-					))}
-				</div>
-			</div>
-		</div>
-	);
+    .fc .fc-daygrid-day:hover {
+      background: #f9fafb;
+    }
+
+    .fc .fc-daygrid-day-number {
+      padding: 0.5rem;
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    /* Today Highlight */
+    .fc .fc-day-today {
+      background: rgba(23, 201, 100, 0.05) !important;
+    }
+
+    .fc .fc-day-today .fc-daygrid-day-number {
+      background: #17c964;
+      color: white;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.25rem;
+    }
+
+    /* Other Month Days */
+    .fc .fc-day-other .fc-daygrid-day-number {
+      color: #d1d5db;
+    }
+
+    /* Weekend Styling */
+    .fc .fc-day-sat,
+    .fc .fc-day-sun {
+      background: #fafafa;
+    }
+
+    /* Event Cells */
+    .fc .fc-daygrid-day-frame {
+      min-height: 5rem;
+    }
+
+    .fc .fc-daygrid-event {
+      margin: 2px 4px;
+      border: none;
+      border-radius: 0.375rem;
+    }
+
+    .fc .fc-daygrid-event-harness {
+      margin-bottom: 2px;
+    }
+
+    /* More Link */
+    .fc .fc-daygrid-more-link {
+      color: #17c964;
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      background: rgba(23, 201, 100, 0.1);
+      margin: 2px 4px;
+    }
+
+    .fc .fc-daygrid-more-link:hover {
+      background: rgba(23, 201, 100, 0.2);
+      text-decoration: none;
+    }
+
+    /* Week View Time Grid */
+    .fc .fc-timegrid-slot {
+      height: 3rem;
+      border-color: #f3f4f6;
+    }
+
+    .fc .fc-timegrid-slot-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .fc .fc-timegrid-event {
+      border: none;
+      border-radius: 0.375rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* List View */
+    .fc .fc-list-event {
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .fc .fc-list-event:hover {
+      background: #f9fafb;
+    }
+
+    .fc .fc-list-event-dot {
+      background: #17c964;
+      border-color: #17c964;
+    }
+
+    .fc .fc-list-day-cushion {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    /* Scrollbar Styling */
+    .fc-scroller::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .fc-scroller::-webkit-scrollbar-track {
+      background: #f3f4f6;
+      border-radius: 4px;
+    }
+
+    .fc-scroller::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+    }
+
+    .fc-scroller::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+
+    /* Remove default borders */
+    .fc .fc-scrollgrid {
+      border-color: #e5e7eb;
+    }
+
+    .fc .fc-scrollgrid-section > * {
+      border-color: #e5e7eb;
+    }
+
+    /* Popover */
+    .fc .fc-popover {
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .fc .fc-popover-header {
+      background: #f9fafb;
+      color: #374151;
+      font-weight: 600;
+      border-radius: 0.75rem 0.75rem 0 0;
+    }
+  `;
+
+  React.useEffect(() => {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = customStyles;
+    document.head.appendChild(styleTag);
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
+
+  const customButtons = {
+    prev: {
+      text: (
+        <Icon
+          icon="mynaui:chevron-left-solid"
+          className="w-4 h-4 text-gray-500 hover:text-[#17c964]"
+        />
+      ),
+      click: () => calendarRef.current?.getApi().prev(),
+    },
+    next: {
+      text: (
+        <Icon
+          icon="mynaui:chevron-right-solid"
+          className="w-4 h-4 text-gray-500 hover:text-[#17c964]"
+        />
+      ),
+      click: () => calendarRef.current?.getApi().next(),
+    },
+    today: {
+      text: "Today",
+      click: () => calendarRef.current?.getApi().today(),
+    },
+  };
+
+  const headerToolbar = {
+    left: "title",
+    center: "",
+    right: "prev,next",
+  };
+
+  const memoizedEvents = React.useMemo(
+    () =>
+      events.map((event: any) => ({
+        ...event,
+        id: String(event.id),
+        editable: false,
+        durationEditable: false,
+      })) ?? [],
+    [events],
+  );
+
+  const buttonClassNames = (view: string) =>
+    `px-3 py-1 text-sm rounded-md transition-all duration-200 ${
+      currentView === view
+        ? "bg-[#17c964] text-white"
+        : "text-gray-500 hover:bg-gray-100"
+    }`;
+
+  const Switcher = () => (
+    <div className="space-x-2 flex bg-gray-50 p-1 rounded-lg">
+      {["dayGridMonth", "timeGridWeek", "listWeek"].map((view) => (
+        <button
+          key={view}
+          onClick={() => {
+            calendarRef.current?.getApi().changeView(view);
+            setCurrentView(view);
+          }}
+          className={buttonClassNames(view)}
+        >
+          {view === "dayGridMonth"
+            ? "Month"
+            : view === "timeGridWeek"
+              ? "Week"
+              : "List"}
+        </button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="w-full max-w-full bg-white rounded-xl overflow-hidden border border-gray-100">
+      {/* Header */}
+      <div className="px-6 py-4 flex justify-between items-center bg-white/60 backdrop-blur-sm">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800">SEDP Calendar</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Events, announcements & schedules
+          </p>
+        </div>
+
+        <div className="hidden md:flex">
+          <Switcher />
+        </div>
+      </div>
+
+      {/* Calendar */}
+      <div className="p-4">
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[
+            dayGridPlugin,
+            timeGridPlugin,
+            interactionPlugin,
+            listPlugin,
+          ]}
+          initialView="dayGridMonth"
+          headerToolbar={headerToolbar}
+          customButtons={customButtons as any}
+          weekNumberClassNames="hidden"
+          events={memoizedEvents}
+          height="auto"
+          selectable
+          dayMaxEvents
+          eventContent={(eventInfo) => (
+            <Button
+              onPress={() => handlePress(eventInfo.event.id)}
+              as={"div"}
+              radius="sm"
+              className="border-none bg-[#17c964]/10 text-[#17c964] hover:bg-[#17c964]/20
+              w-full text-left p-2 flex flex-col rounded-lg"
+            >
+              <span className="font-medium">{eventInfo.event.title}</span>
+              <span className="text-xs text-gray-500">
+                @{eventInfo.event.extendedProps.location}
+              </span>
+            </Button>
+          )}
+          eventTextColor="#17c964"
+          eventBackgroundColor="transparent"
+          viewClassNames="overflow-x-auto"
+          views={{
+            dayGridMonth: {
+              titleFormat: { year: "numeric", month: "long" },
+            },
+            timeGridWeek: {
+              titleFormat: { year: "numeric", month: "long", day: "numeric" },
+            },
+            listWeek: {
+              titleFormat: { year: "numeric", month: "long" },
+            },
+          }}
+          buttonText={{
+            today: "Today",
+            month: "Month",
+            week: "Week",
+            list: "List",
+          }}
+        />
+      </div>
+
+      {/* Mobile Switcher */}
+      <div className="md:hidden flex justify-center pb-4 px-4">
+        <Switcher />
+      </div>
+    </div>
+  );
 }
 
 export default FCalendar;
