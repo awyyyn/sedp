@@ -154,7 +154,7 @@ export function AppSidebar() {
                     className={`${pathname.includes("transactions") ? "bg-[#A6F3B2]  " : "bg-[#A6F3B240] hover:bg-[#A6F3B2]"} max-w-[95%] mx-auto rounded-xl my-1`}
                     icon={<Icon icon="bitcoin-icons:transactions-filled" />}
                   >
-                    Transactions
+                    Logs
                   </MenuItem>
                 </RouterLink>
                 <RouterLink to="/admin/system-users">
