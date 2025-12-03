@@ -177,7 +177,7 @@ export function DocumentTable({
         selectionMode="single"
       >
         <TableHeader>
-          <TableColumn>Name</TableColumn>
+          {/*<TableColumn>Name</TableColumn>*/}
           <TableColumn>File Type</TableColumn>
           <TableColumn>Type</TableColumn>
           <TableColumn className={`${!showAmount && "hidden"}`}>
@@ -192,7 +192,7 @@ export function DocumentTable({
           {data.map((doc) => {
             const exe = getFileExtension(doc.documentUrl);
             const isCor = doc.docType === "COR";
-            const docLabel = isCor ? "COR/COE" : doc.documentName;
+            // const docLabel = isCor ? "COR/COE" : doc.documentName;
             const docType =
               doc.docType === "OTHER"
                 ? doc.otherType
@@ -206,13 +206,13 @@ export function DocumentTable({
                 className="cursor-pointer"
                 key={doc.id}
               >
-                <TableCell>{docLabel.replace("_", " ")}</TableCell>
+                {/*<TableCell>{docLabel.replace("_", " ")}</TableCell>*/}
                 <TableCell>{exe?.toUpperCase()}</TableCell>
                 <TableCell className="capitalize">
                   {docType?.replace(/_/g, " ")}
                 </TableCell>
                 <TableCell className={`${!showAmount && "hidden"}`}>
-                  {formatCurrency(doc.amount)}
+                  {docType === "RECEIPT " ? formatCurrency(doc.amount) : "N/A"}
                 </TableCell>
               </TableRow>
             );
