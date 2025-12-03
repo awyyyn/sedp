@@ -306,11 +306,9 @@ export default function Scholars() {
           <CardBody className="pt-8 ">
             <div className="px-5 flex justify-between">
               <div className="leading-loose">
-                <h1 className="text-xl leading-none font-medium">
-                  Transactions
-                </h1>
+                <h1 className="text-xl leading-none font-medium">Logs</h1>
                 <p className="text-sm leading-loose text-gray-400">
-                  List of transactions
+                  List of logs
                 </p>
               </div>
 
