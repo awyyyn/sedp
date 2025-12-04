@@ -176,8 +176,8 @@ export default function Semester() {
           </div>
         </div>
 
-        <div className=" mt-5 relative">
-          <div className="md:absolute relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
+        <div className="  mt-5 relative">
+          <div className="bg-[#d5e3fc] rounded-md   py-2 md:absolute relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
             <h1>School Year </h1>
             <p className="text-sm mb-2 text-gray-500">
               Select a semester to view documents.{" "}
