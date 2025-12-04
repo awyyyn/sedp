@@ -212,7 +212,7 @@ export function DocumentTable({
                   {docType?.replace(/_/g, " ")}
                 </TableCell>
                 <TableCell className={`${!showAmount && "hidden"}`}>
-                  {docType === "RECEIPT " ? formatCurrency(doc.amount) : "N/A"}
+                  {docType === "RECEIPT" ? formatCurrency(doc.amount) : "N/A"}
                 </TableCell>
               </TableRow>
             );
