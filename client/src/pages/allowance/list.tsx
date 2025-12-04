@@ -105,9 +105,9 @@ export default function MyAllowanceList() {
         </div>
 
         <div className=" mt-5 max-h-[calc(100dvh-5dvh)]     overflow-y-auto relative md:flex">
-          <div className="md:sticky overflow-auto  relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
-            <div className="sticky z-20 py-2 bg-white/5 scroll-py-32 top-0 backdrop-blur-md">
-              <h1>Folders </h1>
+          <div className="bg-[#d5e3fc] rounded-md   md:sticky overflow-auto  relative px-2 md:top-0 md:left-0   md:w-[200px] md:max-w-[200px]">
+            <div className="sticky z-20 py-2 bg-white/5 scroll-py-32  top-0 backdrop-blur-md">
+              <h1 className=" ">Folders </h1>
               <p className="text-sm mb-2 text-gray-500">
                 Select a year to view allowances.{" "}
                 {formatDate(new Date(`${activeFileId}-01`), "yyyy")}
