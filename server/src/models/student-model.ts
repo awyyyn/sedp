@@ -223,24 +223,23 @@ export async function readAllStudents({
   });
 
   return {
-    data: users
-      .map((user) => ({
-        ...user,
-        birthDate: user.birthDate.toISOString(),
-        documents: (user.documents || [])
-          .filter(
-            (doc) =>
-              doc.createdAt.getFullYear() === new Date().getFullYear() &&
-              doc.createdAt.getMonth() === new Date().getMonth() &&
-              doc.monthlyDocument,
-          )
-          .map((doc) => ({
-            ...doc,
-            createdAt: doc.createdAt.toISOString(),
-            updatedAt: doc.updatedAt.toISOString(),
-          })),
-      }))
-      .sort((a, b) => b.lastName.localeCompare(a.lastName)),
+    data: users.map((user) => ({
+      ...user,
+      birthDate: user.birthDate.toISOString(),
+      documents: (user.documents || [])
+        .filter(
+          (doc) =>
+            doc.createdAt.getFullYear() === new Date().getFullYear() &&
+            doc.createdAt.getMonth() === new Date().getMonth() &&
+            doc.monthlyDocument,
+        )
+        .map((doc) => ({
+          ...doc,
+          createdAt: doc.createdAt.toISOString(),
+          updatedAt: doc.updatedAt.toISOString(),
+        })),
+    })),
+    // .sort((a, b) => b.lastName.localeCompare(a.lastName)),
     hasMore: pagination ? pagination.page * pagination.take < count : false,
     count,
   };
