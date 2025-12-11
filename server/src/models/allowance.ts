@@ -192,6 +192,11 @@ export const readAllowances = async ({
     include: {
       student: includeStudent,
     },
+    orderBy: {
+      student: {
+        lastName: "asc",
+      },
+    },
   });
 
   const count = await prisma.allowance.count({
